@@ -1,13 +1,22 @@
 <!DOCTYPE html>
-<html {% if language %} lang="{{ language }}" {% endif %}>
+<html lang="{{ language or config['APP_LANG'] }}">
 <head>
     <meta charset="UTF-8">
-    <title>{% if title %}{{ title }} | {% endif %}KILC d.o.o. Bovec</title>
+    <title>{{ title + ' |' if title else '' }} {{ config['APP_NAME'] }}</title>
 </head>
 <body>
     <div id="header">
         <b>Navigation goes here</b>
     </div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
     <div id="content">
         {% block content %}{% endblock %}
     </div>
