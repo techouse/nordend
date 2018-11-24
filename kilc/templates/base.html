@@ -6,7 +6,7 @@
 </head>
 <body>
     <div id="header">
-        <b>Navigation goes here</b>
+        {% include "navigation.html" %}
     </div>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -21,7 +21,7 @@
         {% block content %}{% endblock %}
     </div>
     <div id="footer">
-        <b>Footer goes here</b>
+        {% include "footer.html" %}
     </div>
 </body>
 </html>
