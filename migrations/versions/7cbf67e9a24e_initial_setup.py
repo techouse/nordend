@@ -1,8 +1,8 @@
-"""initial_tables
+"""initial_setup
 
-Revision ID: 524355a65e6e
+Revision ID: 7cbf67e9a24e
 Revises: 
-Create Date: 2018-11-24 21:57:54.299663
+Create Date: 2018-11-24 23:44:06.135992
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '524355a65e6e'
+revision = '7cbf67e9a24e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -35,6 +35,17 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_contact_title'), 'contact', ['title'], unique=True)
+    op.create_table('user',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=64), nullable=False),
+    sa.Column('email', sa.String(length=120), nullable=False),
+    sa.Column('password_hash', sa.String(length=128), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)
+    op.create_index(op.f('ix_user_name'), 'user', ['name'], unique=False)
     op.create_table('product',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('category_id', sa.Integer(), nullable=False),
@@ -64,6 +75,9 @@ def downgrade():
     op.drop_table('bottle')
     op.drop_index(op.f('ix_product_name'), table_name='product')
     op.drop_table('product')
+    op.drop_index(op.f('ix_user_name'), table_name='user')
+    op.drop_index(op.f('ix_user_email'), table_name='user')
+    op.drop_table('user')
     op.drop_index(op.f('ix_contact_title'), table_name='contact')
     op.drop_table('contact')
     op.drop_index(op.f('ix_category_name'), table_name='category')
