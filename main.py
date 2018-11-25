@@ -1,5 +1,8 @@
-from kilc import app, cli, db
+from kilc import create_app, cli, db
 from kilc.models import User, Contact, Category, Product, Bottle
+
+app = create_app()
+cli.register(app)
 
 
 @app.shell_context_processor

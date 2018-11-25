@@ -7,146 +7,113 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-11-25 17:23+0100\n"
+"POT-Creation-Date: 2018-11-25 23:13+0100\n"
 "PO-Revision-Date: 2018-11-25 18:05+0100\n"
+"Last-Translator: \n"
 "Language: it\n"
 "Language-Team: it <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.6.0\n"
-"Last-Translator: \n"
-"X-Generator: Poedit 2.2\n"
 
-#: kilc/__init__.py:20
+#: kilc/__init__.py:18
 msgid "Please login to access this page."
 msgstr "Effettua il login per accedere a questa pagina."
 
-#: kilc/email.py:24
+#: kilc/auth/email.py:8
 #, python-format
 msgid "[%(app_name)s] Reset Your Password"
 msgstr "[%(app_name)s] Ripristina la password"
 
-#: kilc/forms.py:10
+#: kilc/auth/forms.py:10
 msgid "Email"
 msgstr "Email"
 
-#: kilc/forms.py:11 kilc/forms.py:19 kilc/forms.py:52
+#: kilc/auth/forms.py:11 kilc/auth/forms.py:19 kilc/auth/forms.py:35
 msgid "Password"
 msgstr "Password"
 
-#: kilc/forms.py:12
+#: kilc/auth/forms.py:12
 msgid "Remember Me"
 msgstr "Ricorda me"
 
-#: kilc/forms.py:13 kilc/routes.py:50
+#: kilc/auth/forms.py:13 kilc/auth/routes.py:28
 msgid "Sign In"
 msgstr "Registrati"
 
-#: kilc/forms.py:17 kilc/forms.py:30
+#: kilc/auth/forms.py:17 kilc/main/forms.py:10
 msgid "Name"
 msgstr "Nome"
 
-#: kilc/forms.py:18 kilc/forms.py:31 kilc/forms.py:47
+#: kilc/auth/forms.py:18 kilc/auth/forms.py:30 kilc/main/forms.py:11
 msgid "E-mail"
 msgstr "Email"
 
-#: kilc/forms.py:20 kilc/forms.py:53
+#: kilc/auth/forms.py:20 kilc/auth/forms.py:36
 msgid "Repeat Password"
 msgstr "Ripeti la password"
 
-#: kilc/forms.py:21 kilc/routes.py:32
+#: kilc/auth/forms.py:21 kilc/auth/routes.py:49
 msgid "Register"
 msgstr "Registrare"
 
-#: kilc/forms.py:26
+#: kilc/auth/forms.py:26
 msgid "Please use a different e-mail address"
 msgstr "Si prega di utilizzare un indirizzo e-mail diverso"
 
-#: kilc/forms.py:32
-msgid "About me"
-msgstr "Me"
-
-#: kilc/forms.py:33
-msgid "Submit"
-msgstr "Invia"
-
-#: kilc/forms.py:43
-msgid "Please chose a different e-mail address"
-msgstr "Si prega di scegliere un indirizzo email diverso"
-
-#: kilc/forms.py:48 kilc/forms.py:54
+#: kilc/auth/forms.py:31 kilc/auth/forms.py:37
 msgid "Request Password Reset"
 msgstr "Richiedi la reimpostazione della password"
 
-#: kilc/routes.py:17
-msgid "Home Page"
-msgstr "Home Page"
-
-#: kilc/routes.py:30
-msgid "Congratulations, you are now a registered user!"
-msgstr "Congratulazioni, ora sei un utente registrato!"
-
-#: kilc/routes.py:43
+#: kilc/auth/routes.py:21
 msgid "Invalid username or password"
 msgstr "Nome utente o password errati"
 
-#: kilc/routes.py:89
-msgid "Your changes have been saved"
-msgstr "Le modifiche sono state salvate"
+#: kilc/auth/routes.py:47
+msgid "Congratulations, you are now a registered user!"
+msgstr "Congratulazioni, ora sei un utente registrato!"
 
-#: kilc/routes.py:95
-msgid "Edit Profile"
-msgstr "Modifica Profilo"
-
-#: kilc/routes.py:107
+#: kilc/auth/routes.py:61
 msgid "Check your email for the instructions to reset your password"
 msgstr "Controlla la tua e-mail per le istruzioni per reimpostare la password"
 
-#: kilc/routes.py:109 kilc/templates/reset_password_request.html:4
+#: kilc/auth/routes.py:63 kilc/templates/auth/reset_password_request.html:4
 msgid "Reset Password"
 msgstr "Resetta la password"
 
-#: kilc/routes.py:123
+#: kilc/auth/routes.py:77
 msgid "Your password has been reset"
 msgstr "La tua password è stata resettata"
 
-#: kilc/templates/404.html:4
-msgid "Not Found"
-msgstr "Non trovato"
+#: kilc/main/forms.py:12
+msgid "About me"
+msgstr "Me"
 
-#: kilc/templates/500.html:4
-msgid "An unexpected error has occurred"
-msgstr "Si è verificato un errore imprevisto"
+#: kilc/main/forms.py:13
+msgid "Submit"
+msgstr "Invia"
 
-#: kilc/templates/500.html:5
-msgid "The administrator has been notified. Sorry for the inconvenience!"
-msgstr "L’amministratore è stato informato. Ci dispiace per l’inconvenienza!"
+#: kilc/main/forms.py:23
+msgid "Please chose a different e-mail address"
+msgstr "Si prega di scegliere un indirizzo email diverso"
 
-#: kilc/templates/500.html:6
-msgid "Back"
-msgstr "Indietro"
+#: kilc/main/routes.py:24
+msgid "Home Page"
+msgstr "Home Page"
+
+#: kilc/main/routes.py:49
+msgid "Your changes have been saved"
+msgstr "Le modifiche sono state salvate"
+
+#: kilc/main/routes.py:55
+msgid "Edit Profile"
+msgstr "Modifica Profilo"
 
 #: kilc/templates/index.html:4
 msgid "Welcome"
 msgstr "Benvenuti"
-
-#: kilc/templates/login.html:25
-msgid "New user?"
-msgstr "Nuovo utente?"
-
-#: kilc/templates/login.html:25
-msgid "Click to register!"
-msgstr "Clicca per registrarti!"
-
-#: kilc/templates/login.html:26
-msgid "Forgot your password?"
-msgstr "Hai dimenticato la password?"
-
-#: kilc/templates/login.html:26
-msgid "Click to reset it"
-msgstr "Clicca per resettarlo"
 
 #: kilc/templates/navigation.html:2
 msgid "Home"
@@ -164,10 +131,43 @@ msgstr "Profilo"
 msgid "Logout"
 msgstr "Logout"
 
-#: kilc/templates/reset_password.html:4
-msgid "Reset Your Password"
-msgstr "Reimposta la tua password"
-
 #: kilc/templates/user.html:19
 msgid "Edit your profile"
 msgstr "Modifica il tuo profilo"
+
+#: kilc/templates/auth/login.html:25
+msgid "New user?"
+msgstr "Nuovo utente?"
+
+#: kilc/templates/auth/login.html:25
+msgid "Click to register!"
+msgstr "Clicca per registrarti!"
+
+#: kilc/templates/auth/login.html:26
+msgid "Forgot your password?"
+msgstr "Hai dimenticato la password?"
+
+#: kilc/templates/auth/login.html:26
+msgid "Click to reset it"
+msgstr "Clicca per resettarlo"
+
+#: kilc/templates/auth/reset_password.html:4
+msgid "Reset Your Password"
+msgstr "Reimposta la tua password"
+
+#: kilc/templates/errors/404.html:4
+msgid "Not Found"
+msgstr "Non trovato"
+
+#: kilc/templates/errors/500.html:4
+msgid "An unexpected error has occurred"
+msgstr "Si è verificato un errore imprevisto"
+
+#: kilc/templates/errors/500.html:5
+msgid "The administrator has been notified. Sorry for the inconvenience!"
+msgstr "L’amministratore è stato informato. Ci dispiace per l’inconvenienza!"
+
+#: kilc/templates/errors/500.html:6
+msgid "Back"
+msgstr "Indietro"
+
