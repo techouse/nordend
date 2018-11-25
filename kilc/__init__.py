@@ -2,7 +2,8 @@ import logging
 import os
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
-from flask import Flask
+from flask import Flask, request
+from flask_babel import Babel, lazy_gettext as _l
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -16,9 +17,17 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'login'
+login.login_message = _l('Please login to access this page.')
 mail = Mail(app)
+babel = Babel(app)
 
 from kilc import routes, models, errors
+
+
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
+
 
 if not app.debug:
     if app.config['MAIL_SERVER']:

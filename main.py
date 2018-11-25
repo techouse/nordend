@@ -1,4 +1,4 @@
-from kilc import app, db
+from kilc import app, cli, db
 from kilc.models import User, Contact, Category, Product, Bottle
 
 

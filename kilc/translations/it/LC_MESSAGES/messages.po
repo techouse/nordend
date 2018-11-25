@@ -1,0 +1,173 @@
+# Italian translations for PROJECT.
+# Copyright (C) 2018 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2018-11-25 17:23+0100\n"
+"PO-Revision-Date: 2018-11-25 18:05+0100\n"
+"Language: it\n"
+"Language-Team: it <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.6.0\n"
+"Last-Translator: \n"
+"X-Generator: Poedit 2.2\n"
+
+#: kilc/__init__.py:20
+msgid "Please login to access this page."
+msgstr "Effettua il login per accedere a questa pagina."
+
+#: kilc/email.py:24
+#, python-format
+msgid "[%(app_name)s] Reset Your Password"
+msgstr "[%(app_name)s] Ripristina la password"
+
+#: kilc/forms.py:10
+msgid "Email"
+msgstr "Email"
+
+#: kilc/forms.py:11 kilc/forms.py:19 kilc/forms.py:52
+msgid "Password"
+msgstr "Password"
+
+#: kilc/forms.py:12
+msgid "Remember Me"
+msgstr "Ricorda me"
+
+#: kilc/forms.py:13 kilc/routes.py:50
+msgid "Sign In"
+msgstr "Registrati"
+
+#: kilc/forms.py:17 kilc/forms.py:30
+msgid "Name"
+msgstr "Nome"
+
+#: kilc/forms.py:18 kilc/forms.py:31 kilc/forms.py:47
+msgid "E-mail"
+msgstr "Email"
+
+#: kilc/forms.py:20 kilc/forms.py:53
+msgid "Repeat Password"
+msgstr "Ripeti la password"
+
+#: kilc/forms.py:21 kilc/routes.py:32
+msgid "Register"
+msgstr "Registrare"
+
+#: kilc/forms.py:26
+msgid "Please use a different e-mail address"
+msgstr "Si prega di utilizzare un indirizzo e-mail diverso"
+
+#: kilc/forms.py:32
+msgid "About me"
+msgstr "Me"
+
+#: kilc/forms.py:33
+msgid "Submit"
+msgstr "Invia"
+
+#: kilc/forms.py:43
+msgid "Please chose a different e-mail address"
+msgstr "Si prega di scegliere un indirizzo email diverso"
+
+#: kilc/forms.py:48 kilc/forms.py:54
+msgid "Request Password Reset"
+msgstr "Richiedi la reimpostazione della password"
+
+#: kilc/routes.py:17
+msgid "Home Page"
+msgstr "Home Page"
+
+#: kilc/routes.py:30
+msgid "Congratulations, you are now a registered user!"
+msgstr "Congratulazioni, ora sei un utente registrato!"
+
+#: kilc/routes.py:43
+msgid "Invalid username or password"
+msgstr "Nome utente o password errati"
+
+#: kilc/routes.py:89
+msgid "Your changes have been saved"
+msgstr "Le modifiche sono state salvate"
+
+#: kilc/routes.py:95
+msgid "Edit Profile"
+msgstr "Modifica Profilo"
+
+#: kilc/routes.py:107
+msgid "Check your email for the instructions to reset your password"
+msgstr "Controlla la tua e-mail per le istruzioni per reimpostare la password"
+
+#: kilc/routes.py:109 kilc/templates/reset_password_request.html:4
+msgid "Reset Password"
+msgstr "Resetta la password"
+
+#: kilc/routes.py:123
+msgid "Your password has been reset"
+msgstr "La tua password è stata resettata"
+
+#: kilc/templates/404.html:4
+msgid "Not Found"
+msgstr "Non trovato"
+
+#: kilc/templates/500.html:4
+msgid "An unexpected error has occurred"
+msgstr "Si è verificato un errore imprevisto"
+
+#: kilc/templates/500.html:5
+msgid "The administrator has been notified. Sorry for the inconvenience!"
+msgstr "L’amministratore è stato informato. Ci dispiace per l’inconvenienza!"
+
+#: kilc/templates/500.html:6
+msgid "Back"
+msgstr "Indietro"
+
+#: kilc/templates/index.html:4
+msgid "Welcome"
+msgstr "Benvenuti"
+
+#: kilc/templates/login.html:25
+msgid "New user?"
+msgstr "Nuovo utente?"
+
+#: kilc/templates/login.html:25
+msgid "Click to register!"
+msgstr "Clicca per registrarti!"
+
+#: kilc/templates/login.html:26
+msgid "Forgot your password?"
+msgstr "Hai dimenticato la password?"
+
+#: kilc/templates/login.html:26
+msgid "Click to reset it"
+msgstr "Clicca per resettarlo"
+
+#: kilc/templates/navigation.html:2
+msgid "Home"
+msgstr "A casa"
+
+#: kilc/templates/navigation.html:4
+msgid "Login"
+msgstr "Login"
+
+#: kilc/templates/navigation.html:6
+msgid "Profile"
+msgstr "Profilo"
+
+#: kilc/templates/navigation.html:7
+msgid "Logout"
+msgstr "Logout"
+
+#: kilc/templates/reset_password.html:4
+msgid "Reset Your Password"
+msgstr "Reimposta la tua password"
+
+#: kilc/templates/user.html:19
+msgid "Edit your profile"
+msgstr "Modifica il tuo profilo"

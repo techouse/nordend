@@ -6,7 +6,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config(object):
     # Website settings
     APP_NAME = os.environ.get('APP_NAME') or 'Flask'
-    DEFAULT_LANGUAGE = os.environ.get('DEFAULT_LANGUAGE') or 'en'
+    LANGUAGES = ['en', 'de', 'it', 'sl']
     # Security settings
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'im-not-lazy-im-just-very-relaxed'
     # Database settings

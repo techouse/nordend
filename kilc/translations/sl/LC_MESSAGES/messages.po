@@ -1,0 +1,175 @@
+# Slovenian translations for PROJECT.
+# Copyright (C) 2018 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2018-11-25 17:23+0100\n"
+"PO-Revision-Date: 2018-11-25 17:41+0100\n"
+"Language: sl\n"
+"Language-Team: sl <LL@li.org>\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 "
+"|| n%100==4 ? 2 : 3);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.6.0\n"
+"Last-Translator: \n"
+"X-Generator: Poedit 2.2\n"
+
+#: kilc/__init__.py:20
+msgid "Please login to access this page."
+msgstr "Prosimo, da se prijavite za dostop do te strani."
+
+#: kilc/email.py:24
+#, python-format
+msgid "[%(app_name)s] Reset Your Password"
+msgstr "[%(app_name)s] Ponastavite svoje geslo"
+
+#: kilc/forms.py:10
+msgid "Email"
+msgstr "E-pošta"
+
+#: kilc/forms.py:11 kilc/forms.py:19 kilc/forms.py:52
+msgid "Password"
+msgstr "Geslo"
+
+#: kilc/forms.py:12
+msgid "Remember Me"
+msgstr "Zapomni si me"
+
+#: kilc/forms.py:13 kilc/routes.py:50
+msgid "Sign In"
+msgstr "Prijava"
+
+#: kilc/forms.py:17 kilc/forms.py:30
+msgid "Name"
+msgstr "Ime"
+
+#: kilc/forms.py:18 kilc/forms.py:31 kilc/forms.py:47
+msgid "E-mail"
+msgstr "E-pošta"
+
+#: kilc/forms.py:20 kilc/forms.py:53
+msgid "Repeat Password"
+msgstr "Ponovitev gesla"
+
+#: kilc/forms.py:21 kilc/routes.py:32
+msgid "Register"
+msgstr "Registracija"
+
+#: kilc/forms.py:26
+msgid "Please use a different e-mail address"
+msgstr "Izberi drug e-poštni naslov"
+
+#: kilc/forms.py:32
+msgid "About me"
+msgstr "O meni"
+
+#: kilc/forms.py:33
+msgid "Submit"
+msgstr "Pošlji"
+
+#: kilc/forms.py:43
+msgid "Please chose a different e-mail address"
+msgstr "Izberi drug e-poštni naslov"
+
+#: kilc/forms.py:48 kilc/forms.py:54
+msgid "Request Password Reset"
+msgstr "Zahtevaj ponastavitev gesla"
+
+#: kilc/routes.py:17
+msgid "Home Page"
+msgstr "Domača stran"
+
+#: kilc/routes.py:30
+msgid "Congratulations, you are now a registered user!"
+msgstr "Čestitke, zdaj ste registrirani uporabnik!"
+
+#: kilc/routes.py:43
+msgid "Invalid username or password"
+msgstr "Napačno uporabniško ime ali geslo"
+
+#: kilc/routes.py:89
+msgid "Your changes have been saved"
+msgstr "Vaše spremembe so bile shranjene"
+
+#: kilc/routes.py:95
+msgid "Edit Profile"
+msgstr "Uredi profil"
+
+#: kilc/routes.py:107
+msgid "Check your email for the instructions to reset your password"
+msgstr ""
+"Preverite svoj e-pošni nabiralnik za navodila za ponastavitev gesla"
+
+#: kilc/routes.py:109 kilc/templates/reset_password_request.html:4
+msgid "Reset Password"
+msgstr "Ponastavi geslo"
+
+#: kilc/routes.py:123
+msgid "Your password has been reset"
+msgstr "Vaše geslo je bilo ponastavljeno"
+
+#: kilc/templates/404.html:4
+msgid "Not Found"
+msgstr "Ne najdem"
+
+#: kilc/templates/500.html:4
+msgid "An unexpected error has occurred"
+msgstr "Prišlo je to napake"
+
+#: kilc/templates/500.html:5
+msgid "The administrator has been notified. Sorry for the inconvenience!"
+msgstr "Administrator je bil obveščen o napaki"
+
+#: kilc/templates/500.html:6
+msgid "Back"
+msgstr "Nazaj"
+
+#: kilc/templates/index.html:4
+msgid "Welcome"
+msgstr "Dobrodošli"
+
+#: kilc/templates/login.html:25
+msgid "New user?"
+msgstr "Nov uporabnik"
+
+#: kilc/templates/login.html:25
+msgid "Click to register!"
+msgstr "Kliknite za registracijo"
+
+#: kilc/templates/login.html:26
+msgid "Forgot your password?"
+msgstr "Ste pozabili geslo"
+
+#: kilc/templates/login.html:26
+msgid "Click to reset it"
+msgstr "Kliknite za ponastavitev"
+
+#: kilc/templates/navigation.html:2
+msgid "Home"
+msgstr "Domov"
+
+#: kilc/templates/navigation.html:4
+msgid "Login"
+msgstr "Prijava"
+
+#: kilc/templates/navigation.html:6
+msgid "Profile"
+msgstr "Profil"
+
+#: kilc/templates/navigation.html:7
+msgid "Logout"
+msgstr "Odjava"
+
+#: kilc/templates/reset_password.html:4
+msgid "Reset Your Password"
+msgstr "Ponastavi geslo"
+
+#: kilc/templates/user.html:19
+msgid "Edit your profile"
+msgstr "Uredi svoj profil"
