@@ -27,5 +27,16 @@ class RegistrationForm(FlaskForm):
 
 class EditProfileForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(max=64)])
-    about_me = TextAreaField('About me', validators=[Length(min=0, max=1400)])
+    email = StringField('E-mail', validators=[DataRequired(), Email(), Length(max=120)])
+    about_me = TextAreaField('About me', validators=[Length(min=0, max=255)])
     submit = SubmitField('Submit')
+
+    def __init__(self, original_email, *args, **kwargs):
+        super(EditProfileForm, self).__init__(*args, **kwargs)
+        self.original_email = original_email
+
+    def validate_email(self, email):
+        if email.data != self.original_email:
+            user = User.query.filter_by(email=self.email.data).first()
+            if user is not None:
+                raise ValidationError('Please chose a different e-mail address')
