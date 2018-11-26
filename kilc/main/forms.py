@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
 from wtforms.validators import Email, DataRequired, ValidationError, Length
 
-from kilc.models import User
+from ..models import User
 
 
 class EditProfileForm(FlaskForm):

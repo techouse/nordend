@@ -1,6 +1,6 @@
 import unittest
 from flask import current_app
-from kilc import create_app, db
+from .. import create_app, db
 from config import Config
 
 

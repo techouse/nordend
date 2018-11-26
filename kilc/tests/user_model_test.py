@@ -3,7 +3,7 @@ import unittest
 from faker import Faker
 
 from config import Config
-from kilc.models import User
+from ..models import User
 
 
 class TestConfig(Config):

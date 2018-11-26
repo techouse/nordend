@@ -3,11 +3,11 @@ from flask_babel import _
 from flask_login import current_user, login_user, logout_user
 from werkzeug.urls import url_parse
 
-from kilc import db
-from kilc.auth import bp
-from kilc.auth.email import send_password_reset_email
-from kilc.auth.forms import LoginForm, RegistrationForm, ResetPasswordRequestForm, ResetPasswordForm
-from kilc.models import User
+from .. import db
+from ..auth import bp
+from ..auth.email import send_password_reset_email
+from ..auth.forms import LoginForm, RegistrationForm, ResetPasswordRequestForm, ResetPasswordForm
+from ..models import User
 
 
 @bp.route('/login', methods=['GET', 'POST'])

@@ -4,10 +4,10 @@ from flask import render_template, flash, redirect, url_for, request, g
 from flask_babel import _, get_locale
 from flask_login import current_user, login_required
 
-from kilc import db
-from kilc.main import bp
-from kilc.main.forms import EditProfileForm
-from kilc.models import User
+from .. import db
+from ..main import bp
+from ..main.forms import EditProfileForm
+from ..models import User
 
 
 @bp.before_app_request
