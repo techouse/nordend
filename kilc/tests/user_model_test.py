@@ -39,7 +39,3 @@ class UserModelCase(unittest.TestCase):
                          'https://www.gravatar.com/avatar/'
                          'd4c74594d841139328695756648b6bd6'
                          '?d=identicon&s=128')
-
-
-if __name__ == '__main__':
-    unittest.main(verbosity=2)

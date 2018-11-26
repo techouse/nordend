@@ -4,6 +4,13 @@ import click
 
 
 def register(app):
+    @app.cli.command()
+    def test():
+        """ Run the unit tests """
+        import unittest
+        tests = unittest.TestLoader().discover('kilc.tests', pattern="*test.py")
+        unittest.TextTestRunner(verbosity=2).run(tests)
+
     @app.cli.group()
     def translate():
         """Translation and localization commands."""
