@@ -21,4 +21,6 @@ class Config(object):
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    MAIL_SUBJECT_PREFIX = os.environ.get('MAIL_SUBJECT_PREFIX') or APP_NAME
+    MAIL_SENDER = os.environ.get('MAIL_SUBJECT_PREFIX') or 'your-email@example.com'
     ADMINS = ['your-email@example.com']

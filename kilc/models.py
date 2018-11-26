@@ -5,6 +5,7 @@ from time import time
 import jwt
 from flask import current_app
 from flask_login import UserMixin
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from . import db, login
@@ -16,6 +17,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), nullable=False, index=True, unique=True)
     about_me = db.Column(db.Text)
     password_hash = db.Column(db.String(128))
+    confirmed = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
@@ -35,6 +37,22 @@ class User(UserMixin, db.Model):
         return jwt.encode({'reset_password': self.id, 'exp': time() + expires_in},
                           current_app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
 
+    def generate_confirmation_token(self, expires = 3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expires)
+        return s.dumps({'confirm': self.id}).decode('utf-8')
+
+    def confirm(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token.encode('utf-8'))
+        except:
+            return False
+        if data.get('confirm') != self.id:
+            return False
+        self.confirmed = True
+        db.session.add(self)
+        return True
+
     @staticmethod
     def verify_reset_password_token(token):
         try:
@@ -42,6 +60,10 @@ class User(UserMixin, db.Model):
         except:
             return
         return User.query.get(id)
+
+    def ping(self):
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
 
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
