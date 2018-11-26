@@ -16,11 +16,17 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(64), nullable=False, index=True)
     email = db.Column(db.String(120), nullable=False, index=True, unique=True)
     about_me = db.Column(db.Text)
+    avatar_hash = db.Column(db.String(32))
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        if self.email is not None and self.avatar_hash is None:
+            self.avatar_hash = self.gravatar_hash()
 
     @property
     def password(self):
@@ -37,7 +43,7 @@ class User(UserMixin, db.Model):
         return jwt.encode({'reset_password': self.id, 'exp': time() + expires_in},
                           current_app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
 
-    def generate_confirmation_token(self, expires = 3600):
+    def generate_confirmation_token(self, expires=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expires)
         return s.dumps({'confirm': self.id}).decode('utf-8')
 
@@ -65,9 +71,14 @@ class User(UserMixin, db.Model):
         self.last_seen = datetime.utcnow()
         db.session.add(self)
 
-    def avatar(self, size):
-        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
-        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(digest, size)
+    def gravatar_hash(self):
+        return md5(self.email.lower().encode('utf-8')).hexdigest()
+
+    def gravatar(self, size=100, default='identicon', rating='g'):
+        url = 'https://secure.gravatar.com/avatar'
+        hash = self.avatar_hash or self.gravatar_hash()
+        return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
+            url=url, hash=hash, size=size, default=default, rating=rating)
 
     def __repr__(self):
         return '<User {}>'.format(self.name)

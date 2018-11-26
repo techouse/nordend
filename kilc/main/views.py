@@ -40,6 +40,7 @@ def edit_profile():
         current_user.name = form.name.data
         current_user.email = form.email.data
         current_user.about_me = form.about_me.data
+        current_user.avatar_hash = current_user.gravatar_hash()
         db.session.commit()
         flash(_('Your changes have been saved'))
         return redirect(url_for('main.edit_profile'))
