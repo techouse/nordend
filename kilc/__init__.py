@@ -30,14 +30,14 @@ def create_app(config_class=Config):
     mail.init_app(app)
     babel.init_app(app)
 
-    from kilc.errors import bp as errors_bp
-    app.register_blueprint(errors_bp)
+    from kilc.errors import errors
+    app.register_blueprint(errors)
 
-    from kilc.auth import bp as auth_bp
-    app.register_blueprint(auth_bp, url_prefix='/auth')
+    from kilc.auth import auth
+    app.register_blueprint(auth, url_prefix='/auth')
 
-    from kilc.main import bp as main_bp
-    app.register_blueprint(main_bp)
+    from kilc.main import main
+    app.register_blueprint(main)
 
     if not app.debug and not app.testing:
         if app.config['MAIL_SERVER']:

@@ -4,14 +4,14 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from .. import db
-from ..auth import bp
+from ..auth import auth
 from ..auth.email import send_password_reset_email
 from ..auth.forms import LoginForm, RegistrationForm, ResetPasswordRequestForm, ResetPasswordForm
 from ..email import send_email
 from ..models import User
 
 
-@bp.before_app_request
+@auth.before_app_request
 def before_request():
     if current_user.is_authenticated:
         current_user.ping()
@@ -22,14 +22,14 @@ def before_request():
             return redirect(url_for('auth.unconfirmed'))
 
 
-@bp.route('/unconfirmed')
+@auth.route('/unconfirmed')
 def unconfirmed():
     if current_user.is_anonymous or current_user.confirmed:
         return redirect(url_for('main.index'))
     return render_template('auth/unconfirmed.html')
 
 
-@bp.route('/login', methods=['GET', 'POST'])
+@auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
@@ -47,13 +47,13 @@ def login():
     return render_template('auth/login.html', title=_('Sign In'), form=form)
 
 
-@bp.route('/logout')
+@auth.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
 
 
-@bp.route('/register', methods=['GET', 'POST'])
+@auth.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.admin'))
@@ -71,7 +71,7 @@ def register():
     return render_template('auth/register.html', title=_('Register'), form=form)
 
 
-@bp.route('/confirm/<token>')
+@auth.route('/confirm/<token>')
 @login_required
 def confirm(token):
     if current_user.confirmed:
@@ -84,7 +84,7 @@ def confirm(token):
     return redirect(url_for('main.index'))
 
 
-@bp.route('/confirm')
+@auth.route('/confirm')
 @login_required
 def resend_confirmation():
     token = current_user.generate_confirmation_token()
@@ -94,7 +94,7 @@ def resend_confirmation():
     return redirect(url_for('main.index'))
 
 
-@bp.route('/reset_password_request', methods=['GET', 'POST'])
+@auth.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
@@ -108,7 +108,7 @@ def reset_password_request():
     return render_template('auth/reset_password_request.html', title=_('Reset Password'), form=form)
 
 
-@bp.route('/reset_password/<token>', methods=['GET', 'POST'])
+@auth.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
