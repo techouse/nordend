@@ -4,8 +4,8 @@ import unittest
 from faker import Faker
 
 from config import Config
+from kilc.factories import UserFactory
 from .. import create_app, db
-from ..models import User
 
 
 class TestConfig(Config):
@@ -27,37 +27,37 @@ class UserModelCase(unittest.TestCase):
         self.app_context.pop()
 
     def test_password_setter(self):
-        u = User(name=self.faker.name(), email=self.faker.email(), password=self.faker.password())
+        u = UserFactory.build()
         self.assertTrue(u.password_hash is not None)
 
     def test_no_password_getter(self):
-        u = User(name=self.faker.name(), email=self.faker.email(), password=self.faker.password())
+        u = UserFactory.build()
         with self.assertRaises(AttributeError):
             u.password
 
     def test_password_verification(self):
         password1 = self.faker.password()
         password2 = self.faker.password()
-        u = User(name=self.faker.name(), email=self.faker.email(), password=password1)
+        u = UserFactory.build(password=password1)
         self.assertTrue(u.verify_password(password1))
         self.assertFalse(u.verify_password(password2))
 
     def test_password_salts_are_random(self):
         password = self.faker.password()
-        u1 = User(name=self.faker.name(), email=self.faker.email(), password=password)
-        u2 = User(name=self.faker.name(), email=self.faker.email(), password=password)
+        u1 = UserFactory.build(password=password)
+        u2 = UserFactory.build(password=password)
         self.assertNotEqual(u1.password_hash, u2.password_hash)
 
     def test_valid_confirmation_token(self):
-        u = User(name=self.faker.name(), email=self.faker.email(), password=self.faker.password())
+        u = UserFactory.build()
         db.session.add(u)
         db.session.commit()
         token = u.generate_confirmation_token()
         self.assertTrue(u.confirm(token))
 
     def test_invalid_confirmation_token(self):
-        u1 = User(name=self.faker.name(), email=self.faker.email(), password=self.faker.password())
-        u2 = User(name=self.faker.name(), email=self.faker.email(), password=self.faker.password())
+        u1 = UserFactory.build()
+        u2 = UserFactory.build()
         db.session.add(u1)
         db.session.add(u2)
         db.session.commit()
@@ -65,7 +65,7 @@ class UserModelCase(unittest.TestCase):
         self.assertFalse(u2.confirm(token))
 
     def test_expired_confirmation_token(self):
-        u = User(name=self.faker.name(), email=self.faker.email(), password=self.faker.password())
+        u = UserFactory.build()
         db.session.add(u)
         db.session.commit()
         token = u.generate_confirmation_token(1)
@@ -73,7 +73,7 @@ class UserModelCase(unittest.TestCase):
         self.assertFalse(u.confirm(token))
 
     def test_ping(self):
-        u = User(name=self.faker.name(), email=self.faker.email(), password=self.faker.password())
+        u = UserFactory.build()
         db.session.add(u)
         db.session.commit()
         time.sleep(2)
@@ -82,7 +82,7 @@ class UserModelCase(unittest.TestCase):
         self.assertTrue(u.last_seen > last_seen_before)
 
     def test_gravatar(self):
-        u = User(name=self.faker.name(), email='john@example.com', password=self.faker.password())
+        u = UserFactory.build(email='john@example.com')
         with self.app.test_request_context('/'):
             gravatar = u.gravatar()
             gravatar_256 = u.gravatar(size=256)
