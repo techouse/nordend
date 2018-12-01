@@ -4,9 +4,9 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from .. import db
-from ..auth import auth
-from ..auth.email import send_password_reset_email
-from ..auth.forms import LoginForm, RegistrationForm, ResetPasswordRequestForm, ResetPasswordForm
+from . import auth
+from .email import send_password_reset_email
+from .forms import LoginForm, RegistrationForm, ResetPasswordRequestForm, ResetPasswordForm
 from ..email import send_email
 from ..models import User
 

@@ -3,8 +3,8 @@ from flask_babel import _, get_locale
 from flask_login import current_user, login_required
 
 from .. import db
-from ..main import main
-from ..main.forms import EditProfileForm
+from . import main
+from .forms import EditProfileForm
 from ..models import User
 
 
