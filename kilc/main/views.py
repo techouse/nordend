@@ -13,26 +13,26 @@ def before_request():
     g.locale = str(get_locale())
 
 
-@main.route('/')
-@main.route('/index')
+@main.route("/")
+@main.route("/index")
 def index():
-    return render_template('index.html', title=_('Home Page'))
+    return render_template("index.html", title=_("Home Page"))
 
 
-@main.route('/admin')
+@main.route("/admin")
 @login_required
 def admin():
-    return render_template('admin.html')
+    return render_template("admin.html")
 
 
-@main.route('/user/<id>')
+@main.route("/user/<id>")
 @login_required
 def user(id):
     user = User.query.filter_by(id=id).first_or_404()
-    return render_template('user.html', user=user)
+    return render_template("user.html", user=user)
 
 
-@main.route('/edit_profile', methods=['GET', 'POST'])
+@main.route("/edit_profile", methods=["GET", "POST"])
 @login_required
 def edit_profile():
     form = EditProfileForm(current_user.email)
@@ -42,10 +42,10 @@ def edit_profile():
         current_user.about_me = form.about_me.data
         current_user.avatar_hash = current_user.gravatar_hash()
         db.session.commit()
-        flash(_('Your changes have been saved'))
-        return redirect(url_for('main.edit_profile'))
-    elif request.method == 'GET':
+        flash(_("Your changes have been saved"))
+        return redirect(url_for("main.edit_profile"))
+    elif request.method == "GET":
         form.name.data = current_user.name
         form.email.data = current_user.email
         form.about_me.data = current_user.about_me
-    return render_template('edit_profile.html', title=_('Edit Profile'), form=form)
+    return render_template("edit_profile.html", title=_("Edit Profile"), form=form)

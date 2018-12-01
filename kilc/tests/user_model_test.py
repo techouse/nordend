@@ -10,12 +10,12 @@ from .. import create_app, db
 
 class TestConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'  # in memory database
+    SQLALCHEMY_DATABASE_URI = "sqlite://"  # in memory database
 
 
 class UserModelCase(unittest.TestCase):
     def setUp(self):
-        self.faker = Faker('en_GB')
+        self.faker = Faker("en_GB")
         self.app = create_app(TestConfig)
         self.app_context = self.app.app_context()
         self.app_context.push()
@@ -82,14 +82,13 @@ class UserModelCase(unittest.TestCase):
         self.assertTrue(u.last_seen > last_seen_before)
 
     def test_gravatar(self):
-        u = UserFactory.build(email='john@example.com')
-        with self.app.test_request_context('/'):
+        u = UserFactory.build(email="john@example.com")
+        with self.app.test_request_context("/"):
             gravatar = u.gravatar()
             gravatar_256 = u.gravatar(size=256)
-            gravatar_pg = u.gravatar(rating='pg')
-            gravatar_retro = u.gravatar(default='retro')
-        self.assertTrue('https://secure.gravatar.com/avatar/' +
-                        'd4c74594d841139328695756648b6bd6' in gravatar)
-        self.assertTrue('s=256' in gravatar_256)
-        self.assertTrue('r=pg' in gravatar_pg)
-        self.assertTrue('d=retro' in gravatar_retro)
+            gravatar_pg = u.gravatar(rating="pg")
+            gravatar_retro = u.gravatar(default="retro")
+        self.assertTrue("https://secure.gravatar.com/avatar/" + "d4c74594d841139328695756648b6bd6" in gravatar)
+        self.assertTrue("s=256" in gravatar_256)
+        self.assertTrue("r=pg" in gravatar_pg)
+        self.assertTrue("d=retro" in gravatar_retro)

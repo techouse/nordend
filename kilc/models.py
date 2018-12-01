@@ -30,7 +30,7 @@ class User(UserMixin, db.Model):
 
     @property
     def password(self):
-        raise AttributeError('Password is not a readable attribute')
+        raise AttributeError("Password is not a readable attribute")
 
     @password.setter
     def password(self, password):
@@ -40,20 +40,23 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def get_reset_password_token(self, expires_in=600):
-        return jwt.encode({'reset_password': self.id, 'exp': time() + expires_in},
-                          current_app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
+        return jwt.encode(
+            {"reset_password": self.id, "exp": time() + expires_in},
+            current_app.config["SECRET_KEY"],
+            algorithm="HS256",
+        ).decode("utf-8")
 
     def generate_confirmation_token(self, expires=3600):
-        s = Serializer(current_app.config['SECRET_KEY'], expires)
-        return s.dumps({'confirm': self.id}).decode('utf-8')
+        s = Serializer(current_app.config["SECRET_KEY"], expires)
+        return s.dumps({"confirm": self.id}).decode("utf-8")
 
     def confirm(self, token):
-        s = Serializer(current_app.config['SECRET_KEY'])
+        s = Serializer(current_app.config["SECRET_KEY"])
         try:
-            data = s.loads(token.encode('utf-8'))
+            data = s.loads(token.encode("utf-8"))
         except:
             return False
-        if data.get('confirm') != self.id:
+        if data.get("confirm") != self.id:
             return False
         self.confirmed = True
         db.session.add(self)
@@ -62,7 +65,7 @@ class User(UserMixin, db.Model):
     @staticmethod
     def verify_reset_password_token(token):
         try:
-            id = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])['reset_password']
+            id = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])["reset_password"]
         except:
             return
         return User.query.get(id)
@@ -72,16 +75,17 @@ class User(UserMixin, db.Model):
         db.session.add(self)
 
     def gravatar_hash(self):
-        return md5(self.email.lower().encode('utf-8')).hexdigest()
+        return md5(self.email.lower().encode("utf-8")).hexdigest()
 
-    def gravatar(self, size=100, default='identicon', rating='g'):
-        url = 'https://secure.gravatar.com/avatar'
+    def gravatar(self, size=100, default="identicon", rating="g"):
+        url = "https://secure.gravatar.com/avatar"
         hash = self.avatar_hash or self.gravatar_hash()
-        return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
-            url=url, hash=hash, size=size, default=default, rating=rating)
+        return "{url}/{hash}?s={size}&d={default}&r={rating}".format(
+            url=url, hash=hash, size=size, default=default, rating=rating
+        )
 
     def __repr__(self):
-        return '<User {}>'.format(self.name)
+        return "<User {}>".format(self.name)
 
 
 @login.user_loader
@@ -99,36 +103,36 @@ class Contact(db.Model):
     email = db.Column(db.String(120))
 
     def __repr__(self):
-        return '<Contact {}>'.format(self.title)
+        return "<Contact {}>".format(self.title)
 
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False, index=True, unique=True)
-    products = db.relationship('Product', backref='category', lazy=True)
+    products = db.relationship("Product", backref="category", lazy=True)
 
     def __repr__(self):
-        return '<Category {}>'.format(self.name)
+        return "<Category {}>".format(self.name)
 
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey("category.id"), nullable=False)
     name = db.Column(db.String(120), index=True, unique=True, nullable=False)
     description = db.Column(db.Text)
     potency = db.Column(db.Float, nullable=False, default=0)
-    bottles = db.relationship('Bottle', backref='product', lazy=True)
+    bottles = db.relationship("Bottle", backref="product", lazy=True)
 
     def __repr__(self):
-        return '<Product {}>'.format(self.name)
+        return "<Product {}>".format(self.name)
 
 
 class Bottle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
     name = db.Column(db.String(120), index=True, nullable=False)
     volume = db.Column(db.Float, nullable=False, default=0)
     description = db.Column(db.Text)
 
     def __repr__(self):
-        return '<Bottle {}>'.format(self.name)
+        return "<Bottle {}>".format(self.name)
