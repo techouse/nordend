@@ -1,5 +1,5 @@
-from kilc import create_app, cli, db
-from kilc.models import User, Contact, Category, Product, Bottle
+from app import create_app, cli, db
+from app.models import User, Contact, Category, Product, Bottle
 
 app = create_app()
 cli.register(app)

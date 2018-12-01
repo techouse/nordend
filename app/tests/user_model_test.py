@@ -4,7 +4,7 @@ import unittest
 from faker import Faker
 
 from config import Config
-from kilc.factories import UserFactory
+from app.factories import UserFactory
 from .. import create_app, db
 
 

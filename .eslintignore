@@ -1,4 +1,4 @@
 /webpack.*.js
 /postcss.config.js
 /.babelrc
-/kilc/static/dist/*.js
+/app/static/dist/*.js

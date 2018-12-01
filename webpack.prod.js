@@ -9,11 +9,11 @@ module.exports = merge(common, {
     ],
     entry:   {
         app: ['babel-polyfill',
-              './kilc/static/js/app.js',
-              './kilc/static/scss/app.scss']
+              './app/static/js/app.js',
+              './app/static/scss/app.scss']
     },
     resolve: {
         modules: ['./node_modules',
-                  './kilc/static/js/modules']
+                  './app/static/js/modules']
     }
 })

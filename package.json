@@ -2,7 +2,7 @@
   "private": true,
   "author": "Klemen Tušar",
   "license": "MIT",
-  "name": "kilc",
+  "name": "flask-cms",
   "version": "0.0.1",
   "description": "",
   "scripts": {

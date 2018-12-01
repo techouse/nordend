@@ -30,15 +30,15 @@ def create_app(config_class=Config):
     mail.init_app(app)
     babel.init_app(app)
 
-    from kilc.errors import errors
+    from app.errors import errors
 
     app.register_blueprint(errors)
 
-    from kilc.auth import auth
+    from app.auth import auth
 
     app.register_blueprint(auth, url_prefix="/auth")
 
-    from kilc.main import main
+    from app.main import main
 
     app.register_blueprint(main)
 

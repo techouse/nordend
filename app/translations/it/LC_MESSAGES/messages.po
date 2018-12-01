@@ -7,222 +7,222 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-11-26 22:16+0100\n"
+"POT-Creation-Date: 2018-12-01 21:11+0100\n"
 "PO-Revision-Date: 2018-11-26 22:20+0100\n"
 "Last-Translator: \n"
 "Language: it\n"
 "Language-Team: it <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.6.0\n"
-"X-Generator: Poedit 2.2\n"
 
-#: kilc/__init__.py:18
+#: app/__init__.py:18
 msgid "Please login to access this page."
 msgstr "Effettua il login per accedere a questa pagina."
 
-#: kilc/auth/email.py:10
+#: app/auth/email.py:11
 #, python-format
 msgid "[%(app_name)s] Reset Your Password"
 msgstr "[%(app_name)s] Ripristina la password"
 
-#: kilc/auth/forms.py:10
+#: app/auth/forms.py:10
 msgid "Email"
 msgstr "Email"
 
-#: kilc/auth/forms.py:11 kilc/auth/forms.py:19 kilc/auth/forms.py:35
+#: app/auth/forms.py:11 app/auth/forms.py:19 app/auth/forms.py:35
 msgid "Password"
 msgstr "Password"
 
-#: kilc/auth/forms.py:12
+#: app/auth/forms.py:12
 msgid "Remember Me"
 msgstr "Ricorda me"
 
-#: kilc/auth/forms.py:13 kilc/auth/routes.py:47
+#: app/auth/forms.py:13 app/auth/views.py:49
 msgid "Sign In"
 msgstr "Registrati"
 
-#: kilc/auth/forms.py:17 kilc/main/forms.py:10
+#: app/auth/forms.py:17 app/main/forms.py:10
 msgid "Name"
 msgstr "Nome"
 
-#: kilc/auth/forms.py:18 kilc/auth/forms.py:30 kilc/main/forms.py:11
+#: app/auth/forms.py:18 app/auth/forms.py:30 app/main/forms.py:11
 msgid "E-mail"
 msgstr "Email"
 
-#: kilc/auth/forms.py:20 kilc/auth/forms.py:36
+#: app/auth/forms.py:20 app/auth/forms.py:36
 msgid "Repeat Password"
 msgstr "Ripeti la password"
 
-#: kilc/auth/forms.py:21 kilc/auth/routes.py:71
+#: app/auth/forms.py:21 app/auth/views.py:72
 msgid "Register"
 msgstr "Registrare"
 
-#: kilc/auth/forms.py:26
+#: app/auth/forms.py:26
 msgid "Please use a different e-mail address"
 msgstr "Si prega di utilizzare un indirizzo e-mail diverso"
 
-#: kilc/auth/forms.py:31 kilc/auth/forms.py:37
+#: app/auth/forms.py:31 app/auth/forms.py:37
 msgid "Request Password Reset"
 msgstr "Richiedi la reimpostazione della password"
 
-#: kilc/auth/routes.py:40
+#: app/auth/views.py:42
 msgid "Invalid username or password"
 msgstr "Nome utente o password errati"
 
-#: kilc/auth/routes.py:67
+#: app/auth/views.py:69
 msgid "Confirm your account"
 msgstr "Conferma il tuo account"
 
-#: kilc/auth/routes.py:69
+#: app/auth/views.py:70
 msgid "A confirmation email has been sent to you by email."
 msgstr "UN'email di conferma è stata inviata via email."
 
-#: kilc/auth/routes.py:81
+#: app/auth/views.py:82
 msgid "You have confirmed your account. Thanks!"
 msgstr "Hai confermato il tuo account. Grazie!"
 
-#: kilc/auth/routes.py:83
+#: app/auth/views.py:84
 msgid "The confirmation link is invalid or has expired."
 msgstr "Il link di conferma non è valido o è scaduto."
 
-#: kilc/auth/routes.py:91
+#: app/auth/views.py:92
 msgid "Confirm Your Account"
 msgstr "Conferma il tuo account"
 
-#: kilc/auth/routes.py:93
+#: app/auth/views.py:93
 msgid "A new confirmation email has been sent to you by email."
 msgstr "Una nuova email di conferma è stata inviata via email."
 
-#: kilc/auth/routes.py:106
+#: app/auth/views.py:106
 msgid "Check your email for the instructions to reset your password"
 msgstr "Controlla la tua e-mail per le istruzioni per reimpostare la password"
 
-#: kilc/auth/routes.py:108 kilc/templates/auth/reset_password_request.html:4
+#: app/auth/views.py:108 app/templates/auth/reset_password_request.html:4
 msgid "Reset Password"
 msgstr "Resetta la password"
 
-#: kilc/auth/routes.py:122
+#: app/auth/views.py:122
 msgid "Your password has been reset"
 msgstr "La tua password è stata resettata"
 
-#: kilc/main/forms.py:12
+#: app/main/forms.py:12
 msgid "About me"
 msgstr "Me"
 
-#: kilc/main/forms.py:13
+#: app/main/forms.py:13
 msgid "Submit"
 msgstr "Invia"
 
-#: kilc/main/forms.py:23
+#: app/main/forms.py:23
 msgid "Please chose a different e-mail address"
 msgstr "Si prega di scegliere un indirizzo email diverso"
 
-#: kilc/main/routes.py:21
+#: app/main/views.py:19
 msgid "Home Page"
 msgstr "Home Page"
 
-#: kilc/main/routes.py:46
+#: app/main/views.py:45
 msgid "Your changes have been saved"
 msgstr "Le modifiche sono state salvate"
 
-#: kilc/main/routes.py:52
+#: app/main/views.py:51
 msgid "Edit Profile"
 msgstr "Modifica Profilo"
 
-#: kilc/templates/index.html:4
+#: app/templates/index.html:4
 msgid "Welcome"
 msgstr "Benvenuti"
 
-#: kilc/templates/navigation.html:2
+#: app/templates/navigation.html:2
 msgid "Home"
 msgstr "A casa"
 
-#: kilc/templates/navigation.html:4
+#: app/templates/navigation.html:4
 msgid "Login"
 msgstr "Login"
 
-#: kilc/templates/navigation.html:6
+#: app/templates/navigation.html:6
 msgid "Profile"
 msgstr "Profilo"
 
-#: kilc/templates/navigation.html:7
+#: app/templates/navigation.html:7
 msgid "Logout"
 msgstr "Logout"
 
-#: kilc/templates/user.html:19
+#: app/templates/user.html:19
 msgid "Edit your profile"
 msgstr "Modifica il tuo profilo"
 
-#: kilc/templates/auth/login.html:25
+#: app/templates/auth/login.html:25
 msgid "New user?"
 msgstr "Nuovo utente?"
 
-#: kilc/templates/auth/login.html:25
+#: app/templates/auth/login.html:25
 msgid "Click to register!"
 msgstr "Clicca per registrarti!"
 
-#: kilc/templates/auth/login.html:26
+#: app/templates/auth/login.html:26
 msgid "Forgot your password?"
 msgstr "Hai dimenticato la password?"
 
-#: kilc/templates/auth/login.html:26
+#: app/templates/auth/login.html:26
 msgid "Click to reset it"
 msgstr "Clicca per resettarlo"
 
-#: kilc/templates/auth/reset_password.html:4
+#: app/templates/auth/reset_password.html:4
 msgid "Reset Your Password"
 msgstr "Reimposta la tua password"
 
-#: kilc/templates/auth/unconfirmed.html:4
+#: app/templates/auth/unconfirmed.html:4
 #, python-format
 msgid "%(app_name)s - Confirm your account"
 msgstr ""
 
-#: kilc/templates/auth/unconfirmed.html:5
+#: app/templates/auth/unconfirmed.html:5
 #, python-format
 msgid "Hello, %(name)s"
 msgstr ""
 
-#: kilc/templates/auth/unconfirmed.html:6
+#: app/templates/auth/unconfirmed.html:6
 msgid "You have not confirmed your account yet."
 msgstr ""
 
-#: kilc/templates/auth/unconfirmed.html:8
+#: app/templates/auth/unconfirmed.html:8
 msgid "Before you can access this site you need to confirm your account."
 msgstr ""
 
-#: kilc/templates/auth/unconfirmed.html:9
+#: app/templates/auth/unconfirmed.html:9
 msgid ""
 "Check your inbox, you should have received an email with a confirmation "
 "link."
 msgstr ""
 
-#: kilc/templates/auth/unconfirmed.html:12
+#: app/templates/auth/unconfirmed.html:12
 msgid "Need another confirmation email?"
 msgstr ""
 
-#: kilc/templates/auth/unconfirmed.html:13
+#: app/templates/auth/unconfirmed.html:13
 msgid "Click here"
 msgstr ""
 
-#: kilc/templates/errors/404.html:4
+#: app/templates/errors/404.html:4
 msgid "Not Found"
 msgstr "Non trovato"
 
-#: kilc/templates/errors/500.html:4
+#: app/templates/errors/500.html:4
 msgid "An unexpected error has occurred"
 msgstr "Si è verificato un errore imprevisto"
 
-#: kilc/templates/errors/500.html:5
+#: app/templates/errors/500.html:5
 msgid "The administrator has been notified. Sorry for the inconvenience!"
 msgstr "L’amministratore è stato informato. Ci dispiace per l’inconvenienza!"
 
-#: kilc/templates/errors/500.html:6
+#: app/templates/errors/500.html:6
 msgid "Back"
 msgstr "Indietro"
 
 #~ msgid "Congratulations, you are now a registered user!"
 #~ msgstr "Congratulazioni, ora sei un utente registrato!"
+

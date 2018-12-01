@@ -5,7 +5,7 @@ module.exports = merge(common, {
     mode:    'development',
     devtool: 'inline-source-map',
     entry:   {
-        app: ['./kilc/static/js/app.js',
-              './kilc/static/scss/app.scss']
+        app: ['./app/static/js/app.js',
+              './app/static/scss/app.scss']
     }
 })

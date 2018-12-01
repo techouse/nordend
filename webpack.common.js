@@ -5,11 +5,11 @@ const path                 = require('path'),
 module.exports = {
     target:  'web',
     output:  {
-        path:     path.resolve(__dirname, 'kilc/static/dist'),
+        path:     path.resolve(__dirname, 'app/static/dist'),
         filename: '[name].js'
     },
     resolve: {
-        modules: ['./kilc/static/js/modules']
+        modules: ['./app/static/js/modules']
     },
     stats:   {
         colors: true
@@ -30,7 +30,7 @@ module.exports = {
         ]
     },
     plugins: [
-        new CleanWebpackPlugin(['./kilc/static/dist']),
+        new CleanWebpackPlugin(['./app/static/dist']),
         new MiniCssExtractPlugin({filename: '[name].css'}),
     ]
 }
