@@ -8,9 +8,11 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import CSRFProtect
 
 from config import Config, basedir
 
+csrf = CSRFProtect()
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
@@ -24,22 +26,24 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    csrf.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
     login.init_app(app)
     mail.init_app(app)
     babel.init_app(app)
 
-    from app.errors import errors
 
+    from app.errors import errors
     app.register_blueprint(errors)
 
     from app.auth import auth
-
     app.register_blueprint(auth, url_prefix="/auth")
 
-    from app.main import main
+    from app.admin import admin
+    app.register_blueprint(admin, url_prefix="/admin")
 
+    from app.main import main
     app.register_blueprint(main)
 
     if not app.debug and not app.testing:
