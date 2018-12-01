@@ -31,6 +31,6 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(['./kilc/static/dist']),
-        new MiniCssExtractPlugin({filename: 'style.css'}),
+        new MiniCssExtractPlugin({filename: '[name].css'}),
     ]
 }
