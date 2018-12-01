@@ -4,6 +4,7 @@ from logging.handlers import SMTPHandler, RotatingFileHandler
 
 from flask import Flask, request, current_app
 from flask_babel import Babel, lazy_gettext as _l
+from flask_cache_buster import CacheBuster
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -20,6 +21,7 @@ login.login_view = "auth.login"
 login.login_message = _l("Please login to access this page.")
 mail = Mail()
 babel = Babel()
+cache_buster = CacheBuster(config={"extensions": [".js", ".css"], "hash_size": 10})
 
 
 def create_app(config_class=Config):
@@ -32,18 +34,22 @@ def create_app(config_class=Config):
     login.init_app(app)
     mail.init_app(app)
     babel.init_app(app)
-
+    cache_buster.register_cache_buster(app)
 
     from app.errors import errors
+
     app.register_blueprint(errors)
 
     from app.auth import auth
+
     app.register_blueprint(auth, url_prefix="/auth")
 
     from app.admin import admin
+
     app.register_blueprint(admin, url_prefix="/admin")
 
     from app.main import main
+
     app.register_blueprint(main)
 
     if not app.debug and not app.testing:
