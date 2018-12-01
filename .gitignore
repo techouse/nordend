@@ -107,3 +107,6 @@ ENV/
 
 # logs
 /logs
+
+# Node modules
+/node_modules
