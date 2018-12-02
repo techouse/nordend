@@ -12,7 +12,19 @@ def before_request():
     g.locale = str(get_locale())
 
 
-@admin.route('/')
+@admin.route("/")
 @login_required
 def index():
-    return render_template('admin/index.html')
+    return render_template("admin/index.html", title="Administration")
+
+
+@admin.route("/users")
+@login_required
+def users():
+    return render_template("admin/users.html", title="Users")
+
+
+@admin.route("/pages")
+@login_required
+def pages():
+    return render_template("admin/pages.html", title="Pages")
