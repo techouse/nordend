@@ -1,4 +1,5 @@
 require("./bootstrap")
+require("@coreui/coreui")
 
 import Vue from "vue"
 
