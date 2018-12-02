@@ -1,9 +1,11 @@
 // Fonts
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,700&subset=latin-ext');
 
+@import "~flag-icon-css/sass/flag-icon";
 @import "~@fortawesome/fontawesome-free/scss/fontawesome";
 @import "~@fortawesome/fontawesome-free/scss/regular";
 @import "~@fortawesome/fontawesome-free/scss/solid";
+@import "~simple-line-icons/scss/simple-line-icons";
 
 // Variables
 @import 'variables';
@@ -11,11 +13,5 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
-body {
-  background-color: $body-bg;
-}
-
-.navbar {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-}
+// CoreUI
+@import "~@coreui/coreui/scss/coreui";
