@@ -49,18 +49,23 @@ const config = {
                 loader:  'vue-loader'
             },
             {
-                test: /\.css$/,
-                use:  [
-                    {loader: 'vue-style-loader', options: {sourceMap}},
-                    {loader: 'css-loader', options: {sourceMap}}
-                ]
-            },
-            {
-                test: /\.scss$/,
+                test: /\.(scss|sass|css)$/i,
                 use:  [{loader: MiniCssExtractPlugin.loader, options: {sourceMap}},
                        {loader: 'css-loader', options: {sourceMap}},
                        {loader: 'postcss-loader', options: {sourceMap}},
+                       'resolve-url-loader',
                        {loader: 'sass-loader', options: {sourceMap, importer: nodeSassMagicImporter()}},]
+            },
+            {
+                test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+                use:  [{
+                    loader:  'file-loader',
+                    options: {
+                        name:       '[name].[ext]',
+                        outputPath: 'fonts/',
+                        publicPath: '/static/dist/fonts/',
+                    }
+                }]
             }
         ]
     },
