@@ -17,6 +17,7 @@ const config = {
                 './app/static/scss/app.scss'],
         admin: ['./app/static/js/admin.js',
                 './app/static/scss/admin.scss'],
+        error: ['./app/static/scss/error.scss']
     },
     output:       {
         path:     path.resolve(__dirname, 'app/static/dist'),
