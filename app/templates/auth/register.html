@@ -1,37 +1,60 @@
-{% extends "base.html" %}
+{% extends "auth/base.html" %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
-    <form action="" method="post">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.name.label }}<br>
-            {{ form.name(size=32) }}<br>
-            {% for error in form.name.errors %}
-            <small style="color: red; font-weight: bold">{{ error }}</small>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.email.label }}<br>
-            {{ form.email(size=64) }}<br>
-            {% for error in form.email.errors %}
-            <small style="color: red; font-weight: bold">{{ error }}</small>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}<br>
-            {% for error in form.password.errors %}
-            <small style="color: red; font-weight: bold">{{ error }}</small>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.password2.label }}<br>
-            {{ form.password2(size=32) }}<br>
-            {% for error in form.password2.errors %}
-            <small style="color: red; font-weight: bold">{{ error }}</small>
-            {% endfor %}
-        </p>
-        <p>{{ form.submit() }}</p>
-    </form>
+    <div class="col-md-6">
+        <div class="card mx-4">
+            <form method="post" action="" class="card-body p-4">
+                {{ form.hidden_tag() }}
+                <h1>{{ title }}</h1>
+                <p class="text-muted">{{ _('Create your account') }}</p>
+
+                {% for error in form.name.errors %}
+                    <small style="color: red; font-weight: bold">{{ error }}</small>
+                {% endfor %}
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="icon-user"></i>
+                      </span>
+                    </div>
+                    {{ form.name(size=32, class_="form-control", placeholder=_("Name")) }}
+                </div>
+
+                {% for error in form.email.errors %}
+                    <small style="color: red; font-weight: bold">{{ error }}</small>
+                {% endfor %}
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">@</span>
+                    </div>
+                    {{ form.email(size=64, class_="form-control", type="email", placeholder=_("E-mail")) }}
+                </div>
+
+                {% for error in form.password.errors %}
+                    <small style="color: red; font-weight: bold">{{ error }}</small>
+                {% endfor %}
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                  <span class="input-group-text">
+                    <i class="icon-lock"></i>
+                  </span>
+                    </div>
+                    {{ form.password(size=32, class_="form-control", placeholder=_("Password")) }}
+                </div>
+
+                {% for error in form.password2.errors %}
+                    <small style="color: red; font-weight: bold">{{ error }}</small>
+                {% endfor %}
+                <div class="input-group mb-4">
+                    <div class="input-group-prepend">
+                  <span class="input-group-text">
+                    <i class="icon-lock"></i>
+                  </span>
+                    </div>
+                    {{ form.password2(size=32, class_="form-control", placeholder=_("Repeat password")) }}
+                </div>
+                {{ form.submit(class_="btn btn-block btn-success") }}
+            </form>
+        </div>
+    </div>
 {% endblock %}
