@@ -3,8 +3,9 @@ import unittest
 
 from faker import Faker
 
+from app.models import Permission, Role
 from config import Config
-from app.factories import UserFactory
+from app.factories import UserFactory, AnonymousUserFactory
 from .. import create_app, db
 
 
@@ -20,6 +21,7 @@ class UserModelCase(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
+        Role.insert_roles()
 
     def tearDown(self):
         db.session.remove()
@@ -92,3 +94,19 @@ class UserModelCase(unittest.TestCase):
         self.assertTrue("s=256" in gravatar_256)
         self.assertTrue("r=pg" in gravatar_pg)
         self.assertTrue("d=retro" in gravatar_retro)
+
+    def test_user_role(self):
+        u = UserFactory.build()
+        self.assertTrue(u.can(Permission.FOLLOW))
+        self.assertTrue(u.can(Permission.COMMENT))
+        self.assertTrue(u.can(Permission.WRITE))
+        self.assertFalse(u.can(Permission.MODERATE))
+        self.assertFalse(u.can(Permission.ADMIN))
+
+    def test_anonymous_user(self):
+        u = AnonymousUserFactory.build()
+        self.assertFalse(u.can(Permission.FOLLOW))
+        self.assertFalse(u.can(Permission.COMMENT))
+        self.assertFalse(u.can(Permission.WRITE))
+        self.assertFalse(u.can(Permission.MODERATE))
+        self.assertFalse(u.can(Permission.ADMIN))

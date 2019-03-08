@@ -1,5 +1,5 @@
 from app import create_app, cli, db
-from app.models import User, Contact, Category, Product, Bottle
+from app.models import User, Role, Permission, Post
 
 app = create_app()
 cli.register(app)
@@ -7,4 +7,4 @@ cli.register(app)
 
 @app.shell_context_processor
 def make_shell_context():
-    return {"db": db, "User": User, "Contact": Contact, "Category": Category, "Product": Product, "Bottle": Bottle}
+    return dict(db=db, User=User, Role=Role, Permission=Permission, Post=Post)

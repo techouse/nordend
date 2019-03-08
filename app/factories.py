@@ -1,5 +1,5 @@
 import factory
-from .models import User
+from .models import User, AnonymousUser
 
 
 class UserFactory(factory.Factory):
@@ -8,4 +8,10 @@ class UserFactory(factory.Factory):
 
     name = factory.Faker("name")
     email = factory.Faker("email")
+    username = factory.Faker("word")
     password = factory.Faker("password")
+
+
+class AnonymousUserFactory(factory.Factory):
+    class Meta:
+        model = AnonymousUser

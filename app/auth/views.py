@@ -61,8 +61,7 @@ def register():
         return redirect(url_for("main.admin"))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(name=form.name.data, email=form.email.data)
-        user.password(form.password.data)
+        user = User(name=form.name.data, email=form.email.data, password=form.password.data)
         db.session.add(user)
         db.session.commit()
         token = user.generate_confirmation_token()

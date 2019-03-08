@@ -23,4 +23,4 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     MAIL_SUBJECT_PREFIX = os.environ.get("MAIL_SUBJECT_PREFIX") or APP_NAME
     MAIL_SENDER = os.environ.get("MAIL_SUBJECT_PREFIX") or "your-email@example.com"
-    ADMINS = ["your-email@example.com"]
+    ADMINS = list(os.environ.get("ADMINS").split())
