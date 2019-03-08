@@ -1,23 +1,23 @@
 from flask_babel import _, lazy_gettext as _l
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import Email, DataRequired, EqualTo, ValidationError, Length
+from wtforms.validators import Email, InputRequired, EqualTo, ValidationError, Length
 
 from ..models import User
 
 
 class LoginForm(FlaskForm):
-    email = StringField(_l("Email"), validators=[DataRequired(), Email(), Length(max=120)])
-    password = PasswordField(_l("Password"), validators=[DataRequired(), Length(min=8)])
+    email = StringField(_l("Email"), validators=[InputRequired(), Email(), Length(min=0, max=120)])
+    password = PasswordField(_l("Password"), validators=[InputRequired(), Length(min=8, max=128)])
     remember_me = BooleanField(_l("Remember Me"))
     submit = SubmitField(_l("Sign In"))
 
 
 class RegistrationForm(FlaskForm):
-    name = StringField(_l("Name"), validators=[DataRequired(), Length(max=64)])
-    email = StringField(_l("E-mail"), validators=[DataRequired(), Email(), Length(max=120)])
-    password = PasswordField(_l("Password"), validators=[DataRequired(), Length(min=8)])
-    password2 = PasswordField(_l("Repeat Password"), validators=[DataRequired(), EqualTo("password")])
+    name = StringField(_l("Name"), validators=[InputRequired(), Length(min=0, max=64)])
+    email = StringField(_l("E-mail"), validators=[InputRequired(), Email(), Length(min=0, max=120)])
+    password = PasswordField(_l("Password"), validators=[InputRequired(), Length(min=8, max=128)])
+    password2 = PasswordField(_l("Repeat Password"), validators=[InputRequired(), EqualTo("password")])
     submit = SubmitField(_l("Register"))
 
     def validate_email(self, email):
@@ -27,11 +27,11 @@ class RegistrationForm(FlaskForm):
 
 
 class ResetPasswordRequestForm(FlaskForm):
-    email = StringField(_l("E-mail"), validators=[DataRequired(), Email()])
+    email = StringField(_l("E-mail"), validators=[InputRequired(), Email()])
     submit = SubmitField(_l("Request Password Reset"))
 
 
 class ResetPasswordForm(FlaskForm):
-    password = PasswordField(_l("Password"), validators=[DataRequired(), Length(min=8)])
-    password2 = PasswordField(_l("Repeat Password"), validators=[DataRequired(), EqualTo("password")])
+    password = PasswordField(_l("Password"), validators=[InputRequired(), Length(min=8)])
+    password2 = PasswordField(_l("Repeat Password"), validators=[InputRequired(), EqualTo("password")])
     submit = SubmitField(_l("Request Password Reset"))
