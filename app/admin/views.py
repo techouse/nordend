@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, g, abort
+from flask import render_template, flash, redirect, url_for, request, g, abort, current_app
 from flask_babel import _, get_locale
 from flask_login import current_user, login_required
 
@@ -47,8 +47,12 @@ def edit_profile():
 @login_required
 @admin_required
 def users_index():
-    users = User.query.order_by(User.id.asc()).all()
-    return render_template("admin/users/index.html", users=users)
+    page = request.args.get("page", 1, type=int)
+    pagination = User.query.order_by(User.id.asc()).paginate(
+        page, per_page=current_app.config["POSTS_PER_PAGE"], error_out=False
+    )
+    users = pagination.items
+    return render_template("admin/users/index.html", users=users, pagination=pagination)
 
 
 @admin.route("/users/create", methods=["GET", "POST"])
@@ -118,8 +122,12 @@ def pages_index():
 @login_required
 @permission_required(Permission.WRITE)
 def posts_index():
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
-    return render_template("admin/posts/index.html", posts=posts)
+    page = request.args.get("page", 1, type=int)
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=current_app.config["POSTS_PER_PAGE"], error_out=False
+    )
+    posts = pagination.items
+    return render_template("admin/posts/index.html", posts=posts, pagination=pagination)
 
 
 @admin.route("/posts/create", methods=["GET", "POST"])

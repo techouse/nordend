@@ -24,3 +24,5 @@ class Config(object):
     MAIL_SUBJECT_PREFIX = os.environ.get("MAIL_SUBJECT_PREFIX") or APP_NAME
     MAIL_SENDER = os.environ.get("MAIL_SUBJECT_PREFIX") or "your-email@example.com"
     ADMINS = list(os.environ.get("ADMINS").split())
+    # Pagination
+    POSTS_PER_PAGE = int(os.environ.get("POSTS_PER_PAGE")) or 20
