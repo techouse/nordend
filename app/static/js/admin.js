@@ -6,9 +6,13 @@ import Vue from "vue"
 const app = new Vue(
     {
         el: "#app",
-        data() {
-            return {
-                message: "Hi"
+
+        methods: {
+            sendDeleteRequest(url) {
+                axios.delete(url)
+                     .then(() => {
+                         window.location.reload(true)
+                     })
             }
         }
     }
