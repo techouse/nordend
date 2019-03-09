@@ -35,9 +35,10 @@ def edit_profile():
     if form.validate_on_submit():
         current_user.name = form.name.data
         current_user.email = form.email.data
-        current_user.password = form.password.data
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
+        if form.password.data:
+            current_user.password = form.password.data
         db.session.add(current_user._get_current_object())
         db.session.commit()
         flash(_("Your profile was successfully updated!"))
@@ -62,9 +63,10 @@ def user(id):
         user.email = form.email.data
         user.confirmed = form.confirmed.data
         user.role = Role.query.get(form.role.data)
-        user.password = form.password.data
         user.location = form.location.data
         user.about_me = form.about_me.data
+        if form.password.data:
+            current_user.password = form.password.data
         db.session.add(user)
         db.session.commit()
         flash(_("User was successfully updated!"))

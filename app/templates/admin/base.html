@@ -40,12 +40,21 @@
                 <div class="dropdown-header text-center">
                     <strong>Settings</strong>
                 </div>
+                {% if current_user.is_administrator() %}
+                    <a class="dropdown-item" href="{{ url_for('admin.user', id=current_user.id) }}">
+                        <i class="fa fa-user"></i> Profile
+                    </a>
+                {% else %}
+                    <a class="dropdown-item" href="{{ url_for('admin.edit_profile') }}">
+                        <i class="fa fa-user"></i> Profile
+                    </a>
+                {% endif %}
                 <a class="dropdown-item" href="#">
-                    <i class="fa fa-user"></i> Profile</a>
-                <a class="dropdown-item" href="#">
-                    <i class="fa fa-wrench"></i> Settings</a>
+                    <i class="fa fa-wrench"></i> Settings
+                </a>
                 <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
-                    <i class="fa fa-lock"></i> Logout</a>
+                    <i class="fa fa-lock"></i> Logout
+                </a>
             </div>
         </li>
     </ul>
