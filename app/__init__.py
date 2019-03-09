@@ -5,6 +5,7 @@ from logging.handlers import SMTPHandler, RotatingFileHandler
 from flask import Flask, request, current_app
 from flask_babel import Babel, lazy_gettext as _l
 from flask_cache_buster import CacheBuster
+from flask_ckeditor import CKEditor
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -22,6 +23,7 @@ login.login_message = _l("Please login to access this page.")
 mail = Mail()
 babel = Babel()
 cache_buster = CacheBuster(config={"extensions": [".js", ".css"], "hash_size": 10})
+ckeditor = CKEditor()
 
 
 def create_app(config_class=Config):
@@ -35,6 +37,7 @@ def create_app(config_class=Config):
     mail.init_app(app)
     babel.init_app(app)
     cache_buster.register_cache_buster(app)
+    ckeditor.init_app(app)
 
     from app.errors import errors
 

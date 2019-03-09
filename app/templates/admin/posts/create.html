@@ -1,5 +1,10 @@
 {% extends "admin/base.html" %}
 
+{% block head_includes %}
+    {{ ckeditor.load() }}
+    {{ ckeditor.config(name='body') }}
+{% endblock %}
+
 {% block content %}
     <div class="row">
         <div class="col-sm-12">
@@ -21,7 +26,7 @@
                                 <div class="form-group row">
                                     <label class="col-md-3 col-form-label">{% trans %}Content{% endtrans %}</label>
                                     <div class="col-md-9">
-                                        {{ form.body(class_="form-control", type="textarea", rows=6, placeholder=_("Content")) }}
+                                        {{ form.body(class_="form-control") }}
                                     </div>
                                 </div>
                             </div>

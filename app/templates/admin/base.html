@@ -15,6 +15,7 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/admin.png') }}">
 
     <script defer src="{{ url_for('static', filename='dist/js/admin.js') }}"></script>
+    {% block head_includes %}{% endblock %}
 </head>
 
 <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">

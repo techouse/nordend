@@ -1,4 +1,5 @@
 from flask_babel import _, lazy_gettext as _l
+from flask_ckeditor import CKEditorField
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import TextAreaField, SubmitField, StringField, PasswordField, BooleanField, SelectField
@@ -66,5 +67,5 @@ class UserAdminForm(FlaskForm):
 
 class PostForm(FlaskForm):
     title = StringField("Title", validators=[InputRequired(), Length(max=255)])
-    body = TextAreaField("Content", validators=[InputRequired()])
+    body = CKEditorField("Content", validators=[InputRequired()])
     submit = SubmitField("Submit")
