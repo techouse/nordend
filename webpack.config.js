@@ -72,7 +72,7 @@ const config = {
     },
     plugins:      [
         new VueLoaderPlugin(),
-        new CleanWebpackPlugin(['./app/static/dist']),
+        new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({filename: 'css/[name].css'})
     ]
 }
