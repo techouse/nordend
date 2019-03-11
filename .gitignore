@@ -110,3 +110,6 @@ ENV/
 
 # Node modules
 /node_modules
+
+# Mac specific files
+.DS_Store
