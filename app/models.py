@@ -4,13 +4,26 @@ from time import time
 
 import bleach
 import jwt
-from flask import current_app, url_for
+from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin, login_manager
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from markdown import markdown
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from . import db, login
+
+
+class AddUpdateDelete:
+    def add(self, resource):
+        db.session.add(resource)
+        return db.session.commit()
+
+    def update(self):
+        return db.session.commit()
+
+    def delete(self, resource):
+        db.session.delete(resource)
+        return db.session.commit()
 
 
 class Permission:
@@ -21,7 +34,7 @@ class Permission:
     ADMIN = 16
 
 
-class Role(db.Model):
+class Role(db.Model, AddUpdateDelete):
     __tablename__ = "roles"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
@@ -47,6 +60,17 @@ class Role(db.Model):
 
     def has_permission(self, perm):
         return self.permissions & perm == perm
+
+    @classmethod
+    def is_unique(cls, id, name):
+        existing_role = cls.query.filter_by(name=name).first()
+        if existing_role is None:
+            return True
+        else:
+            if existing_role.id == id:
+                return True
+            else:
+                return False
 
     @staticmethod
     def insert_roles():
@@ -74,7 +98,7 @@ class Role(db.Model):
         db.session.commit()
 
 
-class User(UserMixin, db.Model):
+class User(UserMixin, db.Model, AddUpdateDelete):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), nullable=False, index=True, unique=True)
@@ -164,16 +188,6 @@ class User(UserMixin, db.Model):
     def is_administrator(self):
         return self.can(Permission.ADMIN)
 
-    def to_json(self):
-        json_user = {
-            "url": url_for("api.get_user", id=self.id),
-            "username": self.username,
-            "member_since": self.member_since,
-            "last_seen": self.last_seen,
-            "post_count": self.posts.count(),
-        }
-        return json_user
-
     def __repr__(self):
         return "<User {}>".format(self.name)
 
@@ -194,7 +208,7 @@ def load_user(id):
     return User.query.get(int(id))
 
 
-class Post(db.Model):
+class Post(db.Model, AddUpdateDelete):
     __tablename__ = "posts"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
@@ -228,18 +242,6 @@ class Post(db.Model):
         target.body_html = bleach.linkify(
             bleach.clean(markdown(value, output_format="html"), tags=allowed_tags, strip=True)
         )
-
-    def to_json(self):
-        json_post = {
-            "url": url_for("api.get_post", id=self.id),
-            "title": self.title,
-            "slug": self.slug,
-            "body": self.body,
-            "body_html": self.body_html,
-            "timestamp": self.timestamp,
-            "author_url": url_for("api.get_user", id=self.author_id),
-        }
-        return json_post
 
     def __repr__(self):
         return "<Post {}>".format(self.title)

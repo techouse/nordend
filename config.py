@@ -26,3 +26,4 @@ class Config(object):
     ADMINS = list(os.environ.get("ADMINS").split())
     # Pagination
     POSTS_PER_PAGE = int(os.environ.get("POSTS_PER_PAGE")) or 20
+    PAGINATION_PAGE_ARGUMENT_NAME = "page"

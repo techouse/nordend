@@ -36,21 +36,25 @@ def create_app(config_class=Config):
     babel.init_app(app)
     cache_buster.register_cache_buster(app)
 
-    from app.errors import errors
+    from .errors import errors
 
     app.register_blueprint(errors)
 
-    from app.auth import auth
+    from .auth import auth
 
     app.register_blueprint(auth, url_prefix="/auth")
 
-    from app.admin import admin
+    from .admin import admin
 
     app.register_blueprint(admin, url_prefix="/admin")
 
-    from app.main import main
+    from .main import main
 
     app.register_blueprint(main)
+
+    from .api import api_bp
+
+    app.register_blueprint(api_bp)
 
     if not app.debug and not app.testing:
         if app.config["MAIL_SERVER"]:
