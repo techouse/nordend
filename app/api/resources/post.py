@@ -8,7 +8,7 @@ from ...schemas import PostSchema
 post_schema = PostSchema()
 
 
-class PostsResource(Resource):
+class PostListResource(Resource):
     def get(self):
         pagination_helper = PaginationHelper(
             request, query=Post.query, resource_for_url="api.posts", key_name="data", schema=post_schema

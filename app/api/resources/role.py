@@ -8,7 +8,7 @@ from ...schemas import RoleSchema
 role_schema = RoleSchema()
 
 
-class RolesResource(Resource):
+class RoleListResource(Resource):
     def get(self):
         pagination_helper = PaginationHelper(
             request, query=Role.query, resource_for_url="api.roles", key_name="data", schema=role_schema

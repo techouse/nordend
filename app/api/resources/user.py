@@ -8,7 +8,7 @@ from ...schemas import UserSchema
 user_schema = UserSchema()
 
 
-class UsersResource(Resource):
+class UserListResource(Resource):
     def get(self):
         pagination_helper = PaginationHelper(
             request, query=User.query, resource_for_url="api.users", key_name="data", schema=user_schema
