@@ -8,6 +8,19 @@ from ...schemas import RoleSchema
 role_schema = RoleSchema()
 
 
+class RoleResource(Resource):
+    def get(self, id):
+        role = Role.query.get_or_404(id)
+        result = role_schema.dump(role).data
+        return {"data": result}
+
+    def patch(self, id):
+        pass
+
+    def delete(self, id):
+        pass
+
+
 class RoleListResource(Resource):
     def get(self):
         pagination_helper = PaginationHelper(
@@ -16,9 +29,5 @@ class RoleListResource(Resource):
         result = pagination_helper.paginate_query()
         return result
 
-
-class RoleResource(Resource):
-    def get(self, id):
-        role = Role.query.get_or_404(id)
-        result = role_schema.dump(role).data
-        return {"data": result}
+    def post(self):
+        pass

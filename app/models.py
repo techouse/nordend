@@ -167,6 +167,17 @@ class User(UserMixin, db.Model, AddUpdateDelete):
             return
         return User.query.get(id)
 
+    @classmethod
+    def is_unique(cls, id, email):
+        existing_user = cls.query.filter_by(name=email).first()
+        if existing_user is None:
+            return True
+        else:
+            if existing_user.id == id:
+                return True
+            else:
+                return False
+
     def ping(self):
         self.last_seen = datetime.utcnow()
         db.session.add(self)
@@ -217,6 +228,17 @@ class Post(db.Model, AddUpdateDelete):
     body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+
+    @classmethod
+    def is_unique(cls, id, slug):
+        existing_post = cls.query.filter_by(name=slug).first()
+        if existing_post is None:
+            return True
+        else:
+            if existing_post.id == id:
+                return True
+            else:
+                return False
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
