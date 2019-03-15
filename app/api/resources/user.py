@@ -7,7 +7,7 @@ from ..helpers import PaginationHelper
 from flask_restful import Resource
 
 from ...models import User
-from ...schemas import UserSchema
+from ..schemas import UserSchema
 
 user_schema = UserSchema()
 
@@ -16,7 +16,7 @@ class UserResource(Resource):
     def get(self, id):
         user = User.query.get_or_404(id)
         result = user_schema.dump(user).data
-        return {"data": result}
+        return result
 
     def put(self, id):
         return self.patch(id)
@@ -49,7 +49,7 @@ class UserResource(Resource):
             if "about_me" in request_dict:
                 user.about_me = request_dict["location"]
             user.update()
-            return {"data": self.get(id)}
+            return self.get(id)
         except SQLAlchemyError as e:
             db.session.rollback()
             resp = {"error": str(e)}
@@ -70,7 +70,7 @@ class UserResource(Resource):
 class UserListResource(Resource):
     def get(self):
         pagination_helper = PaginationHelper(
-            request, query=User.query, resource_for_url="api.users", key_name="data", schema=user_schema
+            request, query=User.query, resource_for_url="api.users", key_name="results", schema=user_schema
         )
         result = pagination_helper.paginate_query()
         return result
@@ -99,7 +99,7 @@ class UserListResource(Resource):
             user.add(user)
             query = User.query.get(user.id)
             result = user_schema.dump(query).data
-            return {"data": result}, status.HTTP_201_CREATED
+            return result, status.HTTP_201_CREATED
         except SQLAlchemyError as e:
             db.session.rollback()
             resp = {"error": str(e)}

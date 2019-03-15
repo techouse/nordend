@@ -7,7 +7,7 @@ from ..helpers import PaginationHelper
 from flask_restful import Resource
 
 from ...models import Post
-from ...schemas import PostSchema
+from ..schemas import PostSchema
 
 post_schema = PostSchema()
 
@@ -16,7 +16,7 @@ class PostResource(Resource):
     def get(self, id):
         post = Post.query.get_or_404(id)
         result = post_schema.dump(post).data
-        return {"data": result}
+        return result
 
     def put(self, id):
         return self.patch(id)
@@ -46,7 +46,7 @@ class PostResource(Resource):
             return validate_errors, status.HTTP_400_BAD_REQUEST
         try:
             post.update()
-            return {"data": self.get(id)}
+            return self.get(id)
         except SQLAlchemyError as e:
             db.session.rollback()
             resp = {"error": str(e)}
@@ -67,7 +67,7 @@ class PostResource(Resource):
 class PostListResource(Resource):
     def get(self):
         pagination_helper = PaginationHelper(
-            request, query=Post.query, resource_for_url="api.posts", key_name="data", schema=post_schema
+            request, query=Post.query, resource_for_url="api.posts", key_name="results", schema=post_schema
         )
         result = pagination_helper.paginate_query()
         return result
@@ -94,7 +94,7 @@ class PostListResource(Resource):
             post.add(post)
             query = Post.query.get(post.id)
             result = post_schema.dump(query).data
-            return {"data": result}, status.HTTP_201_CREATED
+            return result, status.HTTP_201_CREATED
         except SQLAlchemyError as e:
             db.session.rollback()
             resp = {"error": str(e)}

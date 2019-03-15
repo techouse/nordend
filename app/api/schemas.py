@@ -2,7 +2,7 @@ from flask_marshmallow import Marshmallow
 from marshmallow import fields
 from marshmallow import validate
 
-from .models import Post, User, Role
+from ..models import Post, User, Role
 
 ma = Marshmallow()
 

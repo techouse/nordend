@@ -3,7 +3,7 @@ from ..helpers import PaginationHelper
 from flask_restful import Resource
 
 from ...models import Role
-from ...schemas import RoleSchema
+from ..schemas import RoleSchema
 
 role_schema = RoleSchema()
 
