@@ -1,5 +1,7 @@
 from flask import request, jsonify, make_response
 from sqlalchemy.exc import SQLAlchemyError
+from webargs import fields, validate
+from webargs.flaskparser import use_args
 
 from .post import post_schema
 from .authentication import TokenRequiredResource
@@ -67,9 +69,38 @@ class UserResource(TokenRequiredResource):
 
 
 class UserListResource(TokenRequiredResource):
-    def get(self):
+    get_args = {
+        "name": fields.String(validate=lambda x: 0 < len(x) <= 255),
+        "email": fields.Email(validate=validate.Email()),
+        "location": fields.String(validate=lambda x: 0 < len(x) <= 255),
+        "confirmed": fields.Boolean(),
+        "role_id": fields.Integer(validate=lambda x: x > 0),
+        "created_at": fields.DateTime(format="iso8601"),
+    }
+
+    @use_args(get_args)
+    def get(self, query_args):
+        filters = []
+        if "name" in query_args:
+            filters.append(User.name.like("%{filter}%".format(filter=query_args["name"])))
+        if "email" in query_args:
+            filters.append(User.email.like("%{filter}%".format(filter=query_args["email"])))
+        if "location" in query_args:
+            filters.append(User.location.like("%{filter}%".format(filter=query_args["location"])))
+        if "confirmed" in query_args:
+            filters.append(User.confirmed == query_args["confirmed"])
+        if "role_id" in query_args:
+            filters.append(User.role_id == query_args["role_id"])
+        if "created_at" in query_args:
+            filters.append(User.created_at == query_args["created_at"])
+
         pagination_helper = PaginationHelper(
-            request, query=User.query, resource_for_url="api.users", key_name="results", schema=user_schema
+            request,
+            query=User.query.filter(*filters) if filters else User.query,
+            resource_for_url="api.users",
+            key_name="results",
+            schema=user_schema,
+            query_args=query_args,
         )
         result = pagination_helper.paginate_query()
         return result
@@ -106,11 +137,33 @@ class UserListResource(TokenRequiredResource):
 
 
 class UserPostListResource(TokenRequiredResource):
-    def get(self, id):
+    get_args = {
+        "title": fields.String(validate=lambda x: 0 < len(x) <= 255),
+        "slug": fields.String(validate=lambda x: 0 < len(x) <= 255),
+        "category_id": fields.Integer(validate=lambda x: x > 0),
+        "created_at": fields.DateTime(format="iso8601"),
+    }
+
+    @use_args(get_args)
+    def get(self, query_args, id):
+        filters = [Post.author_id == id]
+        if "title" in query_args:
+            filters.append(Post.title.like("%{filter}%".format(filter=query_args["title"])))
+        if "slug" in query_args:
+            filters.append(Post.slug.like("%{filter}%".format(filter=query_args["slug"])))
+        if "category_id" in query_args:
+            filters.append(Post.category_id == query_args["category_id"])
+        if "created_at" in query_args:
+            filters.append(Post.created_at == query_args["created_at"])
+
         pagination_helper = PaginationHelper(
-            request, query=Post.query.filter_by(author_id=id), resource_for_url="api.user_posts", key_name="results",
+            request,
+            query=Post.query.filter(*filters),
+            resource_for_url="api.user_posts",
+            key_name="results",
             schema=post_schema,
             url_parameters={"id": id},
+            query_args=query_args,
         )
         result = pagination_helper.paginate_query()
         return result

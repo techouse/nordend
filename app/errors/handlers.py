@@ -36,6 +36,13 @@ def not_found_error(error):
     return render_template("errors/405.html"), status.HTTP_405_METHOD_NOT_ALLOWED
 
 
+@errors.app_errorhandler(status.HTTP_422_UNPROCESSABLE_ENTITY)
+def not_found_error(error):
+    if wants_json_response():
+        return api_error_response(status.HTTP_422_UNPROCESSABLE_ENTITY, str(error))
+    return render_template("errors/422.html"), status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
 @errors.app_errorhandler(status.HTTP_500_INTERNAL_SERVER_ERROR)
 def internal_error(error):
     db.session.rollback()

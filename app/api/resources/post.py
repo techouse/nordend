@@ -1,5 +1,7 @@
 from flask import request, make_response, jsonify
 from sqlalchemy.exc import SQLAlchemyError
+from webargs import fields
+from webargs.flaskparser import use_args
 
 from .authentication import TokenRequiredResource
 from ..helpers import PaginationHelper
@@ -63,9 +65,35 @@ class PostResource(TokenRequiredResource):
 
 
 class PostListResource(TokenRequiredResource):
-    def get(self):
+    get_args = {
+        "title": fields.String(validate=lambda x: 0 < len(x) <= 255),
+        "slug": fields.String(validate=lambda x: 0 < len(x) <= 255),
+        "category_id": fields.Integer(validate=lambda x: x > 0),
+        "author_id": fields.Integer(validate=lambda x: x > 0),
+        "created_at": fields.DateTime(format="iso8601"),
+    }
+
+    @use_args(get_args)
+    def get(self, query_args):
+        filters = []
+        if "title" in query_args:
+            filters.append(Post.title.like("%{filter}%".format(filter=query_args["title"])))
+        if "slug" in query_args:
+            filters.append(Post.slug.like("%{filter}%".format(filter=query_args["slug"])))
+        if "category_id" in query_args:
+            filters.append(Post.category_id)
+        if "author_id" in query_args:
+            filters.append(Post.author_id)
+        if "created_at" in query_args:
+            filters.append(Post.created_at)
+
         pagination_helper = PaginationHelper(
-            request, query=Post.query, resource_for_url="api.posts", key_name="results", schema=post_schema
+            request,
+            query=Post.query.filter(*filters) if filters else Post.query,
+            resource_for_url="api.posts",
+            key_name="results",
+            schema=post_schema,
+            query_args=query_args,
         )
         result = pagination_helper.paginate_query()
         return result

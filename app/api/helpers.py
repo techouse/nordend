@@ -13,6 +13,9 @@ class PaginationHelper:
         self.page_argument_name = current_app.config["PAGINATION_PAGE_ARGUMENT_NAME"]
         self.per_page_argument_name = current_app.config["PAGINATION_PER_PAGE_ARGUMENT_NAME"]
         self.url_parameters = kwargs.get("url_parameters", {})
+        self.query_args = kwargs.get('query_args')
+        if self.query_args:
+            self.url_parameters.update(self.query_args)
 
     def paginate_query(self):
         # If no page number is specified, we assume the request wants page #1
