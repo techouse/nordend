@@ -14,12 +14,6 @@ class RoleResource(Resource):
         result = role_schema.dump(role).data
         return {"data": result}
 
-    def patch(self, id):
-        pass
-
-    def delete(self, id):
-        pass
-
 
 class RoleListResource(Resource):
     def get(self):
@@ -28,6 +22,3 @@ class RoleListResource(Resource):
         )
         result = pagination_helper.paginate_query()
         return result
-
-    def post(self):
-        pass

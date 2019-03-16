@@ -31,7 +31,7 @@ class PostResource(Resource):
             post.title = request_dict["title"].strip()
         if "slug" in request_dict:
             post_slug = request_dict["slug"].strip()
-            if Post.is_unique(id=id, slug=post_slug):
+            if Post.is_unique(id=id, category=post.category, slug=post_slug):
                 post.slug = post_slug
             else:
                 response = {"error": "A post with the same slug already exists"}
@@ -80,11 +80,6 @@ class PostListResource(Resource):
         errors = post_schema.validate(request_dict)
         if errors:
             return errors, status.HTTP_400_BAD_REQUEST
-        if "slug" in request_dict:
-            post_slug = request_dict["slug"].strip()
-            if not Post.is_unique(id=id, slug=post_slug):
-                response = {"error": "A post with the same slug already exists"}
-                return response, status.HTTP_400_BAD_REQUEST
         try:
             post = Post(
                 title=request_dict["title"].strip(),

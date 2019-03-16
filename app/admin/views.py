@@ -123,7 +123,7 @@ def pages_index():
 @permission_required(Permission.WRITE)
 def posts_index():
     page = request.args.get("page", 1, type=int)
-    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+    pagination = Post.query.order_by(Post.created_at.desc()).paginate(
         page, per_page=current_app.config["POSTS_PER_PAGE"], error_out=False
     )
     posts = pagination.items

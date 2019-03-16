@@ -8,6 +8,7 @@ from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin, login_manager
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from markdown import markdown
+from slugify import slugify, UniqueSlugify
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from . import db, login
@@ -97,6 +98,9 @@ class Role(db.Model, AddUpdateDelete):
             db.session.add(role)
         db.session.commit()
 
+    def __repr__(self):
+        return "<Role {}>".format(self.name)
+
 
 class User(UserMixin, db.Model, AddUpdateDelete):
     __tablename__ = "users"
@@ -108,12 +112,12 @@ class User(UserMixin, db.Model, AddUpdateDelete):
     name = db.Column(db.String(64), nullable=False, index=True)
     location = db.Column(db.String(64))
     about_me = db.Column(db.Text)
-    member_since = db.Column(db.DateTime(), default=datetime.utcnow)
-    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    member_since = db.Column(db.DateTime(), default=db.func.current_timestamp())
+    last_seen = db.Column(db.DateTime, default=db.func.current_timestamp())
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship("Post", backref="author", lazy="dynamic")
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
+    created_at = db.Column(db.TIMESTAMP, nullable=False, default=db.func.current_timestamp())
+    updated_at = db.Column(db.TIMESTAMP, onupdate=db.func.current_timestamp())
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -219,19 +223,50 @@ def load_user(id):
     return User.query.get(int(id))
 
 
+class Category(db.Model, AddUpdateDelete):
+    __tablename__ = "categories"
+    id = db.Column(db.Integer, primary_key=True)
+    slug = db.Column(db.String(255), unique=True, nullable=False)
+    name = db.Column(db.String(255), unique=True, nullable=False)
+    posts = db.relationship('Post', backref='category', lazy=True)
+
+    @staticmethod
+    def on_changed_name(target, value, oldvalue, initiator):
+        target.slug = slugify(value, to_lower=True)
+
+    @classmethod
+    def is_unique(cls, id, name):
+        existing_category = cls.query.filter_by(name=name).first()
+        if existing_category is None:
+            return True
+        else:
+            if existing_category.id == id:
+                return True
+            else:
+                return False
+
+    def __repr__(self):
+        return "<Category {}>".format(self.name)
+
+
+db.event.listen(Category.name, "set", Category.on_changed_name)
+
+
 class Post(db.Model, AddUpdateDelete):
     __tablename__ = "posts"
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255))
-    slug = db.Column(db.String(255))
+    title = db.Column(db.String(255), index=True)
+    slug = db.Column(db.String(255), index=True)
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    author_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey("categories.id", ondelete="CASCADE"), nullable=False)
+    created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp())
 
     @classmethod
-    def is_unique(cls, id, slug):
-        existing_post = cls.query.filter_by(name=slug).first()
+    def is_unique(cls, id, category, slug):
+        existing_post = cls.query.filter_by(category_id=category.id, name=slug).first()
         if existing_post is None:
             return True
         else:
@@ -239,6 +274,19 @@ class Post(db.Model, AddUpdateDelete):
                 return True
             else:
                 return False
+
+    @staticmethod
+    def on_changed_title(target, value, oldvalue, initiator):
+        unique_slugify = UniqueSlugify(
+            to_lower=True,
+            uids=[
+                post.slug
+                for post in Post.query.filter(
+                    Post.category_id == target.category_id, Post.title.like("{}%".format(value))
+                ).all()
+            ],
+        )
+        target.slug = unique_slugify(value)
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
@@ -269,4 +317,5 @@ class Post(db.Model, AddUpdateDelete):
         return "<Post {}>".format(self.title)
 
 
+db.event.listen(Post.title, "set", Post.on_changed_title)
 db.event.listen(Post.body, "set", Post.on_changed_body)

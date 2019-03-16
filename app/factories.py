@@ -1,5 +1,6 @@
 import factory
-from .models import User, AnonymousUser, Post
+
+from .models import User, AnonymousUser, Post, Category
 
 
 class UserFactory(factory.Factory):
@@ -20,6 +21,13 @@ class AnonymousUserFactory(factory.Factory):
         model = AnonymousUser
 
 
+class CategoryFactory(factory.Factory):
+    class Meta:
+        model = Category
+
+    name = factory.Faker("word")
+
+
 class PostFactory(factory.Factory):
     class Meta:
         model = Post
@@ -27,3 +35,4 @@ class PostFactory(factory.Factory):
     title = factory.Faker("sentence", nb_words=4)
     body = factory.Faker("text")
     author = None
+    category = None
