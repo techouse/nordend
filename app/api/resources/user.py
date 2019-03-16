@@ -32,7 +32,7 @@ class UserResource(Resource):
             return errors, status.HTTP_400_BAD_REQUEST
         try:
             if "email" in request_dict:
-                user_email = request_dict["email"].strip()
+                user_email = request_dict["email"]
                 if User.is_unique(id=id, email=user_email):
                     user.email = user_email
                 else:
@@ -83,8 +83,8 @@ class UserListResource(Resource):
         errors = user_schema.validate(request_dict)
         if errors:
             return errors, status.HTTP_400_BAD_REQUEST
-        user_email = request_dict["email"].strip()
-        if not User.is_unique(id=id, email=user_email):
+        user_email = request_dict["email"]
+        if not User.is_unique(id=0, email=user_email):
             response = {"error": "A user with the same e-mail address already exists"}
             return response, status.HTTP_400_BAD_REQUEST
         try:

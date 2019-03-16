@@ -32,7 +32,12 @@ class CategoryResource(Resource):
             return errors, status.HTTP_400_BAD_REQUEST
         try:
             if "name" in request_dict:
-                category.name = request_dict["name"]
+                category_name = request_dict['name']
+                if Category.is_unique(id=0, name=category_name):
+                    category.name = category_name
+                else:
+                    response = {'error': 'A category with the same name already exists'}
+                    return response, status.HTTP_400_BAD_REQUEST
             category.update()
             return self.get(id)
         except SQLAlchemyError as e:
@@ -55,7 +60,7 @@ class CategoryResource(Resource):
 class CategoryListResource(Resource):
     def get(self):
         pagination_helper = PaginationHelper(
-            request, query=Category.query, resource_for_url="api.categories", key_name="data", schema=category_schema
+            request, query=Category.query, resource_for_url="api.categories", key_name="results", schema=category_schema
         )
         result = pagination_helper.paginate_query()
         return result
@@ -68,8 +73,12 @@ class CategoryListResource(Resource):
         errors = category_schema.validate(request_dict)
         if errors:
             return errors, status.HTTP_400_BAD_REQUEST
+        category_name = request_dict['name']
+        if not Category.is_unique(id=0, name=category_name):
+            response = {'error': 'A category with the same name already exists'}
+            return response, status.HTTP_400_BAD_REQUEST
         try:
-            category = Category(title=request_dict["title"].strip())
+            category = Category(title=category_name)
             category.add(category)
             query = Category.query.get(category.id)
             result = category_schema.dump(query).data

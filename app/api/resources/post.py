@@ -28,16 +28,16 @@ class PostResource(Resource):
             response = {"error": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
         if "title" in request_dict:
-            post.title = request_dict["title"].strip()
+            post.title = request_dict["title"]
         if "slug" in request_dict:
-            post_slug = request_dict["slug"].strip()
+            post_slug = request_dict["slug"]
             if Post.is_unique(id=id, category=post.category, slug=post_slug):
                 post.slug = post_slug
             else:
                 response = {"error": "A post with the same slug already exists"}
                 return response, status.HTTP_400_BAD_REQUEST
         if "body" in request_dict:
-            post.body = request_dict["body"].strip()
+            post.body = request_dict["body"]
         dumped_post, dump_errors = post_schema.dump(post)
         if dump_errors:
             return dump_errors, status.HTTP_400_BAD_REQUEST
@@ -82,9 +82,9 @@ class PostListResource(Resource):
             return errors, status.HTTP_400_BAD_REQUEST
         try:
             post = Post(
-                title=request_dict["title"].strip(),
-                body=request_dict["body"].strip(),
-                slug=request_dict["slug"].strip() if "slug" in request_dict else "",
+                title=request_dict["title"],
+                body=request_dict["body"],
+                slug=request_dict["slug"] if "slug" in request_dict else "",
             )
             post.add(post)
             query = Post.query.get(post.id)

@@ -31,7 +31,7 @@ class RoleResource(Resource):
 class RoleListResource(Resource):
     def get(self):
         pagination_helper = PaginationHelper(
-            request, query=Role.query, resource_for_url="api.roles", key_name="data", schema=role_schema
+            request, query=Role.query, resource_for_url="api.roles", key_name="results", schema=role_schema
         )
         result = pagination_helper.paginate_query()
         return result
