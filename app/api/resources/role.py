@@ -1,16 +1,15 @@
 from flask import request, jsonify
 
 from .. import status
+from ..authentication import TokenRequiredResource
 from ..helpers import PaginationHelper
-from flask_restful import Resource
-
-from ...models import Role
 from ..schemas import RoleSchema
+from ...models import Role
 
 role_schema = RoleSchema()
 
 
-class RoleResource(Resource):
+class RoleResource(TokenRequiredResource):
     def get(self, id):
         role = Role.query.get_or_404(id)
         result = role_schema.dump(role).data
@@ -28,7 +27,7 @@ class RoleResource(Resource):
         return resp, status.HTTP_501_NOT_IMPLEMENTED
 
 
-class RoleListResource(Resource):
+class RoleListResource(TokenRequiredResource):
     def get(self):
         pagination_helper = PaginationHelper(
             request, query=Role.query, resource_for_url="api.roles", key_name="results", schema=role_schema

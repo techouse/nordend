@@ -1,5 +1,5 @@
-from flask import url_for
 from flask import current_app
+from flask import url_for
 
 
 class PaginationHelper:

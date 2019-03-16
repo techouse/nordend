@@ -151,6 +151,19 @@ class User(UserMixin, db.Model, AddUpdateDelete):
         s = Serializer(current_app.config["SECRET_KEY"], expires)
         return s.dumps({"confirm": self.id}).decode("utf-8")
 
+    def generate_auth_token(self, expiration):
+        s = Serializer(current_app.config["SECRET_KEY"], expires_in=expiration)
+        return s.dumps({"id": self.id}).decode("utf-8")
+
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(current_app.config["SECRET_KEY"])
+        try:
+            data = s.loads(token)
+        except:
+            return None
+        return User.query.get(data["id"])
+
     def confirm(self, token):
         s = Serializer(current_app.config["SECRET_KEY"])
         try:
@@ -228,7 +241,7 @@ class Category(db.Model, AddUpdateDelete):
     id = db.Column(db.Integer, primary_key=True)
     slug = db.Column(db.String(255), unique=True, nullable=False)
     name = db.Column(db.String(255), unique=True, nullable=False)
-    posts = db.relationship('Post', backref='category', lazy=True)
+    posts = db.relationship("Post", backref="category", lazy=True)
 
     @staticmethod
     def on_changed_name(target, value, oldvalue, initiator):

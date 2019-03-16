@@ -1,18 +1,17 @@
 from flask import request, make_response, jsonify
 from sqlalchemy.exc import SQLAlchemyError
 
-from ... import db
 from .. import status
+from ..authentication import TokenRequiredResource
 from ..helpers import PaginationHelper
-from flask_restful import Resource
-
-from ...models import Category
 from ..schemas import CategorySchema
+from ... import db
+from ...models import Category
 
 category_schema = CategorySchema()
 
 
-class CategoryResource(Resource):
+class CategoryResource(TokenRequiredResource):
     def get(self, id):
         category = Category.query.get_or_404(id)
         result = category_schema.dump(category).data
@@ -57,7 +56,7 @@ class CategoryResource(Resource):
             return resp, status.HTTP_401_UNAUTHORIZED
 
 
-class CategoryListResource(Resource):
+class CategoryListResource(TokenRequiredResource):
     def get(self):
         pagination_helper = PaginationHelper(
             request, query=Category.query, resource_for_url="api.categories", key_name="results", schema=category_schema

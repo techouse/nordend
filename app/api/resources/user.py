@@ -1,18 +1,17 @@
 from flask import request, jsonify, make_response
 from sqlalchemy.exc import SQLAlchemyError
 
-from ... import db
 from .. import status
+from ..authentication import TokenRequiredResource
 from ..helpers import PaginationHelper
-from flask_restful import Resource
-
-from ...models import User
 from ..schemas import UserSchema
+from ... import db
+from ...models import User
 
 user_schema = UserSchema()
 
 
-class UserResource(Resource):
+class UserResource(TokenRequiredResource):
     def get(self, id):
         user = User.query.get_or_404(id)
         result = user_schema.dump(user).data
@@ -67,7 +66,7 @@ class UserResource(Resource):
             return resp, status.HTTP_401_UNAUTHORIZED
 
 
-class UserListResource(Resource):
+class UserListResource(TokenRequiredResource):
     def get(self):
         pagination_helper = PaginationHelper(
             request, query=User.query, resource_for_url="api.users", key_name="results", schema=user_schema
