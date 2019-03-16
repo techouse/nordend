@@ -14,7 +14,7 @@ class RoleResource(Resource):
     def get(self, id):
         role = Role.query.get_or_404(id)
         result = role_schema.dump(role).data
-        return {"data": result}
+        return result
 
     def put(self, id):
         return self.patch(id)
