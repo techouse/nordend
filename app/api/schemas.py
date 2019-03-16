@@ -15,11 +15,13 @@ class RoleSchema(ma.Schema):
     name = fields.String(required=True)
     default = fields.Boolean(required=True)
     permissions = fields.Integer(required=True)
-    users = fields.Nested("UserSchema", dump_only=True, many=True, exclude=("posts", "role"))
     links = ma.Hyperlinks(
         {
             "self": ma.URLFor("api.role", id="<id>", _external=True),
             "collection": ma.URLFor("api.roles", _external=True),
+            "relationships": {
+                "users": ma.URLFor("api.role_users", id="<id>", _external=True),
+            }
         }
     )
 
@@ -31,11 +33,13 @@ class CategorySchema(ma.Schema):
     id = fields.Integer(dump_only=True)
     name = fields.String(required=True, validate=validate.Length(1))
     slug = fields.String(dump_only=True)
-    posts = fields.Nested("PostSchema", dump_only=True, many=True, exclude=("category", "author"))
     links = ma.Hyperlinks(
         {
-            "self": ma.URLFor("api.categories", id="<id>", _external=True),
+            "self": ma.URLFor("api.category", id="<id>", _external=True),
             "collection": ma.URLFor("api.categories", _external=True),
+            "relationships": {
+                "posts": ma.URLFor("api.category_posts", id="<id>", _external=True),
+            }
         }
     )
 
@@ -91,10 +95,12 @@ class UserSchema(ma.Schema):
     created_at = fields.DateTime(dump_only=True, format="iso8601")
     updated_at = fields.DateTime(dump_only=True, format="iso8601")
     role = fields.Nested("RoleSchema", exclude=("users",))
-    posts = fields.Nested("PostSchema", dump_only=True, many=True, exclude=("author",))
     links = ma.Hyperlinks(
         {
             "self": ma.URLFor("api.user", id="<id>", _external=True),
             "collection": ma.URLFor("api.users", _external=True),
+            "relationships": {
+                "posts": ma.URLFor("api.user_posts", id="<id>", _external=True),
+            }
         }
     )

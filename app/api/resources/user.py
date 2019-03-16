@@ -1,11 +1,12 @@
 from flask import request, jsonify, make_response
 from sqlalchemy.exc import SQLAlchemyError
 
+from .post import post_schema
 from .authentication import TokenRequiredResource
 from ..helpers import PaginationHelper
 from ..schemas import UserSchema
 from ... import db, status
-from ...models import User
+from ...models import User, Post
 
 user_schema = UserSchema()
 
@@ -102,3 +103,14 @@ class UserListResource(TokenRequiredResource):
             db.session.rollback()
             resp = {"error": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
+
+
+class UserPostListResource(TokenRequiredResource):
+    def get(self, id):
+        pagination_helper = PaginationHelper(
+            request, query=Post.query.filter_by(author_id=id), resource_for_url="api.user_posts", key_name="results",
+            schema=post_schema,
+            url_parameters={"id": id},
+        )
+        result = pagination_helper.paginate_query()
+        return result
