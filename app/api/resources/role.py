@@ -1,9 +1,9 @@
 from flask import request, jsonify
 
 from .authentication import TokenRequiredResource
-from .. import status
 from ..helpers import PaginationHelper
 from ..schemas import RoleSchema
+from ... import status
 from ...models import Role
 
 role_schema = RoleSchema()

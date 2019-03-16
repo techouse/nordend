@@ -2,10 +2,9 @@ from flask import request, make_response, jsonify
 from sqlalchemy.exc import SQLAlchemyError
 
 from .authentication import TokenRequiredResource
-from .. import status
 from ..helpers import PaginationHelper
 from ..schemas import CategorySchema
-from ... import db
+from ... import db, status
 from ...models import Category
 
 category_schema = CategorySchema()

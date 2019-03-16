@@ -2,7 +2,7 @@ from flask import jsonify
 from werkzeug.http import HTTP_STATUS_CODES
 
 from . import api_bp
-from . import status
+from .. import status
 from ..exceptions import ValidationError
 
 

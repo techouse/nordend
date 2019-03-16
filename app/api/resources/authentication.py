@@ -2,7 +2,7 @@ from flask import g, jsonify, current_app
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from flask_restful import Resource
 
-from .. import status
+from ... import status
 from ...models import User
 
 basic_auth = HTTPBasicAuth()
