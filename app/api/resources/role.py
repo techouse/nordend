@@ -1,4 +1,6 @@
-from flask import request
+from flask import request, jsonify
+
+from .. import status
 from ..helpers import PaginationHelper
 from flask_restful import Resource
 
@@ -14,6 +16,17 @@ class RoleResource(Resource):
         result = role_schema.dump(role).data
         return {"data": result}
 
+    def put(self, id):
+        return self.patch(id)
+
+    def patch(self, id):
+        resp = jsonify({'error': 'Method not implemented'})
+        return resp, status.HTTP_501_NOT_IMPLEMENTED
+
+    def delete(self, id):
+        resp = jsonify({'error': 'Method not implemented'})
+        return resp, status.HTTP_501_NOT_IMPLEMENTED
+
 
 class RoleListResource(Resource):
     def get(self):
@@ -22,3 +35,7 @@ class RoleListResource(Resource):
         )
         result = pagination_helper.paginate_query()
         return result
+
+    def post(self):
+        resp = jsonify({'error': 'Method not implemented'})
+        return resp, status.HTTP_501_NOT_IMPLEMENTED
