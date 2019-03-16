@@ -1,8 +1,8 @@
 from flask import request, jsonify, make_response
 from sqlalchemy.exc import SQLAlchemyError
 
+from .authentication import TokenRequiredResource
 from .. import status
-from ..authentication import TokenRequiredResource
 from ..helpers import PaginationHelper
 from ..schemas import UserSchema
 from ... import db

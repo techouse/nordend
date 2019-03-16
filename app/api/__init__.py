@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 
-from .authentication import AuthenticationResource
+from .resources.authentication import AuthenticationResource
 from .resources.category import CategoryListResource, CategoryResource
 from .resources.post import PostListResource, PostResource
 from .resources.role import RoleListResource, RoleResource

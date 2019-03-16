@@ -1,7 +1,7 @@
 from flask import request, jsonify
 
+from .authentication import TokenRequiredResource
 from .. import status
-from ..authentication import TokenRequiredResource
 from ..helpers import PaginationHelper
 from ..schemas import RoleSchema
 from ...models import Role
