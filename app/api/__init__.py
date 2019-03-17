@@ -10,7 +10,7 @@ from .resources.user import UserListResource, UserResource, UserPostListResource
 api_bp = Blueprint("api", __name__, url_prefix="/api/v1")
 api = Api(api_bp)
 
-api.add_resource(AuthenticationResource, "/auth/", endpoint="auth")
+api.add_resource(AuthenticationResource, "/login/", endpoint="auth")
 
 api.add_resource(RoleListResource, "/roles/", endpoint="roles")
 api.add_resource(RoleResource, "/roles/<int:id>", endpoint="role")
