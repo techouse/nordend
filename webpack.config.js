@@ -13,11 +13,11 @@ const config = {
     mode:         env,
     target:       'web',
     entry:        {
-        app:   ['./app/static/js/app.js',
-                './app/static/scss/app.scss'],
-        admin: ['./app/static/js/admin.js',
-                './app/static/scss/admin.scss'],
-        error: ['./app/static/scss/error.scss']
+        // frontend: ['./app/static/js/frontend/frontend.js',
+        //            './app/static/scss/frontend/frontend.scss'],
+        backend: ['./app/static/js/backend/backend.js',
+                  './app/static/scss/backend/backend.scss'],
+        // error:    ['./app/static/scss/error.scss']
     },
     output:       {
         path:     path.resolve(__dirname, 'app/static/dist'),
@@ -30,8 +30,10 @@ const config = {
         },
         extensions: ['*', '.js', '.vue', '.json'],
         modules:    ['./node_modules',
-                     './app/static/js/modules',
-                     './app/static/js/components']
+                     './app/static/js/frontend/components',
+                     './app/static/js/frontend/pages',
+                     './app/static/js/backend/components',
+                     './app/static/js/backend/pages']
     },
     stats:        {
         colors: true
