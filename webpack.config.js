@@ -13,11 +13,10 @@ const config = {
     mode:         env,
     target:       'web',
     entry:        {
-        // frontend: ['./app/static/js/frontend/frontend.js',
-        //            './app/static/scss/frontend/frontend.scss'],
+        frontend: ['./app/static/js/frontend/frontend.js',
+                   './app/static/scss/frontend/frontend.scss'],
         backend: ['./app/static/js/backend/backend.js',
-                  './app/static/scss/backend/backend.scss'],
-        // error:    ['./app/static/scss/error.scss']
+                  './app/static/scss/backend/backend.scss']
     },
     output:       {
         path:     path.resolve(__dirname, 'app/static/dist'),
