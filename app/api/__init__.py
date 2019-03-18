@@ -11,6 +11,7 @@ api_bp = Blueprint("api", __name__, url_prefix="/api/v1")
 api = Api(api_bp)
 
 api.add_resource(AuthenticationResource, "/login/", endpoint="auth")
+# TODO maybe add registration route
 
 api.add_resource(RoleListResource, "/roles/", endpoint="roles")
 api.add_resource(RoleResource, "/roles/<int:id>", endpoint="role")

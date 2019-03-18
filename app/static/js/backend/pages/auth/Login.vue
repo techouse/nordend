@@ -2,18 +2,19 @@
     <div class="col-md-8">
         <div class="card-group">
             <div class="card p-4">
-                <form method="post" action="" class="card-body">
+                <form class="card-body" @submit.prevent="submit">
                     <h1>Login</h1>
                     <p class="text-muted">
                         Sign In to your account
                     </p>
+                    <small v-if="error" style="color: red; font-weight: bold">{{ error.error }}</small>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text">
                                 <i class="icon-user" />
                             </span>
                         </div>
-                        <input class="form-control" type="email" placeholder="E-mail">
+                        <input v-model="email" class="form-control" type="email" placeholder="E-mail">
                     </div>
                     <div class="input-group mb-4">
                         <div class="input-group-prepend">
@@ -21,7 +22,7 @@
                                 <i class="icon-lock" />
                             </span>
                         </div>
-                        <input class="form-control" type="password" placeholder="Password">
+                        <input v-model="password" class="form-control" type="password" placeholder="Password">
                     </div>
                     <input type="checkbox" name="remember_me">
                     <label>Remember me</label>
@@ -54,10 +55,32 @@
 
 <script>
     export default {
-        name: "Login"
+        name: "Login",
+
+        data() {
+            return {
+                email:    null,
+                password: null,
+                error:    null
+            }
+        },
+
+        methods: {
+            submit() {
+                this.$set(this, "error", null)
+
+                this.$http.post("/login/", {}, {
+                    auth: {
+                        username: this.email,
+                        password: this.password
+                    }
+                }).then(({data}) => {
+                    localStorage.setItem("auth_token", data.token)
+                    this.$router.push({ name: "Dashboard"})
+                }).catch(({response}) => {
+                    this.$set(this, "error", response.data)
+                })
+            }
+        }
     }
 </script>
-
-<style scoped>
-
-</style>

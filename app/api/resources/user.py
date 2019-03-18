@@ -122,7 +122,7 @@ class UserListResource(TokenRequiredResource):
                 name=request_dict["name"],
                 email=request_dict["email"],
                 password=request_dict["password"],
-                confirmed=request_dict["confirmed"] if "confirmed" in request_dict else "",
+                confirmed=request_dict["confirmed"] if "confirmed" in request_dict else False,
                 location=request_dict["location"] if "location" in request_dict else "",
                 about_me=request_dict["about_me"] if "about_me" in request_dict else "",
             )

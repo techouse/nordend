@@ -97,13 +97,33 @@ const routerOptions = [
 
 Vue.use(Router)
 
-export default new Router({
-                              routes: routerOptions,
-                              base:   "/admin/",
-                              mode:   "history",
-                              beforeRouteEnter(to, from, next) {
-                                  // called before the route that renders this component is confirmed.
-                                  // does NOT have access to `this` component instance,
-                                  // because it has not been created yet when this guard is called!
-                              },
-                          })
+const router = new Router(
+    {
+        routes: routerOptions,
+        base:   "/admin/",
+        mode:   "history"
+    }
+)
+
+router.beforeEach((to, from, next) => {
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        if (localStorage.getItem("auth_token") == null) {
+            next({
+                     name:   "Login",
+                     params: {nextUrl: to.fullPath}
+                 })
+        } else {
+            next()
+        }
+    } else if (to.matched.some(record => record.meta.guest)) {
+        if (localStorage.getItem("auth_token") == null) {
+            next()
+        } else {
+            next({name: "Dashboard"})
+        }
+    } else {
+        next()
+    }
+})
+
+export default router
