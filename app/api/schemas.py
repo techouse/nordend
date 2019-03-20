@@ -78,6 +78,7 @@ class PostSchema(ma.Schema):
         data["category"] = category_dict
         return data
 
+
 class UserSchema(ma.Schema):
     class Meta:
         model = User

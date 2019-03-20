@@ -26,7 +26,7 @@ class CategoryResource(TokenRequiredResource):
         category = Category.query.get_or_404(id)
         request_dict = request.get_json()
         if not request_dict:
-            response = {"error": "No input data provided"}
+            response = {"message": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
         errors = category_schema.validate(request_dict)
         if errors:
@@ -37,13 +37,13 @@ class CategoryResource(TokenRequiredResource):
                 if Category.is_unique(id=0, name=category_name):
                     category.name = category_name
                 else:
-                    response = {"error": "A category with the same name already exists"}
+                    response = {"message": "A category with the same name already exists"}
                     return response, status.HTTP_400_BAD_REQUEST
             category.update()
             return self.get(id)
         except SQLAlchemyError as e:
             db.session.rollback()
-            resp = {"error": str(e)}
+            resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
     def delete(self, id):
@@ -54,7 +54,7 @@ class CategoryResource(TokenRequiredResource):
             return response, status.HTTP_204_NO_CONTENT
         except SQLAlchemyError as e:
             db.session.rollback()
-            resp = jsonify({"error": str(e)})
+            resp = jsonify({"message": str(e)})
             return resp, status.HTTP_401_UNAUTHORIZED
 
 
@@ -85,14 +85,14 @@ class CategoryListResource(TokenRequiredResource):
     def post(self):
         request_dict = request.get_json()
         if not request_dict:
-            response = {"error": "No input data provided"}
+            response = {"message": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
         errors = category_schema.validate(request_dict)
         if errors:
             return errors, status.HTTP_400_BAD_REQUEST
         category_name = request_dict["name"]
         if not Category.is_unique(id=0, name=category_name):
-            response = {"error": "A category with the same name already exists"}
+            response = {"message": "A category with the same name already exists"}
             return response, status.HTTP_400_BAD_REQUEST
         try:
             category = Category(title=category_name)
@@ -102,7 +102,7 @@ class CategoryListResource(TokenRequiredResource):
             return result, status.HTTP_201_CREATED
         except SQLAlchemyError as e:
             db.session.rollback()
-            resp = {"error": str(e)}
+            resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
 

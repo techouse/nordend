@@ -26,7 +26,7 @@ class UserResource(TokenRequiredResource):
         user = User.query.get_or_404(id)
         request_dict = request.get_json()
         if not request_dict:
-            response = {"error": "No input data provided"}
+            response = {"message": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
         errors = user_schema.validate(request_dict)
         if errors:
@@ -37,7 +37,7 @@ class UserResource(TokenRequiredResource):
                 if User.is_unique(id=id, email=user_email):
                     user.email = user_email
                 else:
-                    response = {"error": "A user with the same e-mail address already exists"}
+                    response = {"message": "A user with the same e-mail address already exists"}
                     return response, status.HTTP_400_BAD_REQUEST
             if "password" in request_dict:
                 user.password = request_dict["password"]
@@ -53,7 +53,7 @@ class UserResource(TokenRequiredResource):
             return self.get(id)
         except SQLAlchemyError as e:
             db.session.rollback()
-            resp = {"error": str(e)}
+            resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
     def delete(self, id):
@@ -64,7 +64,7 @@ class UserResource(TokenRequiredResource):
             return response, status.HTTP_204_NO_CONTENT
         except SQLAlchemyError as e:
             db.session.rollback()
-            resp = jsonify({"error": str(e)})
+            resp = jsonify({"message": str(e)})
             return resp, status.HTTP_401_UNAUTHORIZED
 
 
@@ -115,7 +115,7 @@ class UserListResource(TokenRequiredResource):
             return errors, status.HTTP_400_BAD_REQUEST
         user_email = request_dict["email"]
         if not User.is_unique(id=0, email=user_email):
-            response = {"error": "A user with the same e-mail address already exists"}
+            response = {"message": "A user with the same e-mail address already exists"}
             return response, status.HTTP_400_BAD_REQUEST
         try:
             user = User(
@@ -132,7 +132,7 @@ class UserListResource(TokenRequiredResource):
             return result, status.HTTP_201_CREATED
         except SQLAlchemyError as e:
             db.session.rollback()
-            resp = {"error": str(e)}
+            resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
 

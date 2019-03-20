@@ -27,7 +27,7 @@ def verify_user_password(email_or_token, password):
 
 @basic_auth.error_handler
 def auth_error():
-    return jsonify({"error": "Invalid credentials"}), status.HTTP_401_UNAUTHORIZED
+    return jsonify({"message": "Invalid credentials"}), status.HTTP_401_UNAUTHORIZED
 
 
 @token_auth.verify_token
@@ -38,7 +38,7 @@ def verify_token(token):
 
 @token_auth.error_handler
 def token_auth_error():
-    return jsonify({"error": "Token invalid"}), status.HTTP_401_UNAUTHORIZED
+    return jsonify({"message": "Token invalid"}), status.HTTP_401_UNAUTHORIZED
 
 
 class TokenRequiredResource(Resource):
@@ -49,7 +49,7 @@ class AuthenticationResource(Resource):
     @basic_auth.login_required
     def post(self):
         if g.current_user.is_anonymous or g.token_used:
-            return jsonify({"error": "Invalid credentials"}), status.HTTP_401_UNAUTHORIZED
+            return jsonify({"message": "Invalid credentials"}), status.HTTP_401_UNAUTHORIZED
         return jsonify(
             {
                 "token": g.current_user.generate_auth_token(expiration=current_app.config["JWT_TOKEN_EXPIRATION_TIME"]),

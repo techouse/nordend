@@ -22,11 +22,11 @@ class RoleResource(TokenRequiredResource):
         return self.patch(id)
 
     def patch(self, id):
-        resp = jsonify({"error": "Method not implemented"})
+        resp = jsonify({"message": "Method not implemented"})
         return resp, status.HTTP_501_NOT_IMPLEMENTED
 
     def delete(self, id):
-        resp = jsonify({"error": "Method not implemented"})
+        resp = jsonify({"message": "Method not implemented"})
         return resp, status.HTTP_501_NOT_IMPLEMENTED
 
 
@@ -59,7 +59,7 @@ class RoleListResource(TokenRequiredResource):
         return result
 
     def post(self):
-        resp = jsonify({"error": "Method not implemented"})
+        resp = jsonify({"message": "Method not implemented"})
         return resp, status.HTTP_501_NOT_IMPLEMENTED
 
 

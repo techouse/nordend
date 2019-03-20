@@ -25,7 +25,7 @@ class PostResource(TokenRequiredResource):
         post = Post.query.get_or_404(id)
         request_dict = request.get_json()
         if not request_dict:
-            response = {"error": "No input data provided"}
+            response = {"message": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
         if "title" in request_dict:
             post.title = request_dict["title"]
@@ -34,7 +34,7 @@ class PostResource(TokenRequiredResource):
             if Post.is_unique(id=id, category=post.category, slug=post_slug):
                 post.slug = post_slug
             else:
-                response = {"error": "A post with the same slug already exists"}
+                response = {"message": "A post with the same slug already exists"}
                 return response, status.HTTP_400_BAD_REQUEST
         if "body" in request_dict:
             post.body = request_dict["body"]
@@ -49,7 +49,7 @@ class PostResource(TokenRequiredResource):
             return self.get(id)
         except SQLAlchemyError as e:
             db.session.rollback()
-            resp = {"error": str(e)}
+            resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
     def delete(self, id):
@@ -60,7 +60,7 @@ class PostResource(TokenRequiredResource):
             return response, status.HTTP_204_NO_CONTENT
         except SQLAlchemyError as e:
             db.session.rollback()
-            resp = jsonify({"error": str(e)})
+            resp = jsonify({"message": str(e)})
             return resp, status.HTTP_401_UNAUTHORIZED
 
 
@@ -101,7 +101,7 @@ class PostListResource(TokenRequiredResource):
     def post(self):
         request_dict = request.get_json()
         if not request_dict:
-            response = {"error": "No input data provided"}
+            response = {"message": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
         errors = post_schema.validate(request_dict)
         if errors:
@@ -118,5 +118,5 @@ class PostListResource(TokenRequiredResource):
             return result, status.HTTP_201_CREATED
         except SQLAlchemyError as e:
             db.session.rollback()
-            resp = {"error": str(e)}
+            resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST

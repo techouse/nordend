@@ -7,11 +7,11 @@
                     <p class="text-muted">
                         Sign In to your account
                     </p>
-                    <small v-if="error" style="color: red; font-weight: bold">{{ error.error }}</small>
+                    <small v-if="alert" style="color: red; font-weight: bold">{{ alert.message }}</small>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text">
-                                <i class="icon-user" />
+                                <i class="icon-user"/>
                             </span>
                         </div>
                         <input v-model="email" class="form-control" type="email" placeholder="E-mail">
@@ -19,7 +19,7 @@
                     <div class="input-group mb-4">
                         <div class="input-group-prepend">
                             <span class="input-group-text">
-                                <i class="icon-lock" />
+                                <i class="icon-lock"/>
                             </span>
                         </div>
                         <input v-model="password" class="form-control" type="password" placeholder="Password">
@@ -54,6 +54,8 @@
 </template>
 
 <script>
+    import {mapActions, mapGetters} from "vuex"
+
     export default {
         name: "Login",
 
@@ -61,25 +63,23 @@
             return {
                 email:    null,
                 password: null,
-                error:    null
             }
         },
 
-        methods: {
-            submit() {
-                this.$set(this, "error", null)
+        computed: {
+            ...mapGetters("alert", ["alert"])
+        },
 
-                this.$http.post("/login/", {}, {
-                    auth: {
-                        username: this.email,
-                        password: this.password
-                    }
-                }).then(({data}) => {
-                    localStorage.setItem("auth_token", data.token)
-                    this.$router.push({ name: "Dashboard"})
-                }).catch(({response}) => {
-                    this.$set(this, "error", response.data)
-                })
+        methods: {
+            ...mapActions("auth", ["login"]),
+
+            submit() {
+                if (this.email && this.password) {
+                    this.login({email: this.email, password: this.password})
+                        .then(() => {
+                            this.$router.push({name: "Dashboard"})
+                        })
+                }
             }
         }
     }

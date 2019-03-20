@@ -14,6 +14,10 @@ import ResetPasswordRequest from "../pages/auth/ResetPasswordRequest"
 
 const routerOptions = [
     {
+        path:     "/",
+        redirect: {name: "Dashboard"}
+    },
+    {
         path:      "/auth/login",
         component: Login,
         name:      "Login",
@@ -47,7 +51,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/",
+        path:      "/dashboard",
         component: Dashboard,
         name:      "Dashboard",
         meta:      {
@@ -99,27 +103,25 @@ Vue.use(Router)
 
 const router = new Router(
     {
-        routes: routerOptions,
-        base:   "/admin/",
-        mode:   "history"
+        routes:               routerOptions,
+        base:                 "/admin/",
+        mode:                 "history",
+        linkExactActiveClass: "active"
     }
 )
 
 router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
-        if (localStorage.getItem("auth_token") == null) {
-            next({
-                     name:   "Login",
-                     params: {nextUrl: to.fullPath}
-                 })
+        if (localStorage.getItem("token") == null) {
+            next({name: "Login", params: {nextUrl: to.fullPath}})
         } else {
             next()
         }
     } else if (to.matched.some(record => record.meta.guest)) {
-        if (localStorage.getItem("auth_token") == null) {
+        if (localStorage.getItem("token") == null) {
             next()
         } else {
-            next({name: "Dashboard"})
+            next({name: "Dashboard", params: {nextUrl: to.fullPath}})
         }
     } else {
         next()

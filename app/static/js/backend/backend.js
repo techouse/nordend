@@ -2,15 +2,16 @@ require("../bootstrap")
 require("@coreui/coreui")
 
 import Vue     from "vue"
-import App     from "./App"
-import router  from "./router"
 import Element from "element-ui"
+import router  from "./router"
+import store   from "./store"
 import api     from "./components/api"
+import App     from "./App"
 
 let token = document.head.querySelector("meta[name=\"csrf-token\"]")
 
 if (token) {
-   api.defaults.headers.common["X-CSRF-TOKEN"] = token.content
+    api.defaults.headers.common["X-CSRF-TOKEN"] = token.content
 } else {
     console.error("CSRF token not found!")
 }
@@ -23,6 +24,7 @@ new Vue(
     {
         el:     "#app",
         router,
+        store,
         render: h => h(App)
     }
 )

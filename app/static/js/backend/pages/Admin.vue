@@ -23,12 +23,12 @@
             </button>
             <ul class="nav navbar-nav ml-auto">
                 <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+                    <a v-if="user" class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
                        aria-expanded="false"
                     >
-                        <img class="img-avatar" alt="example@example.com">
+                        <img class="img-avatar" :alt="user.email">
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right">
+                    <div v-if="user" class="dropdown-menu dropdown-menu-right">
                         <div class="dropdown-header text-center">
                             <strong>Settings</strong>
                         </div>
@@ -38,7 +38,7 @@
                         <a class="dropdown-item" href="#">
                             <i class="fa fa-wrench"/> Settings
                         </a>
-                        <a class="dropdown-item" href="#">
+                        <a class="dropdown-item" href="#" @click.prevent="logout">
                             <i class="fa fa-lock"/> Logout
                         </a>
                     </div>
@@ -104,8 +104,27 @@
 </template>
 
 <script>
+    import {mapActions, mapGetters} from "vuex"
+
     export default {
-        name: "Admin"
+        name: "Admin",
+
+        computed: {
+            ...mapGetters("user", [
+                "user"
+            ])
+        },
+
+        created() {
+            this.autoLogin()
+        },
+
+        methods: {
+            ...mapActions("auth", [
+                "autoLogin",
+                "logout"
+            ])
+        }
     }
 </script>
 
