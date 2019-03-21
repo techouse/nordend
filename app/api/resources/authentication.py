@@ -49,7 +49,7 @@ class AuthenticationResource(Resource):
     @basic_auth.login_required
     def post(self):
         if g.current_user.is_anonymous or g.token_used:
-            return token_auth_error()
+            return auth_error()
         return jsonify(
             {
                 "token": g.current_user.generate_auth_token(expiration=current_app.config["JWT_TOKEN_EXPIRATION_TIME"]),
