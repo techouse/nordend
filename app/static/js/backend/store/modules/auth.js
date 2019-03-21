@@ -147,12 +147,8 @@ const actions = {
                                                     dispatch("refreshToken")
                                                 }
                                             })
-                                            .catch(error => {
-                                                try {
-                                                    dispatch("alert/error", error.response.data.message, {root: true})
-                                                } catch (e) {
-                                                    console.log(error)
-                                                }
+                                            .catch(() => {
+                                                dispatch("logout")
                                             })
                                      },
                                      differenceInMilliseconds(subMinutes(parse(state.expiration), 1), new Date()))

@@ -15,7 +15,7 @@ def verify_user_password(email_or_token, password):
         return False
     if password == "":
         g.current_user = User.verify_auth_token(email_or_token)
-        g.token_used = True
+        g.token_used = g.current_user is None
         return g.current_user is not None
     user = User.query.filter_by(email=email_or_token).first()
     if not user:
@@ -49,7 +49,7 @@ class AuthenticationResource(Resource):
     @basic_auth.login_required
     def post(self):
         if g.current_user.is_anonymous or g.token_used:
-            return jsonify({"message": "Invalid credentials"}), status.HTTP_401_UNAUTHORIZED
+            return token_auth_error()
         return jsonify(
             {
                 "token": g.current_user.generate_auth_token(expiration=current_app.config["JWT_TOKEN_EXPIRATION_TIME"]),
