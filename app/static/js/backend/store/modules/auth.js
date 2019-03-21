@@ -144,6 +144,7 @@ const actions = {
                                                     }
 
                                                     commit("setAuthData", authData)
+                                                    dispatch("refreshToken")
                                                 }
                                             })
                                             .catch(error => {

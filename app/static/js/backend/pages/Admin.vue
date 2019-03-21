@@ -113,11 +113,16 @@
             ...mapGetters("user", ["user"])
         },
 
-        created() {
-            this.autoLogin()
-                .then(({userId}) => {
-                    this.getUser(userId)
-                })
+        mounted() {
+            /**
+             * Having this inside mounted prevents getting the user 2x after login
+             */
+            if (!this.user) {
+                this.autoLogin()
+                    .then(({userId}) => {
+                        this.getUser(userId)
+                    })
+            }
         },
 
         methods: {
