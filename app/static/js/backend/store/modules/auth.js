@@ -3,7 +3,7 @@ import router                                        from "../../router"
 import {parse, subMinutes, differenceInMilliseconds} from "date-fns"
 
 const state = {
-    remember:      false,
+    remember:      0,
     userId:        null,
     token:         null,
     expiration:    0,
@@ -25,8 +25,9 @@ const getters = {
 }
 
 const mutations = {
-    setRemember(state, remember = false) {
-        state.remember = remember
+    setRemember(state, remember = 0) {
+        state.remember = Number(remember)
+        localStorage.setItem("remember", state.remember)
     },
 
     setAuthData(state, {userId, token, expiration, refresher}) {
@@ -60,6 +61,7 @@ const mutations = {
             state.authRefresher = null
         }
 
+        localStorage.removeItem("remember")
         localStorage.removeItem("userId")
         sessionStorage.removeItem("userId")
         localStorage.removeItem("token")
@@ -115,6 +117,9 @@ const actions = {
 
     autoLogin({state, commit, dispatch}) {
         return new Promise((resolve, reject) => {
+            const remember = localStorage.getItem("remember") || 0
+            commit("setRemember", remember)
+
             const userId = state.remember ? Number(localStorage.getItem("userId")) : Number(sessionStorage.getItem("userId"))
             const token = state.remember ? localStorage.getItem("token") : sessionStorage.getItem("token")
             const expiration = state.remember ? Number(localStorage.getItem("expiration")) : Number(sessionStorage.getItem("expiration"))
