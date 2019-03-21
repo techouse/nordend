@@ -110,16 +110,19 @@
         name: "Admin",
 
         computed: {
-            ...mapGetters("user", [
-                "user"
-            ])
+            ...mapGetters("user", ["user"])
         },
 
         created() {
             this.autoLogin()
+                .then(({userId}) => {
+                    this.getUser(userId)
+                })
         },
 
         methods: {
+            ...mapActions("user", ["getUser"]),
+
             ...mapActions("auth", [
                 "autoLogin",
                 "logout"

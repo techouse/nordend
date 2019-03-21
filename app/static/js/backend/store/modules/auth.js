@@ -8,6 +8,14 @@ const state = {
 }
 
 const getters = {
+    userId(state) {
+        return state.userId
+    },
+
+    token(state) {
+        return state.token
+    },
+
     isAuthenticated(state) {
         return state.token !== null && +new Date() < Number(state.expiration)
     }
@@ -36,7 +44,7 @@ const mutations = {
 }
 
 const actions = {
-    login({commit, dispatch}, {email, password}) {
+    login({state, commit, dispatch}, {email, password}) {
         dispatch("alert/clear", null, {root: true})
 
         return new Promise((resolve, reject) => {
@@ -58,19 +66,25 @@ const actions = {
                            expiration: jwtData ? Number(jwtData.exp) * 1000 : 0
                        })
 
-                       dispatch("user/get", (jwtUser && "id" in jwtUser) ? Number(jwtUser.id) : null, {root: true})
-
-                       resolve(response)
+                       resolve({
+                                   userId:     state.userId,
+                                   token:      state.token,
+                                   expiration: state.expiration
+                               })
                    }
                })
                .catch(error => {
-                   dispatch("alert/error", error.response.data.message, {root: true})
+                   try {
+                       dispatch("alert/error", error.response.data.message, {root: true})
+                   } catch (e) {
+                       console.log(error)
+                   }
                    reject(error)
                })
         })
     },
 
-    autoLogin({commit, dispatch}) {
+    autoLogin({commit, state}) {
         return new Promise((resolve, reject) => {
             const userId = Number(localStorage.getItem("userId"))
             const token = localStorage.getItem("token")
@@ -87,12 +101,10 @@ const actions = {
                 expiration: expiration
             })
 
-            dispatch("user/get", userId, {root: true})
-
             resolve({
-                        userId:     userId,
-                        token:      token,
-                        expiration: expiration
+                        userId:     state.userId,
+                        token:      state.token,
+                        expiration: state.expiration
                     })
         })
     },

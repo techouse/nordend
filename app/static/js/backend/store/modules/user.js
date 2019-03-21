@@ -18,7 +18,7 @@ const mutations = {
 }
 
 const actions = {
-    get({commit, dispatch}, id) {
+    getUser({commit, dispatch}, id) {
         return new Promise((resolve, reject) => {
             api.get(`/users/${id}`)
                .then(response => {

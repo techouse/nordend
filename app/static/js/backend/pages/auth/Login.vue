@@ -67,16 +67,19 @@
         },
 
         computed: {
-            ...mapGetters("alert", ["alert"])
+            ...mapGetters("alert", ["alert"]),
         },
 
         methods: {
             ...mapActions("auth", ["login"]),
 
+            ...mapActions("user", ["getUser"]),
+
             submit() {
                 if (this.email && this.password) {
                     this.login({email: this.email, password: this.password})
-                        .then(() => {
+                        .then(({userId}) => {
+                            this.getUser(userId)
                             this.$router.push({name: "Dashboard"})
                         })
                 }
