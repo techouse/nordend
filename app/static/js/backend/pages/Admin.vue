@@ -22,13 +22,13 @@
                 <span class="navbar-toggler-icon"/>
             </button>
             <ul class="nav navbar-nav ml-auto">
-                <li class="nav-item dropdown">
-                    <a v-if="user" class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+                <li v-if="user" class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
                        aria-expanded="false"
                     >
-                        <img class="img-avatar" :alt="user.email">
+                        <img class="img-avatar" :alt="user.name || user.email">
                     </a>
-                    <div v-if="user" class="dropdown-menu dropdown-menu-right">
+                    <div class="dropdown-menu dropdown-menu-right">
                         <div class="dropdown-header text-center">
                             <strong>Settings</strong>
                         </div>
@@ -49,9 +49,6 @@
             <div class="sidebar">
                 <nav class="sidebar-nav">
                     <ul class="nav">
-                        <li class="nav-title">
-                            Menu
-                        </li>
                         <li class="nav-item">
                             <router-link :to="{name: 'Dashboard'}" class="nav-link">
                                 <i class="nav-icon icon-speedometer"/> Dashboard
@@ -97,7 +94,9 @@
         <footer class="app-footer">
             <div class="ml-auto">
                 <span>Shamelessly powered by</span>
-                <a href="http://flask.pocoo.org" target="_blank">Flask</a> & <a href="https://vuejs.org">Vue.js</a>
+                <a href="http://flask.pocoo.org" target="_blank">Flask</a>,
+                <a href="https://vuejs.org">Vue.js</a> and
+                <a href="https://getbootstrap.com" target="_blank">Bootstrap</a>.
             </div>
         </footer>
     </div>

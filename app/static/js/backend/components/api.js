@@ -19,7 +19,7 @@ api.isCancel = axios.isCancel
  */
 api.interceptors.request.use(
     (config) => {
-        let token = localStorage.getItem("token")
+        let token = localStorage.getItem("token") || sessionStorage.getItem("token")
 
         if (token) {
             config.headers["Authorization"] = `Bearer ${token}`

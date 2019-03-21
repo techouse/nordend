@@ -112,13 +112,13 @@ const router = new Router(
 
 router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
-        if (localStorage.getItem("token") == null) {
+        if (!localStorage.getItem("token") && !sessionStorage.getItem("token")) {
             next({name: "Login", params: {nextUrl: to.fullPath}})
         } else {
             next()
         }
     } else if (to.matched.some(record => record.meta.guest)) {
-        if (localStorage.getItem("token") == null) {
+        if (!localStorage.getItem("token") && !sessionStorage.getItem("token")) {
             next()
         } else {
             next({name: "Dashboard", params: {nextUrl: to.fullPath}})

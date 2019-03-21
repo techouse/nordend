@@ -24,7 +24,7 @@
                         </div>
                         <input v-model="password" class="form-control" type="password" placeholder="Password">
                     </div>
-                    <input type="checkbox" name="remember_me">
+                    <input v-model="remember" type="checkbox" name="remember_me" @change="rememberChanged">
                     <label>Remember me</label>
                     <div class="row">
                         <div class="col-6">
@@ -63,6 +63,7 @@
             return {
                 email:    null,
                 password: null,
+                remember: false
             }
         },
 
@@ -71,9 +72,16 @@
         },
 
         methods: {
-            ...mapActions("auth", ["login"]),
+            ...mapActions("auth", [
+                "login",
+                "rememberMe"
+            ]),
 
             ...mapActions("user", ["getUser"]),
+
+            rememberChanged() {
+                this.rememberMe(this.remember)
+            },
 
             submit() {
                 if (this.email && this.password) {

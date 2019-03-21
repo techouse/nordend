@@ -3,6 +3,7 @@ import router                                        from "../../router"
 import {parse, subMinutes, differenceInMilliseconds} from "date-fns"
 
 const state = {
+    remember:      false,
     userId:        null,
     token:         null,
     expiration:    0,
@@ -24,15 +25,25 @@ const getters = {
 }
 
 const mutations = {
+    setRemember(state, remember = false) {
+        state.remember = remember
+    },
+
     setAuthData(state, {userId, token, expiration, refresher}) {
         state.userId = userId
         state.token = token
         state.expiration = expiration
         state.authRefresher = refresher
 
-        localStorage.setItem("userId", userId)
-        localStorage.setItem("token", token)
-        localStorage.setItem("expiration", expiration)
+        if (state.remember) {
+            localStorage.setItem("userId", userId)
+            localStorage.setItem("token", token)
+            localStorage.setItem("expiration", expiration)
+        } else {
+            sessionStorage.setItem("userId", userId)
+            sessionStorage.setItem("token", token)
+            sessionStorage.setItem("expiration", expiration)
+        }
     },
 
     setAuthRefresher(state, refresher) {
@@ -40,6 +51,7 @@ const mutations = {
     },
 
     clearAuthData(state) {
+        state.remember = false
         state.userId = null
         state.token = null
         state.expiration = 0
@@ -49,12 +61,19 @@ const mutations = {
         }
 
         localStorage.removeItem("userId")
+        sessionStorage.removeItem("userId")
         localStorage.removeItem("token")
+        sessionStorage.removeItem("token")
         localStorage.removeItem("expiration")
+        sessionStorage.removeItem("expiration")
     }
 }
 
 const actions = {
+    rememberMe({commit}, remember) {
+        commit("setRemember", remember)
+    },
+
     login({commit, dispatch}, {email, password}) {
         dispatch("alert/clear", null, {root: true})
 
@@ -94,11 +113,11 @@ const actions = {
         })
     },
 
-    autoLogin({commit, dispatch}) {
+    autoLogin({state, commit, dispatch}) {
         return new Promise((resolve, reject) => {
-            const userId = Number(localStorage.getItem("userId"))
-            const token = localStorage.getItem("token")
-            const expiration = Number(localStorage.getItem("expiration"))
+            const userId = state.remember ? Number(localStorage.getItem("userId")) : Number(sessionStorage.getItem("userId"))
+            const token = state.remember ? localStorage.getItem("token") : sessionStorage.getItem("token")
+            const expiration = state.remember ? Number(localStorage.getItem("expiration")) : Number(sessionStorage.getItem("expiration"))
 
             if (+new Date() >= expiration || !token || !userId) {
                 reject()
