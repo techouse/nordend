@@ -42,11 +42,11 @@ def create_app(config_class=Config):
 
     from .auth import auth
 
-    app.register_blueprint(auth, url_prefix="/auth")
+    app.register_blueprint(auth, url_prefix="/auth/")
 
     from .admin import admin
 
-    app.register_blueprint(admin, url_prefix="/admin")
+    app.register_blueprint(admin, url_prefix="/admin/")
 
     from .main import main
 

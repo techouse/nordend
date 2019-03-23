@@ -1,5 +1,6 @@
 import Vue                  from "vue"
 import Router               from "vue-router"
+import store                from "../store"
 // PAGES
 import Dashboard            from "../pages/Dashboard"
 import Login                from "../pages/auth/Login"
@@ -111,14 +112,20 @@ const router = new Router(
 )
 
 router.beforeEach((to, from, next) => {
+    const remember   = Number(localStorage.getItem("remember")),
+          userId     = remember ? localStorage.getItem("userId") : sessionStorage.getItem("userId"),
+          token      = remember ? localStorage.getItem("token") : sessionStorage.getItem("token"),
+          expiration = remember ? Number(localStorage.getItem("expiration")) : Number(sessionStorage.getItem("expiration"))
+
     if (to.matched.some(record => record.meta.requiresAuth)) {
-        if (!localStorage.getItem("token") && !sessionStorage.getItem("token")) {
+        if (+new Date() >= expiration || !token || !userId) {
+            store.commit("auth/clearAuthData")
             next({name: "Login", params: {nextUrl: to.fullPath}})
         } else {
             next()
         }
     } else if (to.matched.some(record => record.meta.guest)) {
-        if (!localStorage.getItem("token") && !sessionStorage.getItem("token")) {
+        if (+new Date() >= expiration || !token || !userId) {
             next()
         } else {
             next({name: "Dashboard", params: {nextUrl: to.fullPath}})

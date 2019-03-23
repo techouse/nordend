@@ -120,9 +120,9 @@ const actions = {
             const remember = localStorage.getItem("remember") || 0
             commit("setRemember", remember)
 
-            const userId = state.remember ? Number(localStorage.getItem("userId")) : Number(sessionStorage.getItem("userId"))
-            const token = state.remember ? localStorage.getItem("token") : sessionStorage.getItem("token")
-            const expiration = state.remember ? Number(localStorage.getItem("expiration")) : Number(sessionStorage.getItem("expiration"))
+            const userId = state.remember ? Number(localStorage.getItem("userId")) : Number(sessionStorage.getItem("userId")),
+                  token = state.remember ? localStorage.getItem("token") : sessionStorage.getItem("token"),
+                  expiration = state.remember ? Number(localStorage.getItem("expiration")) : Number(sessionStorage.getItem("expiration"))
 
             if (+new Date() >= expiration || !token || !userId) {
                 reject()
