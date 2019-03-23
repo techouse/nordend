@@ -25,7 +25,3 @@
         name: "Categories"
     }
 </script>
-
-<style scoped>
-
-</style>

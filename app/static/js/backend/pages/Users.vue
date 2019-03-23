@@ -25,7 +25,3 @@
         name: "Users"
     }
 </script>
-
-<style scoped>
-
-</style>

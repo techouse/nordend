@@ -9,7 +9,3 @@
         name: "Dashboard"
     }
 </script>
-
-<style scoped>
-
-</style>

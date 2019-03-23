@@ -25,7 +25,3 @@
         name: "Posts"
     }
 </script>
-
-<style scoped>
-
-</style>

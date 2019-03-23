@@ -33,7 +33,3 @@
         name: "ResetPassword"
     }
 </script>
-
-<style scoped>
-
-</style>

@@ -25,7 +25,3 @@
         name: "Roles"
     }
 </script>
-
-<style scoped>
-
-</style>

@@ -22,7 +22,3 @@
         name: "Unconfirmed"
     }
 </script>
-
-<style scoped>
-
-</style>

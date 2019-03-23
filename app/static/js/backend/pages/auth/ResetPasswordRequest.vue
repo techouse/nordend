@@ -22,7 +22,3 @@
         name: "ResetPasswordRequest"
     }
 </script>
-
-<style scoped>
-
-</style>

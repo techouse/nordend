@@ -49,7 +49,3 @@
         name: "Register"
     }
 </script>
-
-<style scoped>
-
-</style>
