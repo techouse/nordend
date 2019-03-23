@@ -1,4 +1,5 @@
 const path                    = require('path'),
+      outputPath              = path.resolve(__dirname, 'app/static/dist'),
       CleanWebpackPlugin      = require('clean-webpack-plugin'),
       MiniCssExtractPlugin    = require('mini-css-extract-plugin'),
       Fiber                   = require('fibers'),
@@ -19,7 +20,7 @@ const config = {
                    './app/static/scss/backend/backend.scss']
     },
     output:       {
-        path:     path.resolve(__dirname, 'app/static/dist'),
+        path:     outputPath,
         filename: 'js/[name].js'
     },
     optimization: {},
@@ -51,21 +52,28 @@ const config = {
                 loader:  'vue-loader'
             },
             {
-                test: /\.(scss|sass|css)$/i,
+                test: /\.(sa|sc|c)ss$/i,
                 use:  [
-                    production ? {
+                    {
                         loader:  MiniCssExtractPlugin.loader,
                         options: {sourceMap}
-                    } : 'style-loader',
-                    {loader: 'css-loader', options: {sourceMap}},
+                    },
+                    {
+                        loader:  'css-loader',
+                        options: {
+                            sourceMap,
+                            importLoaders: 2
+                        }
+                    },
                     {loader: 'postcss-loader', options: {sourceMap}},
                     'resolve-url-loader',
                     {
                         loader:  'sass-loader',
                         options: {
-                            sourceMap:      true,
+                            sourceMap,
                             implementation: require("sass"),
-                            fiber:          Fiber
+                            fiber:          Fiber,
+                            includePaths:   [path.resolve(__dirname, 'app/static/scss')]
                         }
                     },]
             },
@@ -85,7 +93,11 @@ const config = {
     plugins:      [
         new VueLoaderPlugin(),
         new CleanWebpackPlugin(),
-        new MiniCssExtractPlugin({filename: 'css/[name].css'})
+        new MiniCssExtractPlugin({
+                                     path:          outputPath + '/css',
+                                     filename:      'css/[name].css',
+                                     chunkFilename: '[id].css'
+                                 })
     ]
 }
 
