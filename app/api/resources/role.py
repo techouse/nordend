@@ -1,9 +1,9 @@
-from flask import request, jsonify
+from flask import request
 from webargs import fields, validate
 from webargs.flaskparser import use_args
 
-from .user import user_schema
 from .authentication import TokenRequiredResource
+from .user import user_schema
 from ..helpers import PaginationHelper
 from ..schemas import RoleSchema
 from ... import status
@@ -22,19 +22,19 @@ class RoleResource(TokenRequiredResource):
         return self.patch(id)
 
     def patch(self, id):
-        resp = jsonify({"message": "Method not implemented"})
+        resp = {"message": "Method not implemented"}
         return resp, status.HTTP_501_NOT_IMPLEMENTED
 
     def delete(self, id):
-        resp = jsonify({"message": "Method not implemented"})
+        resp = {"message": "Method not implemented"}
         return resp, status.HTTP_501_NOT_IMPLEMENTED
 
 
 class RoleListResource(TokenRequiredResource):
     get_args = {
-        "name": fields.String(validate=lambda x: 0 < len(x) <= 64),
-        "default": fields.Boolean(),
-        "permissions": fields.Integer(validate=lambda x: x > 0),
+        "name": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 64),
+        "default": fields.Boolean(allow_none=True, ),
+        "permissions": fields.Integer(allow_none=True, validate=lambda x: x > 0),
     }
 
     @use_args(get_args)
@@ -59,17 +59,17 @@ class RoleListResource(TokenRequiredResource):
         return result
 
     def post(self):
-        resp = jsonify({"message": "Method not implemented"})
+        resp = {"message": "Method not implemented"}
         return resp, status.HTTP_501_NOT_IMPLEMENTED
 
 
 class RoleUserListResource(TokenRequiredResource):
     get_args = {
-        "name": fields.String(validate=lambda x: 0 < len(x) <= 255),
-        "email": fields.Email(validate=validate.Email()),
-        "location": fields.String(validate=lambda x: 0 < len(x) <= 255),
+        "name": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "email": fields.Email(allow_none=True, validate=validate.Email()),
+        "location": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "confirmed": fields.Boolean(),
-        "created_at": fields.DateTime(format="iso8601"),
+        "created_at": fields.DateTime(allow_none=True, format="iso8601"),
     }
 
     @use_args(get_args)

@@ -175,7 +175,7 @@ const actions = {
                                                 dispatch("logout")
                                             })
                                      },
-                                     differenceInMilliseconds(subMinutes(parse(state.expiration), 1), new Date()))
+                                     differenceInMilliseconds(subMinutes(parse(state.expiration), 5), new Date()))
 
         commit("setAuthRefresher", refresher)
     }

@@ -12,7 +12,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        Users table here
+                        Create user here
                     </div>
                 </div>
             </div>
@@ -22,6 +22,6 @@
 
 <script>
     export default {
-        name: "Users"
+        name: "User"
     }
 </script>

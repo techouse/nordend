@@ -1,10 +1,11 @@
-from flask import request, jsonify, make_response
+from flask import request, make_response
+from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields, validate
 from webargs.flaskparser import use_args
 
-from .post import post_schema
 from .authentication import TokenRequiredResource
+from .post import post_schema
 from ..helpers import PaginationHelper
 from ..schemas import UserSchema
 from ... import db, status
@@ -60,38 +61,44 @@ class UserResource(TokenRequiredResource):
         user = User.query.get_or_404(id)
         try:
             user.delete(user)
-            response = make_response()
-            return response, status.HTTP_204_NO_CONTENT
+            resp = {}
+            return resp, status.HTTP_204_NO_CONTENT
         except SQLAlchemyError as e:
             db.session.rollback()
-            resp = jsonify({"message": str(e)})
-            return resp, status.HTTP_401_UNAUTHORIZED
+            resp = {"message": str(e)}
+            return resp, status.HTTP_400_BAD_REQUEST
 
 
 class UserListResource(TokenRequiredResource):
     get_args = {
-        "name": fields.String(validate=lambda x: 0 < len(x) <= 255),
-        "email": fields.Email(validate=validate.Email()),
-        "location": fields.String(validate=lambda x: 0 < len(x) <= 255),
-        "confirmed": fields.Boolean(),
-        "role_id": fields.Integer(validate=lambda x: x > 0),
-        "created_at": fields.DateTime(format="iso8601"),
+        "search": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "name": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "email": fields.Email(allow_none=True, validate=validate.Email()),
+        "location": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "confirmed": fields.Boolean(allow_none=True, ),
+        "role_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
+        "created_at": fields.DateTime(allow_none=True, format="iso8601"),
     }
 
     @use_args(get_args)
     def get(self, query_args):
         filters = []
-        if "name" in query_args:
+        if "search" in query_args and query_args["search"]:
+            filters.append(or_(
+                User.name.like("%{filter}%".format(filter=query_args["search"])),
+                User.email.like("%{filter}%".format(filter=query_args["search"]))
+            ))
+        if "name" in query_args and query_args["name"]:
             filters.append(User.name.like("%{filter}%".format(filter=query_args["name"])))
-        if "email" in query_args:
+        if "email" in query_args and query_args["email"]:
             filters.append(User.email.like("%{filter}%".format(filter=query_args["email"])))
-        if "location" in query_args:
+        if "location" in query_args and query_args["location"]:
             filters.append(User.location.like("%{filter}%".format(filter=query_args["location"])))
         if "confirmed" in query_args:
             filters.append(User.confirmed == query_args["confirmed"])
-        if "role_id" in query_args:
+        if "role_id" in query_args and query_args["role_id"]:
             filters.append(User.role_id == query_args["role_id"])
-        if "created_at" in query_args:
+        if "created_at" in query_args and query_args["created_at"]:
             filters.append(User.created_at == query_args["created_at"])
 
         pagination_helper = PaginationHelper(
@@ -138,10 +145,10 @@ class UserListResource(TokenRequiredResource):
 
 class UserPostListResource(TokenRequiredResource):
     get_args = {
-        "title": fields.String(validate=lambda x: 0 < len(x) <= 255),
-        "slug": fields.String(validate=lambda x: 0 < len(x) <= 255),
-        "category_id": fields.Integer(validate=lambda x: x > 0),
-        "created_at": fields.DateTime(format="iso8601"),
+        "title": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "slug": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "category_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
+        "created_at": fields.DateTime(allow_none=True, format="iso8601"),
     }
 
     @use_args(get_args)

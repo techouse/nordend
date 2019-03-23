@@ -115,7 +115,7 @@ class User(UserMixin, db.Model, AddUpdateDelete):
     member_since = db.Column(db.DateTime(), default=db.func.current_timestamp())
     last_seen = db.Column(db.DateTime, default=db.func.current_timestamp())
     avatar_hash = db.Column(db.String(32))
-    posts = db.relationship("Post", backref="author", lazy="dynamic")
+    posts = db.relationship("Post", backref="author", lazy="dynamic", passive_deletes=True)
     created_at = db.Column(db.TIMESTAMP, nullable=False, default=db.func.current_timestamp())
     updated_at = db.Column(db.TIMESTAMP, onupdate=db.func.current_timestamp())
 
@@ -241,7 +241,7 @@ class Category(db.Model, AddUpdateDelete):
     id = db.Column(db.Integer, primary_key=True)
     slug = db.Column(db.String(255), unique=True, nullable=False)
     name = db.Column(db.String(255), unique=True, nullable=False)
-    posts = db.relationship("Post", backref="category", lazy=True)
+    posts = db.relationship("Post", backref="category", lazy=True, passive_deletes=True)
 
     @staticmethod
     def on_changed_name(target, value, oldvalue, initiator):

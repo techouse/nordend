@@ -1,4 +1,4 @@
-from flask import request, make_response, jsonify
+from flask import request, make_response
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields
 from webargs.flaskparser import use_args
@@ -50,18 +50,18 @@ class CategoryResource(TokenRequiredResource):
         category = Category.query.get_or_404(id)
         try:
             category.delete(category)
-            response = make_response()
-            return response, status.HTTP_204_NO_CONTENT
+            resp = {}
+            return resp, status.HTTP_204_NO_CONTENT
         except SQLAlchemyError as e:
             db.session.rollback()
-            resp = jsonify({"message": str(e)})
+            resp = {"message": str(e)}
             return resp, status.HTTP_401_UNAUTHORIZED
 
 
 class CategoryListResource(TokenRequiredResource):
     get_args = {
-        "name": fields.String(validate=lambda x: 0 < len(x) <= 255),
-        "slug": fields.String(validate=lambda x: 0 < len(x) <= 255),
+        "name": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "slug": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
     }
 
     @use_args(get_args)
@@ -108,10 +108,10 @@ class CategoryListResource(TokenRequiredResource):
 
 class CategoryPostListResource(TokenRequiredResource):
     get_args = {
-        "title": fields.String(validate=lambda x: 0 < len(x) <= 255),
-        "slug": fields.String(validate=lambda x: 0 < len(x) <= 255),
-        "author_id": fields.Integer(validate=lambda x: x > 0),
-        "created_at": fields.DateTime(format="iso8601"),
+        "title": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "slug": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "author_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
+        "created_at": fields.DateTime(allow_none=True, format="iso8601"),
     }
 
     @use_args(get_args)

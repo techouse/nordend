@@ -8,7 +8,8 @@ const path                    = require('path'),
       UglifyJsPlugin          = require('uglifyjs-webpack-plugin'),
       env                     = process.env.NODE_ENV,
       sourceMap               = env === 'development',
-      production              = env === 'production'
+      production              = env === 'production',
+      webpack                 = require('webpack')
 
 const config = {
     mode:         env,
@@ -97,7 +98,9 @@ const config = {
                                      path:          outputPath + '/css',
                                      filename:      'css/[name].css',
                                      chunkFilename: '[id].css'
-                                 })
+                                 }),
+        new webpack.NormalModuleReplacementPlugin(/element-ui[\/\\]lib[\/\\]locale[\/\\]lang[\/\\]zh-CN/,
+                                                  'element-ui/lib/locale/lang/en')
     ]
 }
 

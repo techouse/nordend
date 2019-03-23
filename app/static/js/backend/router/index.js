@@ -2,16 +2,26 @@ import Vue                  from "vue"
 import Router               from "vue-router"
 import store                from "../store"
 // PAGES
+// Dashboard
 import Dashboard            from "../pages/Dashboard"
+// Auth
 import Login                from "../pages/auth/Login"
-import Posts                from "../pages/Posts"
-import Users                from "../pages/Users"
-import Categories           from "../pages/Categories"
-import Roles                from "../pages/Roles"
-import NotFound             from "../pages/NotFound"
 import Register             from "../pages/auth/Register"
 import ResetPassword        from "../pages/auth/ResetPassword"
 import ResetPasswordRequest from "../pages/auth/ResetPasswordRequest"
+// Posts
+import Posts                from "../pages/Posts"
+// Users
+import Users                from "../pages/Users"
+import ShowUser             from "../pages/Users/show"
+import CreateUser           from "../pages/Users/create"
+import EditUser             from "../pages/Users/edit"
+// Categories
+import Categories           from "../pages/Categories"
+// Roles
+import Roles                from "../pages/Roles"
+// 404
+import NotFound             from "../pages/NotFound"
 
 const routerOptions = [
     {
@@ -72,8 +82,36 @@ const routerOptions = [
         component: Users,
         name:      "Users",
         meta:      {
-            requiresAuth: true,
-            is_admin:     true
+            requiresAuth:  true,
+            requiresAdmin: true
+        }
+    },
+    {
+        path:      "/users/:userId",
+        component: ShowUser,
+        props:     true,
+        name:      "ShowUser",
+        meta:      {
+            requiresAuth: true
+        }
+    },
+    {
+        path:      "/users/:userId/edit",
+        component: EditUser,
+        props:     true,
+        name:      "EditUser",
+        meta:      {
+            requiresAuth: true
+        }
+    },
+    {
+        path:      "/users/:userId/create",
+        component: CreateUser,
+        props:     true,
+        name:      "CreateUser",
+        meta:      {
+            requiresAuth:  true,
+            requiresAdmin: true
         }
     },
     {
@@ -89,8 +127,8 @@ const routerOptions = [
         component: Roles,
         name:      "Roles",
         meta:      {
-            requiresAuth: true,
-            is_admin:     true
+            requiresAuth:  true,
+            requiresAdmin: true
         }
     },
     {

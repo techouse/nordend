@@ -2,7 +2,7 @@ import api  from "../../components/api"
 import User from "../../models/User"
 
 const state = {
-    user:  null
+    user: null
 }
 
 const getters = {
@@ -27,7 +27,45 @@ const actions = {
                    resolve(response)
                })
                .catch(error => {
-                   dispatch("alert/error", error.response.data.message, {root: true})
+                   try {
+                       dispatch("alert/error", error.response.data.message, {root: true})
+                   } catch (e) {
+                       console.log(error)
+                   }
+                   reject(error)
+               })
+        })
+    },
+
+    getUsers({dispatch}, params = {}) {
+        return new Promise((resolve, reject) => {
+            api.get("/users/", params)
+               .then(response => {
+                   resolve(response)
+               })
+               .catch(error => {
+                   try {
+                       dispatch("alert/error", error.response.data.message, {root: true})
+                   } catch (e) {
+                       console.log(error)
+                   }
+                   reject(error)
+               })
+        })
+    },
+
+    deleteUser({dispatch}, id) {
+        return new Promise((resolve, reject) => {
+            api.delete(`/users/${id}`)
+               .then(response => {
+                   resolve(response)
+               })
+               .catch(error => {
+                   try {
+                       dispatch("alert/error", error.response.data.message, {root: true})
+                   } catch (e) {
+                       console.log(error)
+                   }
                    reject(error)
                })
         })
