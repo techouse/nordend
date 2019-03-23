@@ -55,10 +55,10 @@ const config = {
                 use:  [
                     production ? {
                         loader:  MiniCssExtractPlugin.loader,
-                        options: {sourceMap: true}
+                        options: {sourceMap}
                     } : 'style-loader',
-                    {loader: 'css-loader', options: {sourceMap: true}},
-                    {loader: 'postcss-loader', options: {sourceMap: true}},
+                    {loader: 'css-loader', options: {sourceMap}},
+                    {loader: 'postcss-loader', options: {sourceMap}},
                     'resolve-url-loader',
                     {
                         loader:  'sass-loader',
