@@ -110,7 +110,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/users/:userId/create",
+        path:      "/create/user",
         component: CreateUser,
         props:     true,
         name:      "CreateUser",

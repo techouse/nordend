@@ -22,6 +22,6 @@
 
 <script>
     export default {
-        name: "User"
+        name: "UserShow"
     }
 </script>

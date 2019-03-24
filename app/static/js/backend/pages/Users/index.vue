@@ -6,9 +6,9 @@
                     <div class="card-header">
                         <b>Users</b>
                         <div class="card-header-actions">
-                            <a class="btn btn-sm btn-primary" href="#">
+                            <router-link :to="{name: 'CreateUser'}" class="btn btn-sm btn-primary">
                                 Create new user
-                            </a>
+                            </router-link>
                         </div>
                     </div>
                     <div class="card-body">
