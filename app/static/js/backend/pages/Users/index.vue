@@ -168,6 +168,16 @@
 
                 this.getData()
             }
+        },
+
+        beforeRouteUpdate(to, from, next) {
+            this.getUsers({params: to.params})
+                    .then(({data}) => {
+                        this.$set(this, "users", data.results.map(user => new User(user)))
+                        this.$set(this, "totalCount", data.count)
+                    })
+
+            next()
         }
     }
 </script>
