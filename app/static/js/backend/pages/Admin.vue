@@ -21,12 +21,13 @@
             >
                 <span class="navbar-toggler-icon" />
             </button>
-            <ul class="nav navbar-nav ml-auto">
+            <ul class="nav navbar-nav ml-auto mr-4">
                 <li v-if="currentUser" class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
                        aria-expanded="false"
                     >
-                        <img class="img-avatar" :alt="currentUser.name || currentUser.email">
+                        <i class="fas fa-user-tie"></i>
+                        <span>{{currentUser.name || currentUser.email}}</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <div class="dropdown-header text-center">
