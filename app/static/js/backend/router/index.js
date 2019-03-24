@@ -91,7 +91,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/users/:userId/edit/",
+        path:     "/users/:userId/edit/",
         redirect: {name: "EditUser"}
     },
     {
@@ -141,10 +141,10 @@ Vue.use(Router)
 
 const router = new Router(
     {
-        routes:               routerOptions,
-        base:                 "/admin/",
-        mode:                 "history",
-        linkExactActiveClass: "active"
+        routes:          routerOptions,
+        base:            "/admin/",
+        mode:            "history",
+        linkActiveClass: "active"
     }
 )
 
