@@ -13,7 +13,6 @@ import ResetPasswordRequest from "../pages/auth/ResetPasswordRequest"
 import Posts                from "../pages/Posts"
 // Users
 import Users                from "../pages/Users"
-import ShowUser             from "../pages/Users/show"
 import CreateUser           from "../pages/Users/create"
 import EditUser             from "../pages/Users/edit"
 // Categories
@@ -29,7 +28,7 @@ const routerOptions = [
         redirect: {name: "Dashboard"}
     },
     {
-        path:      "/auth/login",
+        path:      "/auth/login/",
         component: Login,
         name:      "Login",
         meta:      {
@@ -37,7 +36,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/auth/register",
+        path:      "/auth/register/",
         component: Register,
         name:      "Register",
         meta:      {
@@ -45,7 +44,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/auth/reset_password/:token",
+        path:      "/auth/reset_password/:token/",
         component: ResetPassword,
         name:      "ResetPassword",
         props:     true,
@@ -54,7 +53,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/auth/reset_password_request",
+        path:      "/auth/reset_password_request/",
         component: ResetPasswordRequest,
         name:      "ResetPasswordRequest",
         meta:      {
@@ -62,7 +61,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/dashboard",
+        path:      "/dashboard/",
         component: Dashboard,
         name:      "Dashboard",
         meta:      {
@@ -70,7 +69,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/posts",
+        path:      "/posts/",
         component: Posts,
         name:      "Posts",
         meta:      {
@@ -78,7 +77,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/users",
+        path:      "/users/",
         component: Users,
         name:      "Users",
         props:     route => ({
@@ -92,16 +91,11 @@ const routerOptions = [
         }
     },
     {
-        path:      "/users/:userId",
-        component: ShowUser,
-        props:     true,
-        name:      "ShowUser",
-        meta:      {
-            requiresAuth: true
-        }
+        path:      "/users/:userId/edit/",
+        redirect: {name: "EditUser"}
     },
     {
-        path:      "/users/:userId/edit",
+        path:      "/users/:userId/",
         component: EditUser,
         props:     true,
         name:      "EditUser",
@@ -110,7 +104,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/create/user",
+        path:      "/create/user/",
         component: CreateUser,
         props:     true,
         name:      "CreateUser",
@@ -120,7 +114,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/categories",
+        path:      "/categories/",
         component: Categories,
         name:      "Categories",
         meta:      {
@@ -128,7 +122,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/roles",
+        path:      "/roles/",
         component: Roles,
         name:      "Roles",
         meta:      {

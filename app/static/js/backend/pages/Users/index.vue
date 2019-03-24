@@ -29,17 +29,13 @@
                                     />
                                 </template>
                                 <template slot-scope="scope">
-                                    <el-button size="mini"
-                                               @click="edit(scope.row)"
-                                    >
+                                    <router-link :to="{name: 'EditUser', params: {userId: scope.row.id}}"
+                                                 class="btn btn-sm btn-outline-secondary">
                                         Edit
-                                    </el-button>
-                                    <el-button size="mini"
-                                               type="danger"
-                                               @click="remove(scope.row)"
-                                    >
+                                    </router-link>
+                                    <button class="btn btn-sm btn-outline-danger" @click="remove(scope.row)">
                                         Delete
-                                    </el-button>
+                                    </button>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -135,6 +131,10 @@
                         this.$set(this, "users", data.results.map(user => new User(user)))
                         this.$set(this, "totalCount", data.count)
                     })
+            },
+
+            show(user) {
+                this.$router.push({name: "ShowUser", params: {userId: user.id}})
             },
 
             edit(user) {

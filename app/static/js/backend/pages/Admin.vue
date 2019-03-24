@@ -22,11 +22,11 @@
                 <span class="navbar-toggler-icon"/>
             </button>
             <ul class="nav navbar-nav ml-auto">
-                <li v-if="user" class="nav-item dropdown">
+                <li v-if="currentUser" class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
                        aria-expanded="false"
                     >
-                        <img class="img-avatar" :alt="user.name || user.email">
+                        <img class="img-avatar" :alt="currentUser.name || currentUser.email">
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <div class="dropdown-header text-center">
@@ -104,28 +104,32 @@
 
 <script>
     import {mapActions, mapGetters} from "vuex"
+    import User                     from "../models/User"
 
     export default {
         name: "Admin",
 
         computed: {
-            ...mapGetters("user", ["user"])
+            ...mapGetters("user", ["currentUser"])
         },
 
         mounted() {
             /**
              * Having this inside mounted prevents getting the user 2x after login
              */
-            if (!this.user) {
+            if (!this.currentUser) {
                 this.autoLogin()
                     .then(({userId}) => {
                         this.getUser(userId)
+                            .then(({data}) => {
+                                this.setCurrentUser(new User(data))
+                            })
                     })
             }
         },
 
         methods: {
-            ...mapActions("user", ["getUser"]),
+            ...mapActions("user", ["getUser", "setCurrentUser"]),
 
             ...mapActions("auth", [
                 "autoLogin",

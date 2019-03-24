@@ -6,7 +6,7 @@
 </template>
 
 <script>
-    import {mapGetters} from "vuex"
+    import {mapGetters, mapActions} from "vuex"
     import Auth         from "./pages/auth/Auth"
     import Admin        from "./pages/Admin"
 
@@ -22,11 +22,18 @@
             ...mapGetters("alert", ["alert"])
         },
 
+        methods: {
+            ...mapActions("alert", {
+                clearAlert: "clear"
+            })
+        },
+
         watch: {
             alert: {
                 handler(alert) {
                     if (alert && alert.message && alert.type) {
                         this.$message(alert)
+                        this.clearAlert()
                     }
                 },
                 deep: true

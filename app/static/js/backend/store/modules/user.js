@@ -1,12 +1,11 @@
-import api  from "../../components/api"
-import User from "../../models/User"
+import api from "../../components/api"
 
 const state = {
     user: null
 }
 
 const getters = {
-    user(state) {
+    currentUser(state) {
         return state.user
     }
 }
@@ -18,12 +17,14 @@ const mutations = {
 }
 
 const actions = {
-    getUser({commit, dispatch}, id) {
+    setCurrentUser({commit}, user) {
+        commit("setUser", user)
+    },
+
+    getUser({dispatch}, id) {
         return new Promise((resolve, reject) => {
             api.get(`/users/${id}`)
                .then(response => {
-                   commit("setUser", new User(response.data))
-
                    resolve(response)
                })
                .catch(error => {

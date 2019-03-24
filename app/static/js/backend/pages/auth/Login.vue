@@ -54,6 +54,7 @@
 
 <script>
     import {mapActions, mapGetters} from "vuex"
+    import User                     from "../../models/User"
 
     export default {
         name: "Login",
@@ -76,7 +77,7 @@
                 "rememberMe"
             ]),
 
-            ...mapActions("user", ["getUser"]),
+            ...mapActions("user", ["getUser", "setCurrentUser"]),
 
             rememberChanged() {
                 this.rememberMe(this.remember)
@@ -87,6 +88,10 @@
                     this.login({email: this.email, password: this.password})
                         .then(({userId}) => {
                             this.getUser(userId)
+                                .then(({data}) => {
+                                    this.setCurrentUser(new User(data))
+                                })
+
                             this.$router.push({name: "Dashboard"})
                         })
                 }
