@@ -82,7 +82,7 @@
 
         data() {
             return {
-                formRef: "edit-user-form",
+                formRef: "create-user-form",
                 title:   "Create user",
                 user:    new User(),
                 roles:   [],

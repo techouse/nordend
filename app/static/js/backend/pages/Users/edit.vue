@@ -17,7 +17,7 @@
 
         data() {
             return {
-                formRef: "create-user-form",
+                formRef: "edit-user-form",
                 title:   "Edit user",
                 rules:   {
                     email:           [
