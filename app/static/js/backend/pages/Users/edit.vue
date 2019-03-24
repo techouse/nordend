@@ -19,6 +19,7 @@
             return {
                 formRef: "edit-user-form",
                 title:   "Edit user",
+                user:    new User(),
                 rules:   {
                     email:           [
                         {required: true, message: "Please enter email address", trigger: "blur"},
