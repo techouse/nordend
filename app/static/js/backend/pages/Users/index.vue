@@ -62,9 +62,9 @@
 </template>
 
 <script>
-    import {mapActions}    from "vuex"
-    import {parse, format} from "date-fns"
-    import User            from "../../models/User"
+    import {mapActions, mapGetters} from "vuex"
+    import {parse, format}          from "date-fns"
+    import User                     from "../../models/User"
 
     export default {
         name: "Users",
@@ -88,12 +88,18 @@
             }
         },
 
+        computed: {
+            ...mapGetters("alert", ["alert"])
+        },
+
         created() {
             this.getData()
         },
 
         methods: {
             ...mapActions("user", ["getUsers", "deleteUser"]),
+
+            ...mapActions("alert", ["error", "success", "info", "warning"]),
 
             getData() {
                 this.getUsers({params: this.params})
@@ -109,32 +115,23 @@
 
             remove(user) {
                 this.$confirm(`Are you sure you want to delete ${user.name}?`, "Warning", {
-                        confirmButtonText: "OK",
-                        cancelButtonText:  "Cancel",
+                        confirmButtonText: "Yes",
+                        cancelButtonText:  "No",
                         type:              "warning"
                     })
                     .then(() => {
                               this.deleteUser(user.id)
                                   .then(() => {
                                       this.getData()
-                                      this.$message({
-                                                        type:    "success",
-                                                        message: "User successfully deleted"
-                                                    })
+                                      this.success("User successfully deleted")
                                   })
                                   .catch(() => {
-                                      this.$message({
-                                                        type:    "error",
-                                                        message: "There was an error deleting the user"
-                                                    })
+                                      this.error(`There was an error deleting the user: ${this.alert.message}`)
                                   })
                           }
                     )
                     .catch(() => {
-                        this.$message({
-                                          type:    "info",
-                                          message: "User not deleted"
-                                      })
+                        this.info("User not deleted")
                     })
             }
         }

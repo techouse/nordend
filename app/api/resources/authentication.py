@@ -2,7 +2,7 @@ from flask import g, jsonify, current_app
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from flask_restful import Resource
 
-from ... import status
+from ... import status, csrf
 from ...models import User
 
 basic_auth = HTTPBasicAuth()
@@ -17,6 +17,7 @@ def verify_user_password(email_or_token, password):
         g.current_user = User.verify_auth_token(email_or_token)
         g.token_used = g.current_user is None
         return g.current_user is not None
+    csrf.protect()
     user = User.query.filter_by(email=email_or_token).first()
     if not user:
         return False

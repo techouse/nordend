@@ -22,7 +22,11 @@ const mutations = {
         state.message = message
     },
     error(state, message) {
-        state.type = "danger"
+        state.type = "error"
+        state.message = message
+    },
+    info(state, message) {
+        state.type = "info"
         state.message = message
     },
     clear(state) {
@@ -40,6 +44,9 @@ const actions = {
     },
     error({commit}, message) {
         commit("error", message)
+    },
+    info({commit}, message) {
+        commit("info", message)
     },
     clear({commit}) {
         commit("clear")

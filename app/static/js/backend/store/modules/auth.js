@@ -81,9 +81,14 @@ const actions = {
 
         return new Promise((resolve, reject) => {
             api.post("/login/", {}, {
-                   auth: {
+                   auth:    {
                        username: email,
                        password: password
+                   },
+                   headers: {
+                       common: {
+                           "X-CSRF-TOKEN": window.csrfToken
+                       }
                    }
                })
                .then(response => {
@@ -98,6 +103,7 @@ const actions = {
                            expiration: jwtData ? Number(jwtData.exp) * 1000 : 0
                        }
 
+                       window.csrfToken = null
                        commit("setAuthData", authData)
                        dispatch("refreshToken")
 
@@ -120,8 +126,8 @@ const actions = {
             const remember = localStorage.getItem("remember") || 0
             commit("setRemember", remember)
 
-            const userId = state.remember ? Number(localStorage.getItem("userId")) : Number(sessionStorage.getItem("userId")),
-                  token = state.remember ? localStorage.getItem("token") : sessionStorage.getItem("token"),
+            const userId     = state.remember ? Number(localStorage.getItem("userId")) : Number(sessionStorage.getItem("userId")),
+                  token      = state.remember ? localStorage.getItem("token") : sessionStorage.getItem("token"),
                   expiration = state.remember ? Number(localStorage.getItem("expiration")) : Number(sessionStorage.getItem("expiration"))
 
             if (+new Date() >= expiration || !token || !userId) {
@@ -144,7 +150,8 @@ const actions = {
 
     logout({commit}) {
         commit("clearAuthData")
-        router.replace({name: "Login"})
+        //router.replace({name: "Login"})
+        window.location.replace("/admin/auth/login/") // in order to replace the CSRF token
     },
 
     refreshToken({state, commit, dispatch}) {

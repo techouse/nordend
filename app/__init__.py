@@ -53,7 +53,8 @@ def create_app(config_class=Config):
     app.register_blueprint(main)
 
     from .api import api_bp
-
+    
+    csrf.exempt(api_bp)
     app.register_blueprint(api_bp)
 
     if not app.debug and not app.testing:

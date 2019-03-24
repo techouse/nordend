@@ -54,6 +54,40 @@ const actions = {
         })
     },
 
+    createUser({dispatch}, user) {
+        return new Promise((resolve, reject) => {
+            api.post("/users/", user.mappedForSubmission())
+               .then(response => {
+                   resolve(response)
+               })
+               .catch(error => {
+                   try {
+                       dispatch("alert/error", error.response.data.message, {root: true})
+                   } catch (e) {
+                       console.log(error)
+                   }
+                   reject(error)
+               })
+        })
+    },
+
+    updateUser({dispatch}, user) {
+        return new Promise((resolve, reject) => {
+            api.patch(`/users/${user.id}`, user.mappedForSubmission())
+               .then(response => {
+                   resolve(response)
+               })
+               .catch(error => {
+                   try {
+                       dispatch("alert/error", error.response.data.message, {root: true})
+                   } catch (e) {
+                       console.log(error)
+                   }
+                   reject(error)
+               })
+        })
+    },
+
     deleteUser({dispatch}, id) {
         return new Promise((resolve, reject) => {
             api.delete(`/users/${id}`)

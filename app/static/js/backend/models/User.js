@@ -3,6 +3,7 @@ export default class User {
         this.id = null
         this.email = null
         this.password = null
+        this.password_repeat = null
         this.confirmed = null
         this.name = null
         this.location = null
@@ -12,6 +13,7 @@ export default class User {
         this.created_at = null
         this.updated_at = null
         this.role = null
+        this.role_id = null
 
         Object.assign(this, values)
     }
@@ -19,14 +21,15 @@ export default class User {
     mappedForSubmission() {
         let data = {
             email:     this.email,
-            confirmed: this.confirmed,
+            confirmed: Number(this.confirmed),
             name:      this.name,
             location:  this.location,
             about_me:  this.about_me,
-            role_id:   this.role.id,
+            role_id:   this.role_id,
         }
-        if (this.password) {
+        if (this.password && this.password === this.password_repeat) {
             data["password"] = this.password
         }
+        return data
     }
 }

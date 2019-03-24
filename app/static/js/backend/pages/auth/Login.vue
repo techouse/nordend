@@ -7,7 +7,6 @@
                     <p class="text-muted">
                         Sign In to your account
                     </p>
-                    <small v-if="alert" style="color: red; font-weight: bold">{{ alert.message }}</small>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text">

@@ -1,4 +1,4 @@
-from flask import request, make_response
+from flask import request
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields, validate
@@ -9,7 +9,7 @@ from .post import post_schema
 from ..helpers import PaginationHelper
 from ..schemas import UserSchema
 from ... import db, status
-from ...models import User, Post
+from ...models import User, Post, Role
 
 user_schema = UserSchema()
 
@@ -42,6 +42,13 @@ class UserResource(TokenRequiredResource):
                     return response, status.HTTP_400_BAD_REQUEST
             if "password" in request_dict:
                 user.password = request_dict["password"]
+            if "role_id" in request_dict:
+                role_id = request_dict["role_id"]
+                if Role.query.get(role_id):
+                    user.role_id = role_id
+                else:
+                    response = {"message": "A role with that ID does not exist!"}
+                    return response, status.HTTP_400_BAD_REQUEST
             if "confirmed" in request_dict:
                 user.confirmed = request_dict["confirmed"]
             if "name" in request_dict:
@@ -49,7 +56,7 @@ class UserResource(TokenRequiredResource):
             if "location" in request_dict:
                 user.location = request_dict["location"]
             if "about_me" in request_dict:
-                user.about_me = request_dict["location"]
+                user.about_me = request_dict["about_me"]
             user.update()
             return self.get(id)
         except SQLAlchemyError as e:
@@ -75,7 +82,7 @@ class UserListResource(TokenRequiredResource):
         "name": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "email": fields.Email(allow_none=True, validate=validate.Email()),
         "location": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
-        "confirmed": fields.Boolean(allow_none=True, ),
+        "confirmed": fields.Boolean(allow_none=True),
         "role_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
         "created_at": fields.DateTime(allow_none=True, format="iso8601"),
     }

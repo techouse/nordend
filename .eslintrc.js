@@ -9,10 +9,9 @@ module.exports = {
         'plugin:vue/recommended'
     ],
     globals:       {
-        '$':       true,
-        'axios':   true,
-        'require': true,
-        'Vue':     true
+        '$':         true,
+        'require':   true,
+        'Vue':       true
     },
     env:           {
         browser: true
