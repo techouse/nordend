@@ -13,12 +13,22 @@
                     </div>
                     <div class="card-body">
                         <el-table :data="users" class="w-100">
-                            <el-table-column label="#" prop="id"/>
+                            <el-table-column label="#" prop="id" width="50"/>
                             <el-table-column label="Name" prop="name"/>
                             <el-table-column label="E-mail" prop="email"/>
-                            <el-table-column :formatter="$options.filters.formattedDate" label="Created"
-                                             prop="created_at"
-                            />
+                            <el-table-column label="Role" prop="role.name" align="center" width="120"/>
+                            <el-table-column label="Confirmed" align="center" width="100">
+                                <template slot-scope="scope">
+                                    <i v-if="scope.row.confirmed" class="fas fa-check text-success"></i>
+                                    <i v-else class="fas fa-times text-danger"></i>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="Created" align="center" width="160">
+                                <template slot-scope="scope">
+                                    <time :datetime="scope.row.created_at">{{ scope.row.created_at|formattedDate }}
+                                    </time>
+                                </template>
+                            </el-table-column>
                             <el-table-column align="right">
                                 <template slot="header" slot-scope="scope">
                                     <el-input v-model="params.search"
@@ -60,14 +70,15 @@
 <script>
     import {mapActions, mapGetters} from "vuex"
     import {parse, format}          from "date-fns"
+    import {isEmpty}                from "lodash"
     import User                     from "../../models/User"
 
     export default {
         name: "Users",
 
         filters: {
-            formattedDate(row, column) {
-                return format(parse(row.created_at), "YYYY-MM-DD HH:mm:ss")
+            formattedDate(datetime) {
+                return format(parse(datetime), "YYYY-MM-DD HH:mm:ss")
             }
         },
 
@@ -171,11 +182,13 @@
         },
 
         beforeRouteUpdate(to, from, next) {
-            this.getUsers({params: to.params})
+            if (isEmpty(to.query)) {
+                this.getUsers({params: {}})
                     .then(({data}) => {
                         this.$set(this, "users", data.results.map(user => new User(user)))
                         this.$set(this, "totalCount", data.count)
                     })
+            }
 
             next()
         }
