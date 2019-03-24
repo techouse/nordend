@@ -150,8 +150,8 @@ const actions = {
 
     logout({commit}) {
         commit("clearAuthData")
-        //router.replace({name: "Login"})
-        window.location.replace("/admin/auth/login/") // in order to replace the CSRF token
+        router.replace({name: "Login"})
+        window.location.reload()
     },
 
     refreshToken({state, commit, dispatch}) {
