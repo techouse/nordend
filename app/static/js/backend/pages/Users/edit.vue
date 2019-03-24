@@ -123,6 +123,14 @@
                         this.info("User not deleted")
                     })
             }
+        },
+
+        beforeRouteUpdate(to, from, next) {
+            this.getUser(to.params.userId)
+                .then(({data}) => {
+                    this.$set(this, "user", new User(data))
+                })
+            next()
         }
     }
 </script>
