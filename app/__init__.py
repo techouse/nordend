@@ -4,7 +4,7 @@ from logging.handlers import SMTPHandler, RotatingFileHandler
 
 from flask import Flask, request, current_app
 from flask_babel import Babel, lazy_gettext as _l
-from flask_cache_buster import CacheBuster
+from flask_cachebuster import CacheBuster
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -34,7 +34,7 @@ def create_app(config_class=Config):
     login.init_app(app)
     mail.init_app(app)
     babel.init_app(app)
-    cache_buster.register_cache_buster(app)
+    cache_buster.init_app(app)
 
     from .errors import errors
 
