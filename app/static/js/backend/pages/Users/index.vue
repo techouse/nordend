@@ -25,7 +25,7 @@
                                               size="mini"
                                               placeholder="Type to search name or email address"
                                               clearable
-                                              @change="getData"
+                                              @change="searchData"
                                     />
                                 </template>
                                 <template slot-scope="scope">
@@ -75,13 +75,31 @@
             }
         },
 
+        props: {
+            search:  {
+                type:     String,
+                required: false,
+                default:  ""
+            },
+            page:    {
+                type:     Number,
+                required: false,
+                default:  1
+            },
+            perPage: {
+                type:     Number,
+                required: false,
+                default:  12
+            }
+        },
+
         data() {
             return {
                 users:      [],
                 params:     {
-                    search:   "",
-                    page:     1,
-                    per_page: 12
+                    search:   this.search,
+                    page:     this.page,
+                    per_page: this.perPage
                 },
                 pageSizes:  [12, 24, 50, 100],
                 totalCount: 0
@@ -89,11 +107,19 @@
         },
 
         computed: {
-            ...mapGetters("alert", ["alert"])
+            ...mapGetters("alert", ["alert"]),
         },
 
         created() {
             this.getData()
+        },
+
+        mounted() {
+            this.params = {
+                search:   this.search,
+                page:     this.page,
+                per_page: this.perPage
+            }
         },
 
         methods: {
@@ -102,6 +128,8 @@
             ...mapActions("alert", ["error", "success", "info", "warning"]),
 
             getData() {
+                this.$router.replace({name: "Users", query: this.params})
+
                 this.getUsers({params: this.params})
                     .then(({data}) => {
                         this.$set(this, "users", data.results.map(user => new User(user)))
@@ -133,6 +161,12 @@
                     .catch(() => {
                         this.info("User not deleted")
                     })
+            },
+
+            searchData() {
+                this.$set(this.params, "page", 1)
+
+                this.getData()
             }
         }
     }
