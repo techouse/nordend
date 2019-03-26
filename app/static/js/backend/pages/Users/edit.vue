@@ -1,12 +1,12 @@
 <script>
-    import UserCreate   from "./create"
+    import CreateUser   from "./create"
     import {mapActions} from "vuex"
     import User         from "../../models/User"
 
     export default {
-        name: "UserEdit",
+        name: "EditUser",
 
-        extends: UserCreate,
+        extends: CreateUser,
 
         props: {
             userId: {

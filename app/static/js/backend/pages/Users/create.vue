@@ -78,7 +78,7 @@
     import Role                     from "../../models/Role"
 
     export default {
-        name: "UserCreate",
+        name: "CreateUser",
 
         data() {
             return {
