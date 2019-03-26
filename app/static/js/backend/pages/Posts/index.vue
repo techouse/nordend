@@ -3,26 +3,26 @@
         <template v-slot:header>
             <b>{{ title }}</b>
             <div class="card-header-actions">
-                <router-link :to="{name: 'CreateUser'}" class="btn btn-sm btn-primary">
-                    Create new user
+                <router-link :to="{name: 'CreatePost'}" class="btn btn-sm btn-primary">
+                    Create new post
                 </router-link>
             </div>
         </template>
         <template v-slot:body>
-            <el-table :data="users" class="w-100">
+            <el-table :data="posts" class="w-100">
                 <el-table-column label="#" prop="id" width="50"/>
-                <el-table-column label="Name" prop="name"/>
-                <el-table-column label="E-mail" prop="email"/>
-                <el-table-column label="Role" prop="role.name" align="center" width="120"/>
-                <el-table-column label="Confirmed" align="center" width="100">
-                    <template slot-scope="scope">
-                        <i v-if="scope.row.confirmed" class="fas fa-check text-success"></i>
-                        <i v-else class="fas fa-times text-danger"></i>
-                    </template>
-                </el-table-column>
+                <el-table-column label="Title" prop="title"/>
+                <el-table-column label="Category" prop="category.name"/>
+                <el-table-column label="Author" prop="author.name"/>
                 <el-table-column label="Created" align="center" width="160">
                     <template slot-scope="scope">
                         <time :datetime="scope.row.created_at">{{ scope.row.created_at|formatDate }}
+                        </time>
+                    </template>
+                </el-table-column>
+                <el-table-column label="Updated" align="center" width="160">
+                    <template slot-scope="scope">
+                        <time :datetime="scope.row.updated_at">{{ scope.row.updated_at|formatDate }}
                         </time>
                     </template>
                 </el-table-column>
@@ -30,13 +30,13 @@
                     <template slot="header" slot-scope="scope">
                         <el-input v-model="params.search"
                                   size="mini"
-                                  placeholder="Type to search name or email address"
+                                  placeholder="Type to search post title"
                                   clearable
                                   @change="searchData"
                         />
                     </template>
                     <template slot-scope="scope">
-                        <router-link :to="{name: 'EditUser', params: {userId: scope.row.id}}"
+                        <router-link :to="{name: 'EditPost', params: {postId: scope.row.id}}"
                                      class="btn btn-sm btn-outline-secondary">
                             Edit
                         </router-link>
@@ -65,69 +65,69 @@
     import IndexPartial from "../../components/IndexPartial"
     import {mapActions} from "vuex"
     import {isEmpty}    from "lodash"
-    import User         from "../../models/User"
+    import Post         from "../../models/Post"
 
     export default {
-        name: "Users",
+        name: "Posts",
 
         extends: IndexPartial,
 
         data() {
             return {
-                title: "Users",
-                users: []
+                title: "Posts",
+                posts: []
             }
         },
 
         methods: {
-            ...mapActions("user", ["getUsers", "deleteUser"]),
+            ...mapActions("post", ["getPosts", "deletePost"]),
 
             getData() {
-                this.$router.replace({name: "Users", query: this.params})
+                this.$router.replace({name: "Posts", query: this.params})
 
-                this.getUsers({params: this.params})
+                this.getPosts({params: this.params})
                     .then(({data}) => {
-                        this.$set(this, "users", data.results.map(user => new User(user)))
+                        this.$set(this, "posts", data.results.map(post => new Post(post)))
                         this.$set(this, "totalCount", data.count)
                     })
             },
 
-            show(user) {
-                this.$router.push({name: "ShowUser", params: {userId: user.id}})
+            show(post) {
+                this.$router.push({name: "ShowPost", params: {postId: post.id}})
             },
 
-            edit(user) {
-                this.$router.push({name: "EditUser", params: {userId: user.id}})
+            edit(post) {
+                this.$router.push({name: "EditPost", params: {postId: post.id}})
             },
 
-            remove(user) {
-                this.$confirm(`Are you sure you want to delete ${user.name}?`, "Warning", {
+            remove(post) {
+                this.$confirm(`Are you sure you want to delete ${post.title}?`, "Warning", {
                         confirmButtonText: "Yes",
                         cancelButtonText:  "No",
                         type:              "warning"
                     })
                     .then(() => {
-                              this.deleteUser(user.id)
+                              this.deletePost(post.id)
                                   .then(() => {
                                       this.getData()
-                                      this.success("User successfully deleted")
+                                      this.success("Post successfully deleted")
                                   })
                                   .catch(() => {
-                                      this.error(`There was an error deleting the user: ${this.alert.message}`)
+                                      this.error(`There was an error deleting the post: ${this.alert.message}`)
                                   })
                           }
                     )
                     .catch(() => {
-                        this.info("User not deleted")
+                        this.info("Post not deleted")
                     })
             },
         },
 
         beforeRouteUpdate(to, from, next) {
             if (isEmpty(to.query)) {
-                this.getUsers({params: {}})
+                this.getPosts({params: {}})
                     .then(({data}) => {
-                        this.$set(this, "users", data.results.map(user => new User(user)))
+                        this.$set(this, "posts", data.results.map(post => new Post(post)))
                         this.$set(this, "totalCount", data.count)
                     })
             }

@@ -1,4 +1,4 @@
-from flask import request, make_response
+from flask import request
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields
 from webargs.flaskparser import use_args
@@ -68,6 +68,7 @@ class PostResource(TokenRequiredResource):
 
 class PostListResource(TokenRequiredResource):
     get_args = {
+        "search": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "title": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "slug": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "category_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
@@ -78,6 +79,8 @@ class PostListResource(TokenRequiredResource):
     @use_args(get_args)
     def get(self, query_args):
         filters = []
+        if "search" in query_args and query_args["search"]:
+            filters.append(Post.title.like("%{filter}%".format(filter=query_args["search"])))
         if "title" in query_args:
             filters.append(Post.title.like("%{filter}%".format(filter=query_args["title"])))
         if "slug" in query_args:

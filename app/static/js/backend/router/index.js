@@ -5,12 +5,14 @@ import store                from "../store"
 // Dashboard
 import Dashboard            from "../pages/Dashboard"
 // Auth
-import Login                from "../pages/auth/Login"
-import Register             from "../pages/auth/Register"
-import ResetPassword        from "../pages/auth/ResetPassword"
-import ResetPasswordRequest from "../pages/auth/ResetPasswordRequest"
+import Login                from "../pages/Auth/Login"
+import Register             from "../pages/Auth/Register"
+import ResetPassword        from "../pages/Auth/ResetPassword"
+import ResetPasswordRequest from "../pages/Auth/ResetPasswordRequest"
 // Posts
 import Posts                from "../pages/Posts"
+import CreatePost           from "../pages/Posts/create"
+import EditPost             from "../pages/Posts/edit"
 // Users
 import Users                from "../pages/Users"
 import CreateUser           from "../pages/Users/create"
@@ -72,8 +74,31 @@ const routerOptions = [
         path:      "/posts/",
         component: Posts,
         name:      "Posts",
+        props:     route => ({
+            search:  route.query.search,
+            page:    Number(route.query.page) || 1,
+            perPage: Number(route.query.per_page) || 12
+        }),
         meta:      {
             requiresAuth: true
+        }
+    },
+    {
+        path:      "/posts/:postId",
+        component: EditPost,
+        name:      "EditPost",
+        meta:      {
+            requiresAuth: true
+        }
+    },
+    {
+        path:      "/create/post/",
+        component: CreatePost,
+        props:     true,
+        name:      "CreatePost",
+        meta:      {
+            requiresAuth:  true,
+            requiresAdmin: true
         }
     },
     {
@@ -89,10 +114,6 @@ const routerOptions = [
             requiresAuth:  true,
             requiresAdmin: true
         }
-    },
-    {
-        path:     "/users/:userId/edit/",
-        redirect: {name: "EditUser"}
     },
     {
         path:      "/users/:userId/",

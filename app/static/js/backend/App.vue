@@ -7,8 +7,8 @@
 
 <script>
     import {mapGetters, mapActions} from "vuex"
-    import Auth         from "./pages/auth/Auth"
-    import Admin        from "./pages/Admin"
+    import Auth                     from "./pages/Auth/Auth"
+    import Admin                    from "./pages/Admin"
 
     export default {
         name: "App",

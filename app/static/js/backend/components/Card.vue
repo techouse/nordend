@@ -4,15 +4,10 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header">
-                        <b>Posts</b>
-                        <div class="card-header-actions">
-                            <a class="btn btn-sm btn-primary" href="#">
-                                Create new post
-                            </a>
-                        </div>
+                        <slot name="header"/>
                     </div>
                     <div class="card-body">
-                        Posts table here
+                        <slot name="body"/>
                     </div>
                 </div>
             </div>
@@ -22,6 +17,6 @@
 
 <script>
     export default {
-        name: "Posts"
+        name: "Card",
     }
 </script>

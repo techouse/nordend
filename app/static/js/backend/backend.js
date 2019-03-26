@@ -14,6 +14,9 @@ Vue.prototype.$http = api
 // ElementUI
 Vue.use(ElementUI)
 
+// Set all the custom filters
+import "./filters"
+
 new Vue(
     {
         el:     "#app",
