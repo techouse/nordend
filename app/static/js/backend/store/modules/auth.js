@@ -1,4 +1,4 @@
-import api                                           from "../../components/api"
+import api                                           from "../../services/api"
 import router                                        from "../../router"
 import {parse, subMinutes, differenceInMilliseconds} from "date-fns"
 

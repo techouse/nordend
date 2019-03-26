@@ -1,4 +1,4 @@
-import api from "../../components/api"
+import {create, destroy, get, update} from "../../services"
 
 const state = {
     user: null
@@ -21,90 +21,15 @@ const actions = {
         commit("setUser", user)
     },
 
-    getUser({dispatch}, id) {
-        return new Promise((resolve, reject) => {
-            api.get(`/users/${id}`)
-               .then(response => {
-                   resolve(response)
-               })
-               .catch(error => {
-                   try {
-                       dispatch("alert/error", error.response.data.message, {root: true})
-                   } catch (e) {
-                       console.log(error)
-                   }
-                   reject(error)
-               })
-        })
-    },
+    getUser: (context, id) => get(context, `/users/${id}`),
 
-    getUsers({dispatch}, params = {}) {
-        return new Promise((resolve, reject) => {
-            api.get("/users/", params)
-               .then(response => {
-                   resolve(response)
-               })
-               .catch(error => {
-                   try {
-                       dispatch("alert/error", error.response.data.message, {root: true})
-                   } catch (e) {
-                       console.log(error)
-                   }
-                   reject(error)
-               })
-        })
-    },
+    getUsers: (context, params = {}) => get(context, "/users/", params),
 
-    createUser({dispatch}, user) {
-        return new Promise((resolve, reject) => {
-            api.post("/users/", user.mappedForSubmission())
-               .then(response => {
-                   resolve(response)
-               })
-               .catch(error => {
-                   try {
-                       dispatch("alert/error", error.response.data.message, {root: true})
-                   } catch (e) {
-                       console.log(error)
-                   }
-                   reject(error)
-               })
-        })
-    },
+    createUser: (context, user) => create(context, "/users/", user),
 
-    updateUser({dispatch}, user) {
-        return new Promise((resolve, reject) => {
-            api.patch(`/users/${user.id}`, user.mappedForSubmission())
-               .then(response => {
-                   resolve(response)
-               })
-               .catch(error => {
-                   try {
-                       dispatch("alert/error", error.response.data.message, {root: true})
-                   } catch (e) {
-                       console.log(error)
-                   }
-                   reject(error)
-               })
-        })
-    },
+    updateUser: (context, user) => update(context, `/users/${user.id}`, user),
 
-    deleteUser({dispatch}, id) {
-        return new Promise((resolve, reject) => {
-            api.delete(`/users/${id}`)
-               .then(response => {
-                   resolve(response)
-               })
-               .catch(error => {
-                   try {
-                       dispatch("alert/error", error.response.data.message, {root: true})
-                   } catch (e) {
-                       console.log(error)
-                   }
-                   reject(error)
-               })
-        })
-    }
+    deleteUser: (context, id) => destroy(context, `/users/${id}`)
 }
 
 export default {

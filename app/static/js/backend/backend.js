@@ -5,7 +5,7 @@ import Vue       from "vue"
 import ElementUI from "element-ui"
 import router    from "./router"
 import store     from "./store"
-import api       from "./components/api"
+import api       from "./services/api"
 import App       from "./App"
 
 // Set Axios as default resource handler
