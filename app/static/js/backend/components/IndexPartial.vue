@@ -30,7 +30,8 @@
                 params:     {
                     search:   this.search,
                     page:     this.page,
-                    per_page: this.perPage
+                    per_page: this.perPage,
+                    sort:     null
                 },
                 pageSizes:  [12, 24, 50, 100],
                 totalCount: 0
@@ -46,11 +47,9 @@
         },
 
         mounted() {
-            this.params = {
-                search:   this.search,
-                page:     this.page,
-                per_page: this.perPage
-            }
+            this.$set(this.params, "search", this.search)
+            this.$set(this.params, "page", this.page)
+            this.$set(this.params, "per_page", this.per_page)
         },
 
         methods: {
@@ -60,6 +59,17 @@
 
             searchData() {
                 this.$set(this.params, "page", 1)
+
+                this.getData()
+            },
+
+            sort({prop, order}) {
+                if (prop && order) {
+                    const direction = order === "descending" ? "-" : ""
+                    this.$set(this.params, "sort", `${direction}${prop}`)
+                } else {
+                    this.$set(this.params, "sort", null)
+                }
 
                 this.getData()
             }

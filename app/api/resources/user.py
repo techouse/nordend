@@ -1,5 +1,5 @@
 from flask import request
-from sqlalchemy import or_
+from sqlalchemy import or_, desc
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields, validate
 from webargs.flaskparser import use_args
@@ -79,6 +79,7 @@ class UserResource(TokenRequiredResource):
 class UserListResource(TokenRequiredResource):
     get_args = {
         "search": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "sort": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "name": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "email": fields.Email(allow_none=True, validate=validate.Email()),
         "location": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
@@ -89,12 +90,17 @@ class UserListResource(TokenRequiredResource):
 
     @use_args(get_args)
     def get(self, query_args):
+        query = User.query
+
+        # Apply filters
         filters = []
         if "search" in query_args and query_args["search"]:
-            filters.append(or_(
-                User.name.like("%{filter}%".format(filter=query_args["search"])),
-                User.email.like("%{filter}%".format(filter=query_args["search"]))
-            ))
+            filters.append(
+                or_(
+                    User.name.like("%{filter}%".format(filter=query_args["search"])),
+                    User.email.like("%{filter}%".format(filter=query_args["search"])),
+                )
+            )
         if "name" in query_args and query_args["name"]:
             filters.append(User.name.like("%{filter}%".format(filter=query_args["name"])))
         if "email" in query_args and query_args["email"]:
@@ -107,10 +113,25 @@ class UserListResource(TokenRequiredResource):
             filters.append(User.role_id == query_args["role_id"])
         if "created_at" in query_args and query_args["created_at"]:
             filters.append(User.created_at == query_args["created_at"])
+        if filters:
+            query = query.filter(*filters)
+
+        # Apply sorting
+        order_by = User.id
+        if "sort" in query_args and query_args["sort"]:
+            column, direction = PaginationHelper.decode_sort(query_args["sort"])
+            if column == "role.name":
+                query = query.join(Role, User.role)
+                order_by = Role.name
+            elif column in set(User.__table__.columns.keys()):
+                order_by = getattr(User, column)
+            if direction == PaginationHelper.SORT_DESCENDING:
+                order_by = desc(order_by)
+            query = query.order_by(order_by)
 
         pagination_helper = PaginationHelper(
             request,
-            query=User.query.filter(*filters) if filters else User.query,
+            query=query,
             resource_for_url="api.users",
             key_name="results",
             schema=user_schema,

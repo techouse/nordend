@@ -1,4 +1,5 @@
 from flask import request
+from sqlalchemy import desc
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields
 from webargs.flaskparser import use_args
@@ -7,7 +8,7 @@ from .authentication import TokenRequiredResource
 from ..helpers import PaginationHelper
 from ..schemas import PostSchema
 from ... import db, status
-from ...models import Post
+from ...models import Post, Category, User
 
 post_schema = PostSchema()
 
@@ -69,6 +70,7 @@ class PostResource(TokenRequiredResource):
 class PostListResource(TokenRequiredResource):
     get_args = {
         "search": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "sort": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "title": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "slug": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "category_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
@@ -78,6 +80,8 @@ class PostListResource(TokenRequiredResource):
 
     @use_args(get_args)
     def get(self, query_args):
+        query = Post.query
+
         filters = []
         if "search" in query_args and query_args["search"]:
             filters.append(Post.title.like("%{filter}%".format(filter=query_args["search"])))
@@ -91,10 +95,28 @@ class PostListResource(TokenRequiredResource):
             filters.append(Post.author_id)
         if "created_at" in query_args:
             filters.append(Post.created_at)
+        if filters:
+            query = query.filter(*filters)
+
+        # Apply sorting
+        order_by = Post.id
+        if "sort" in query_args and query_args["sort"]:
+            column, direction = PaginationHelper.decode_sort(query_args["sort"])
+            if column == "category.name":
+                query = query.join(Category, Post.category)
+                order_by = Category.name
+            elif column == "author.name":
+                query = query.join(User, Post.author)
+                order_by = User.name
+            elif column in set(Post.__table__.columns.keys()):
+                order_by = getattr(Post, column)
+            if direction == PaginationHelper.SORT_DESCENDING:
+                order_by = desc(order_by)
+            query = query.order_by(order_by)
 
         pagination_helper = PaginationHelper(
             request,
-            query=Post.query.filter(*filters) if filters else Post.query,
+            query=query,
             resource_for_url="api.posts",
             key_name="results",
             schema=post_schema,

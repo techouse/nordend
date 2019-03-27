@@ -1,8 +1,13 @@
+from functools import reduce
+
 from flask import current_app
 from flask import url_for
 
 
 class PaginationHelper:
+    SORT_ASCENDING = "asc"
+    SORT_DESCENDING = "desc"
+
     def __init__(self, request, **kwargs):
         self.request = request
         self.query = kwargs.get("query")
@@ -13,9 +18,15 @@ class PaginationHelper:
         self.page_argument_name = current_app.config["PAGINATION_PAGE_ARGUMENT_NAME"]
         self.per_page_argument_name = current_app.config["PAGINATION_PER_PAGE_ARGUMENT_NAME"]
         self.url_parameters = kwargs.get("url_parameters", {})
-        self.query_args = kwargs.get('query_args')
+        self.query_args = kwargs.get("query_args")
         if self.query_args:
             self.url_parameters.update(self.query_args)
+
+    @staticmethod
+    def decode_sort(sort):
+        if sort[0] == "-":
+            return sort[1:], PaginationHelper.SORT_DESCENDING
+        return sort, PaginationHelper.SORT_ASCENDING
 
     def paginate_query(self):
         # If no page number is specified, we assume the request wants page #1

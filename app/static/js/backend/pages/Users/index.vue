@@ -9,18 +9,18 @@
             </div>
         </template>
         <template v-slot:body>
-            <el-table :data="users" class="w-100">
-                <el-table-column label="#" prop="id" width="50"/>
-                <el-table-column label="Name" prop="name"/>
-                <el-table-column label="E-mail" prop="email"/>
-                <el-table-column label="Role" prop="role.name" align="center" width="120"/>
-                <el-table-column label="Confirmed" align="center" width="100">
+            <el-table :data="users" class="w-100" @sort-change="sort">
+                <el-table-column label="#" prop="id" width="60" sortable="custom" />
+                <el-table-column label="Name" prop="name" sortable="custom" />
+                <el-table-column label="E-mail" prop="email" sortable="custom" />
+                <el-table-column label="Role" prop="role.name" sort-by="role_id" align="center" width="120" sortable="custom" />
+                <el-table-column label="Confirmed" align="center" width="130" sortable="custom">
                     <template slot-scope="scope">
-                        <i v-if="scope.row.confirmed" class="fas fa-check text-success"></i>
-                        <i v-else class="fas fa-times text-danger"></i>
+                        <i v-if="scope.row.confirmed" class="fas fa-check text-success" />
+                        <i v-else class="fas fa-times text-danger" />
                     </template>
                 </el-table-column>
-                <el-table-column label="Created" align="center" width="160">
+                <el-table-column label="Created" align="center" width="160" sortable="custom">
                     <template slot-scope="scope">
                         <time :datetime="scope.row.created_at">{{ scope.row.created_at|formatDate }}
                         </time>
@@ -37,7 +37,8 @@
                     </template>
                     <template slot-scope="scope">
                         <router-link :to="{name: 'EditUser', params: {userId: scope.row.id}}"
-                                     class="btn btn-sm btn-outline-secondary">
+                                     class="btn btn-sm btn-outline-secondary"
+                        >
                             Edit
                         </router-link>
                         <button class="btn btn-sm btn-outline-danger" @click="remove(scope.row)">
@@ -120,7 +121,7 @@
                     .catch(() => {
                         this.info("User not deleted")
                     })
-            },
+            }
         },
 
         beforeRouteUpdate(to, from, next) {
