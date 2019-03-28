@@ -3,8 +3,9 @@
         <header class="app-header navbar">
             <button class="navbar-toggler sidebar-toggler d-lg-none mr-auto" type="button"
                     data-toggle="sidebar-show"
+                    @click.prevent="toggleNano"
             >
-                <span class="navbar-toggler-icon" />
+                <span class="navbar-toggler-icon"/>
             </button>
             <a class="navbar-brand" href="#">
                 <img class="navbar-brand-full" src="/static/images/admin.png" width="48"
@@ -18,26 +19,27 @@
             </a>
             <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button"
                     data-toggle="sidebar-lg-show"
+                    @click.prevent="toggleNano"
             >
-                <span class="navbar-toggler-icon" />
+                <span class="navbar-toggler-icon"/>
             </button>
             <ul class="nav navbar-nav ml-auto mr-4">
                 <li v-if="currentUser" class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
                        aria-expanded="false"
                     >
-                        <i class="fas fa-user-tie"></i>
-                        <span>{{currentUser.name || currentUser.email}}</span>
+                        <i class="fas fa-user-tie"/>
+                        <span>{{ currentUser.name || currentUser.email }}</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <div class="dropdown-header text-center">
                             <strong>Settings</strong>
                         </div>
                         <router-link :to="{name: 'EditUser', params: {userId: currentUser.id}}" class="dropdown-item">
-                            <i class="fa fa-user" /> Profile
+                            <i class="fa fa-user"/> Profile
                         </router-link>
                         <a class="dropdown-item" href="#" @click.prevent="logout">
-                            <i class="fa fa-lock" /> Logout
+                            <i class="fa fa-lock"/> Logout
                         </a>
                     </div>
                 </li>
@@ -45,46 +47,48 @@
         </header>
         <div class="app-body">
             <div class="sidebar">
-                <nav class="sidebar-nav">
+                <nav class="sidebar-nav ps">
                     <ul class="nav">
                         <li class="nav-item">
                             <router-link :to="{name: 'Dashboard'}" class="nav-link">
-                                <i class="nav-icon icon-speedometer" /> Dashboard
+                                <i class="nav-icon icon-speedometer"/> Dashboard
                             </router-link>
                         </li>
                         <li class="nav-item">
                             <router-link :to="{name: 'Posts'}" class="nav-link">
-                                <i class="nav-icon icon-notebook" /> Posts
+                                <i class="nav-icon icon-notebook"/> Posts
                             </router-link>
                         </li>
                         <li class="nav-item">
                             <router-link :to="{name: 'Categories'}" class="nav-link">
-                                <i class="nav-icon icon-tag" /> Categories
+                                <i class="nav-icon icon-tag"/> Categories
                             </router-link>
                         </li>
                         <li class="nav-item">
                             <router-link :to="{name: 'Users'}" class="nav-link">
-                                <i class="nav-icon icon-people" /> Users
+                                <i class="nav-icon icon-people"/> Users
                             </router-link>
                         </li>
                         <li class="nav-item">
                             <router-link :to="{name: 'Roles'}" class="nav-link">
-                                <i class="nav-icon icon-graduation" /> Roles
+                                <i class="nav-icon icon-graduation"/> Roles
                             </router-link>
                         </li>
                     </ul>
                 </nav>
-                <button class="sidebar-minimizer brand-minimizer" type="button" />
+                <button class="sidebar-minimizer brand-minimizer" type="button" @click.prevent="toggleMini"/>
             </div>
             <main class="main">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <router-link :to="{path: $route.currentRoute}">{{ $route.name }}</router-link>
+                        <router-link :to="{path: $route.currentRoute}">
+                            {{ $route.name }}
+                        </router-link>
                     </li>
                 </ol>
                 <div class="container-fluid">
                     <div id="content" class="animated fadeIn">
-                        <router-view />
+                        <router-view/>
                     </div>
                 </div>
             </main>
@@ -132,7 +136,58 @@
             ...mapActions("auth", [
                 "autoLogin",
                 "logout"
-            ])
+            ]),
+
+            toggleNano() {
+                // body
+                const body = document.body
+
+                if (body.classList.contains("sidebar-lg-show")) {
+                    body.classList.remove("sidebar-lg-show")
+                } else {
+                    body.classList.add("sidebar-lg-show")
+                }
+            },
+
+            toggleMini() {
+                // body
+                const body              = document.body,
+                      miniBodyClassList = ["brand-minimized",
+                                           "sidebar-minimized"]
+
+                miniBodyClassList.forEach(_class => {
+                    if (body.classList.contains(_class)) {
+                        body.classList.remove(_class)
+                    } else {
+                        body.classList.add(_class)
+                    }
+                })
+
+                // .sidebar-nav
+                const sidebarNav = document.querySelector(".sidebar-nav")
+
+                if (sidebarNav.classList.contains("ps")) {
+                    sidebarNav.classList.remove("ps")
+                } else {
+                    sidebarNav.classList.add("ps")
+                }
+
+                // .navbar-brand
+                const navbarBrandFull      = document.querySelector(".navbar-brand-full"),
+                      navbarBrandMinimized = document.querySelector(".navbar-brand-minimized")
+
+                if (window.getComputedStyle(navbarBrandFull).display === "none") {
+                    navbarBrandFull.style.display = "block"
+                } else {
+                    navbarBrandFull.style.display = "none"
+                }
+
+                if (window.getComputedStyle(navbarBrandMinimized).display === "none") {
+                    navbarBrandMinimized.style.display = "block"
+                } else {
+                    navbarBrandMinimized.style.display = "none"
+                }
+            }
         }
     }
 </script>
