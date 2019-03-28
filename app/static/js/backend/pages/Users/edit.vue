@@ -81,7 +81,7 @@
         },
 
         methods: {
-            ...mapActions("user", ["updateUser"]),
+            ...mapActions("user", ["getUser", "updateUser", "deleteUser"]),
 
             submit() {
                 this.$refs[this.formRef].validate((valid) => {
