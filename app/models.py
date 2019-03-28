@@ -279,7 +279,7 @@ class Post(db.Model, AddUpdateDelete):
 
     @classmethod
     def is_unique(cls, id, category, slug):
-        existing_post = cls.query.filter_by(category_id=category.id, name=slug).first()
+        existing_post = cls.query.filter_by(category_id=category.id, slug=slug).first()
         if existing_post is None:
             return True
         else:

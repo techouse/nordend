@@ -6,9 +6,9 @@
                     <div class="card-header">
                         <b>{{ title }}</b> <i>{{ user.name }}</i>
                         <div v-if="user.id" class="card-header-actions">
-                            <a class="btn btn-sm btn-danger" href="#" @click.prevent="remove">
+                            <button class="btn btn-sm btn-danger" @click.prevent="remove">
                                 Delete user
-                            </a>
+                            </button>
                         </div>
                     </div>
                     <div class="card-body">

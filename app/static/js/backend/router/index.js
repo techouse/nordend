@@ -85,8 +85,9 @@ const routerOptions = [
         }
     },
     {
-        path:      "/posts/:postId",
+        path:      "/posts/:postId/",
         component: EditPost,
+        props:     true,
         name:      "EditPost",
         meta:      {
             requiresAuth: true

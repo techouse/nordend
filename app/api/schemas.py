@@ -57,6 +57,8 @@ class PostSchema(ma.Schema):
     created_at = fields.DateTime(dump_only=True, format="iso8601")
     updated_at = fields.DateTime(dump_only=True, format="iso8601")
     author = fields.Nested("UserSchema", dump_only=True, exclude=("posts",))
+    category_id = fields.Integer(required=True,
+                                 validate=lambda x: x >= 0 and Category.query.get(x) is not None)
     category = fields.Nested("CategorySchema", dump_only=True, exclude=("posts",))
     links = ma.Hyperlinks(
         {

@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, g
 from sqlalchemy import desc
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields
@@ -37,6 +37,8 @@ class PostResource(TokenRequiredResource):
             else:
                 response = {"message": "A post with the same slug already exists"}
                 return response, status.HTTP_400_BAD_REQUEST
+        if "category_id" in request_dict:
+            post.category_id = request_dict["category_id"]
         if "body" in request_dict:
             post.body = request_dict["body"]
         dumped_post, dump_errors = post_schema.dump(post)
@@ -138,6 +140,8 @@ class PostListResource(TokenRequiredResource):
                 title=request_dict["title"],
                 body=request_dict["body"],
                 slug=request_dict["slug"] if "slug" in request_dict else "",
+                author_id=g.current_user.id,
+                category_id=request_dict["category_id"]
             )
             post.add(post)
             query = Post.query.get(post.id)
