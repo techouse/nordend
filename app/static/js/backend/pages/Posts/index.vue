@@ -9,18 +9,18 @@
             </div>
         </template>
         <template v-slot:body>
-            <el-table :data="posts" class="w-100" @sort-change="sort">
+            <el-table :data="posts" class="w-100" @sort-change="orderBy">
                 <el-table-column label="#" prop="id" width="50" sortable="custom"/>
                 <el-table-column label="Title" prop="title" sortable="custom"/>
                 <el-table-column label="Category" prop="category.name" sortable="custom"/>
                 <el-table-column label="Author" prop="author.name" sortable="custom"/>
-                <el-table-column label="Created" align="center" width="160" sortable="custom">
+                <el-table-column label="Created" align="center" width="160" prop="created_at" sortable="custom">
                     <template slot-scope="scope">
                         <time :datetime="scope.row.created_at">{{ scope.row.created_at|formatDate }}
                         </time>
                     </template>
                 </el-table-column>
-                <el-table-column label="Updated" align="center" width="160" sortable="custom">
+                <el-table-column label="Updated" align="center" width="160" prop="updated_at" sortable="custom">
                     <template slot-scope="scope">
                         <time :datetime="scope.row.updated_at">{{ scope.row.updated_at|formatDate }}
                         </time>

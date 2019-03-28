@@ -77,7 +77,8 @@ const routerOptions = [
         props:     route => ({
             search:  route.query.search,
             page:    Number(route.query.page) || 1,
-            perPage: Number(route.query.per_page) || 12
+            perPage: Number(route.query.per_page) || 12,
+            sort:    route.query.sort
         }),
         meta:      {
             requiresAuth: true
@@ -108,7 +109,8 @@ const routerOptions = [
         props:     route => ({
             search:  route.query.search,
             page:    Number(route.query.page) || 1,
-            perPage: Number(route.query.per_page) || 12
+            perPage: Number(route.query.per_page) || 12,
+            sort:    route.query.sort
         }),
         meta:      {
             requiresAuth:  true,
