@@ -8,7 +8,7 @@ from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin, login_manager
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from markdown import markdown
-from slugify import slugify, UniqueSlugify
+from slugify.slugify import slugify
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from . import db, login
@@ -245,7 +245,7 @@ class Category(db.Model, AddUpdateDelete):
 
     @staticmethod
     def on_changed_name(target, value, oldvalue, initiator):
-        target.slug = slugify(value, to_lower=True)
+        target.slug = slugify(value)
 
     @classmethod
     def is_unique(cls, id, name):
@@ -290,16 +290,8 @@ class Post(db.Model, AddUpdateDelete):
 
     @staticmethod
     def on_changed_title(target, value, oldvalue, initiator):
-        unique_slugify = UniqueSlugify(
-            to_lower=True,
-            uids=[
-                post.slug
-                for post in Post.query.filter(
-                    Post.category_id == target.category_id, Post.title.like("{}%".format(value))
-                ).all()
-            ],
-        )
-        target.slug = unique_slugify(value)
+        if value and (not target.slug or value != oldvalue):
+            target.slug = slugify(value)
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
