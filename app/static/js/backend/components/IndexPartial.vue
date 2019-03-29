@@ -35,7 +35,7 @@
                 params:     {
                     search:   this.search,
                     page:     this.page,
-                    per_page: this.perPage,
+                    per_page: this.per_page,
                     sort:     null
                 },
                 pageSizes:  [12, 24, 50, 100],

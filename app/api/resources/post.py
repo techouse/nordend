@@ -84,6 +84,7 @@ class PostListResource(TokenRequiredResource):
     def get(self, query_args):
         query = Post.query
 
+        # Apply filters
         filters = []
         if "search" in query_args and query_args["search"]:
             filters.append(Post.title.like("%{filter}%".format(filter=query_args["search"])))

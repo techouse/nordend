@@ -1,4 +1,5 @@
 from flask import request, make_response
+from sqlalchemy import desc
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields
 from webargs.flaskparser import use_args
@@ -17,7 +18,7 @@ class CategoryResource(TokenRequiredResource):
     def get(self, id):
         category = Category.query.get_or_404(id)
         result = category_schema.dump(category).data
-        return {"data": result}
+        return result
 
     def put(self, id):
         return self.patch(id)
@@ -60,24 +61,43 @@ class CategoryResource(TokenRequiredResource):
 
 class CategoryListResource(TokenRequiredResource):
     get_args = {
+        "search": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "sort": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "name": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "slug": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
     }
 
     @use_args(get_args)
     def get(self, query_args):
+        query = Category.query
+
         filters = []
+        if "search" in query_args and query_args["search"]:
+            filters.append(Category.name.like("%{filter}%".format(filter=query_args["search"])))
         if "name" in query_args:
             filters.append(Category.name.like("%{filter}%".format(filter=query_args["name"])))
         if "slug" in query_args:
             filters.append(Category.slug.like("%{filter}%".format(filter=query_args["slug"])))
+        if filters:
+            query = query.filter(*filters)
+
+        # Apply sorting
+        order_by = Category.id
+        if "sort" in query_args and query_args["sort"]:
+            column, direction = PaginationHelper.decode_sort(query_args["sort"])
+            if column in set(Category.__table__.columns.keys()):
+                order_by = getattr(Category, column)
+            if direction == PaginationHelper.SORT_DESCENDING:
+                order_by = desc(order_by)
+            query = query.order_by(order_by)
 
         pagination_helper = PaginationHelper(
             request,
-            query=Category.query.filter(*filters) if filters else Category.query,
+            query=query,
             resource_for_url="api.categories",
             key_name="results",
             schema=category_schema,
+            query_args=query_args,
         )
         result = pagination_helper.paginate_query()
         return result
@@ -95,7 +115,7 @@ class CategoryListResource(TokenRequiredResource):
             response = {"message": "A category with the same name already exists"}
             return response, status.HTTP_400_BAD_REQUEST
         try:
-            category = Category(title=category_name)
+            category = Category(name=category_name)
             category.add(category)
             query = Category.query.get(category.id)
             result = category_schema.dump(query).data

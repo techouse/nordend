@@ -19,6 +19,8 @@ import CreateUser           from "../pages/Users/create"
 import EditUser             from "../pages/Users/edit"
 // Categories
 import Categories           from "../pages/Categories"
+import CreateCategory       from "../pages/Categories/create"
+import EditCategory         from "../pages/Categories/edit"
 // Roles
 import Roles                from "../pages/Roles"
 // 404
@@ -141,8 +143,33 @@ const routerOptions = [
         path:      "/categories/",
         component: Categories,
         name:      "Categories",
+        props:     route => ({
+            search:  route.query.search,
+            page:    Number(route.query.page) || 1,
+            perPage: Number(route.query.per_page) || 12,
+            sort:    route.query.sort
+        }),
         meta:      {
             requiresAuth: true
+        }
+    },
+    {
+        path:      "/categories/:categoryId/",
+        component: EditCategory,
+        props:     true,
+        name:      "EditCategory",
+        meta:      {
+            requiresAuth: true
+        }
+    },
+    {
+        path:      "/create/categories/",
+        component: CreateCategory,
+        props:     true,
+        name:      "CreateCategory",
+        meta:      {
+            requiresAuth:  true,
+            requiresAdmin: true
         }
     },
     {

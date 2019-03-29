@@ -19,7 +19,7 @@
             return {
                 formRef: "edit-post-form",
                 title:   "Edit post",
-                user:    new Post(),
+                post:    new Post(),
             }
         },
 
