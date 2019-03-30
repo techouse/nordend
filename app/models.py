@@ -9,6 +9,7 @@ from flask_login import UserMixin, AnonymousUserMixin, login_manager
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from markdown import markdown
 from slugify.slugify import slugify
+from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from . import db, login
@@ -97,6 +98,46 @@ class Role(db.Model, AddUpdateDelete):
             role.default = role.name == default_role
             db.session.add(role)
         db.session.commit()
+
+    @hybrid_property
+    def follow(self):
+        return self.has_permission(Permission.FOLLOW)
+
+    @follow.expression
+    def follow(cls):
+        return cls.permissions >= Permission.FOLLOW
+
+    @hybrid_property
+    def comment(self):
+        return self.has_permission(Permission.COMMENT)
+
+    @comment.expression
+    def comment(cls):
+        return cls.permissions >= Permission.COMMENT
+
+    @hybrid_property
+    def write(self):
+        return self.has_permission(Permission.WRITE)
+
+    @write.expression
+    def write(cls):
+        return cls.permissions >= Permission.WRITE
+
+    @hybrid_property
+    def moderate(self):
+        return self.has_permission(Permission.MODERATE)
+
+    @moderate.expression
+    def moderate(cls):
+        return cls.permissions >= Permission.MODERATE
+
+    @hybrid_property
+    def admin(self):
+        return self.has_permission(Permission.ADMIN)
+
+    @admin.expression
+    def admin(cls):
+        return cls.permissions >= Permission.ADMIN
 
     def __repr__(self):
         return "<Role {}>".format(self.name)

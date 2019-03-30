@@ -2,7 +2,7 @@ from flask_marshmallow import Marshmallow
 from marshmallow import fields, pre_load
 from marshmallow import validate
 
-from ..models import Post, User, Role, Category
+from ..models import Post, User, Role, Category, Permission
 
 ma = Marshmallow()
 
@@ -14,7 +14,12 @@ class RoleSchema(ma.Schema):
     id = fields.Integer(dump_only=True)
     name = fields.String(required=True, validate=lambda x: 0 < len(x) <= 64)
     default = fields.Boolean(required=True)
-    permissions = fields.Integer(required=True,
+    follow = fields.Boolean(dump_only=True)
+    comment = fields.Boolean(dump_only=True)
+    write = fields.Boolean(dump_only=True)
+    moderate = fields.Boolean(dump_only=True)
+    admin = fields.Boolean(dump_only=True)
+    permissions = fields.Integer(load_only=True,
                                  validate=lambda x: x >= 0 and Role.query.filter(Role.permissions == x).count() == 0)
     links = ma.Hyperlinks(
         {

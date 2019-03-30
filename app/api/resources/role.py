@@ -1,4 +1,5 @@
 from flask import request
+from sqlalchemy import desc
 from webargs import fields, validate
 from webargs.flaskparser import use_args
 
@@ -32,6 +33,8 @@ class RoleResource(TokenRequiredResource):
 
 class RoleListResource(TokenRequiredResource):
     get_args = {
+        "search": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "sort": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "name": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 64),
         "default": fields.Boolean(allow_none=True, ),
         "permissions": fields.Integer(allow_none=True, validate=lambda x: x > 0),
@@ -39,17 +42,33 @@ class RoleListResource(TokenRequiredResource):
 
     @use_args(get_args)
     def get(self, query_args):
+        query = Role.query
+
         filters = []
+        if "search" in query_args and query_args["search"]:
+            filters.append(Role.name.like("%{filter}%".format(filter=query_args["search"])))
         if "name" in query_args:
             filters.append(Role.name.like("%{filter}%".format(filter=query_args["name"])))
         if "default" in query_args:
             filters.append(Role.default == query_args["default"])
         if "permissions" in query_args:
             filters.append(Role.permissions == query_args["permissions"])
+        if filters:
+            query = query.filter(*filters)
+
+        # Apply sorting
+        order_by = Role.id
+        if "sort" in query_args and query_args["sort"]:
+            column, direction = PaginationHelper.decode_sort(query_args["sort"])
+            if column in set(Role.__table__.columns.keys() + ["follow", "comment", "write", "moderate", "admin"]):
+                order_by = getattr(Role, column)
+            if direction == PaginationHelper.SORT_DESCENDING:
+                order_by = desc(order_by)
+            query = query.order_by(order_by)
 
         pagination_helper = PaginationHelper(
             request,
-            query=Role.query.filter(*filters) if filters else Role.query,
+            query=query,
             resource_for_url="api.roles",
             key_name="results",
             schema=role_schema,
