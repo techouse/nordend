@@ -1,13 +1,13 @@
 <template>
     <div id="app">
-        <auth v-if="$route.path.startsWith('/auth/')"/>
-        <admin v-else/>
+        <auth v-if="$route.path.startsWith('/auth/')" />
+        <admin v-else />
     </div>
 </template>
 
 <script>
     import {mapGetters, mapActions} from "vuex"
-    import Auth                     from "./pages/Auth/Auth"
+    import Auth                     from "./pages/Auth"
     import Admin                    from "./pages/Admin"
 
     export default {
@@ -15,7 +15,7 @@
 
         components: {
             Auth,
-            Admin,
+            Admin
         },
 
         computed: {

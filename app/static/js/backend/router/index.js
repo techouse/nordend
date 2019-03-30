@@ -25,8 +25,9 @@ import EditCategory         from "../pages/Categories/edit"
 import Roles                from "../pages/Roles"
 import CreateRole           from "../pages/Roles/create"
 import EditRole             from "../pages/Roles/edit"
-// 404
-import NotFound             from "../pages/NotFound"
+// Errors
+import Error404             from "../pages/Errors/404"
+import Error500             from "../pages/Errors/500"
 
 const routerOptions = [
     {
@@ -211,8 +212,8 @@ const routerOptions = [
     },
     {
         path:      "*",
-        component: NotFound,
-        name:      "NotFound"
+        component: Error404,
+        name:      "Error404"
     }
 ]
 
