@@ -3,40 +3,33 @@
         <template v-slot:header>
             <b>{{ title }}</b>
             <div class="card-header-actions">
-                <router-link :to="{name: 'CreateUser'}" class="btn btn-sm btn-primary">
-                    Create new user
+                <router-link :to="{name: 'CreateRole'}" class="btn btn-sm btn-primary">
+                    Create new role
                 </router-link>
             </div>
         </template>
         <template v-slot:body>
-            <el-table :data="users" class="w-100" @sort-change="orderBy">
-                <el-table-column label="#" prop="id" width="60" sortable="custom" />
+            <el-table :data="roles" class="w-100" @sort-change="orderBy">
+                <el-table-column label="#" prop="id" width="50" sortable="custom" />
                 <el-table-column label="Name" prop="name" sortable="custom" />
-                <el-table-column label="E-mail" prop="email" sortable="custom" />
-                <el-table-column label="Role" prop="role.name" sort-by="role_id" align="center" width="120" sortable="custom" />
-                <el-table-column label="Confirmed" align="center" width="130" prop="confirmed" sortable="custom">
+                <el-table-column label="Permissions" prop="permissions" sortable="custom" />
+                <el-table-column label="Default" prop="default" align="center" width="100" sortable="custom">
                     <template slot-scope="scope">
-                        <i v-if="scope.row.confirmed" class="fas fa-check text-success" />
+                        <i v-if="scope.row.default" class="fas fa-check text-success" />
                         <i v-else class="fas fa-times text-danger" />
-                    </template>
-                </el-table-column>
-                <el-table-column label="Created" align="center" width="160" prop="created_at" sortable="custom">
-                    <template slot-scope="scope">
-                        <time :datetime="scope.row.created_at">{{ scope.row.created_at|formatDate }}
-                        </time>
                     </template>
                 </el-table-column>
                 <el-table-column align="right">
                     <template slot="header" slot-scope="scope">
                         <el-input v-model="params.search"
                                   size="mini"
-                                  placeholder="Type to search name or email address"
+                                  placeholder="Type to search role title"
                                   clearable
                                   @change="searchData"
                         />
                     </template>
                     <template slot-scope="scope">
-                        <router-link :to="{name: 'EditUser', params: {userId: scope.row.id}}"
+                        <router-link :to="{name: 'EditRole', params: {roleId: scope.row.id}}"
                                      class="btn btn-sm btn-outline-secondary"
                         >
                             Edit
@@ -65,66 +58,66 @@
 <script>
     import IndexPartial from "../../components/IndexPartial"
     import {mapActions} from "vuex"
+    import Role         from "../../models/Role"
     import {isEmpty}    from "lodash"
-    import User         from "../../models/User"
 
     export default {
-        name: "Users",
+        name: "Roles",
 
         extends: IndexPartial,
 
         data() {
             return {
-                title: "Users",
-                users: []
+                title: "Roles",
+                roles: []
             }
         },
 
         methods: {
-            ...mapActions("user", ["getUsers", "deleteUser"]),
+            ...mapActions("role", ["getRoles", "deleteRole"]),
 
             getData() {
-                this.$router.replace({name: "Users", query: this.params})
+                this.$router.replace({name: "Roles", query: this.params})
 
-                this.getUsers({params: this.params})
+                this.getRoles({params: this.params})
                     .then(({data}) => {
-                        this.$set(this, "users", data.results.map(user => new User(user)))
+                        this.$set(this, "roles", data.results.map(role => new Role(role)))
                         this.$set(this, "totalCount", data.count)
                     })
             },
 
-            edit(user) {
-                this.$router.push({name: "EditUser", params: {userId: user.id}})
+            edit(role) {
+                this.$router.push({name: "EditRole", params: {roleId: role.id}})
             },
 
-            remove(user) {
-                this.$confirm(`Are you sure you want to delete ${user.name}?`, "Warning", {
+            remove(role) {
+                this.$confirm(`Are you sure you want to delete ${role.name}?`, "Warning", {
                         confirmButtonText: "Yes",
                         cancelButtonText:  "No",
                         type:              "warning"
                     })
                     .then(() => {
-                              this.deleteUser(user.id)
+                              this.deleteRole(role.id)
                                   .then(() => {
                                       this.getData()
-                                      this.success("User successfully deleted")
+                                      this.success("Role successfully deleted")
                                   })
                                   .catch(() => {
-                                      this.error(`There was an error deleting the user: ${this.alert.message}`)
+                                      this.error(`There was an error deleting the role: ${this.alert.message}`)
                                   })
                           }
                     )
                     .catch(() => {
-                        this.info("User not deleted")
+                        this.info("Role not deleted")
                     })
-            }
+            },
         },
 
         beforeRouteUpdate(to, from, next) {
             if (isEmpty(to.query)) {
-                this.getUsers({params: {}})
+                this.getRoles({params: {}})
                     .then(({data}) => {
-                        this.$set(this, "users", data.results.map(user => new User(user)))
+                        this.$set(this, "roles", data.results.map(role => new Role(role)))
                         this.$set(this, "totalCount", data.count)
                     })
             }

@@ -79,12 +79,8 @@
                     })
             },
 
-            show(category) {
-                this.$router.push({name: "ShowCategories", params: {categoryId: category.id}})
-            },
-
             edit(category) {
-                this.$router.push({name: "EditCategories", params: {categoryId: category.id}})
+                this.$router.push({name: "EditCategory", params: {categoryId: category.id}})
             },
 
             remove(category) {

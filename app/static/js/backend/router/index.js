@@ -23,6 +23,8 @@ import CreateCategory       from "../pages/Categories/create"
 import EditCategory         from "../pages/Categories/edit"
 // Roles
 import Roles                from "../pages/Roles"
+import CreateRole           from "../pages/Roles/create"
+import EditRole             from "../pages/Roles/edit"
 // 404
 import NotFound             from "../pages/NotFound"
 
@@ -163,7 +165,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/create/categories/",
+        path:      "/create/category/",
         component: CreateCategory,
         props:     true,
         name:      "CreateCategory",
@@ -176,6 +178,32 @@ const routerOptions = [
         path:      "/roles/",
         component: Roles,
         name:      "Roles",
+        props:     route => ({
+            search:  route.query.search,
+            page:    Number(route.query.page) || 1,
+            perPage: Number(route.query.per_page) || 12,
+            sort:    route.query.sort
+        }),
+        meta:      {
+            requiresAuth:  true,
+            requiresAdmin: true
+        }
+    },
+    {
+        path:      "/roles/:roleId/",
+        component: EditRole,
+        props:     true,
+        name:      "EditRole",
+        meta:      {
+            requiresAuth:  true,
+            requiresAdmin: true
+        }
+    },
+    {
+        path:      "/create/role/",
+        component: CreateRole,
+        props:     true,
+        name:      "CreateRole",
         meta:      {
             requiresAuth:  true,
             requiresAdmin: true

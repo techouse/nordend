@@ -92,10 +92,6 @@
                     })
             },
 
-            show(post) {
-                this.$router.push({name: "ShowPost", params: {postId: post.id}})
-            },
-
             edit(post) {
                 this.$router.push({name: "EditPost", params: {postId: post.id}})
             },
