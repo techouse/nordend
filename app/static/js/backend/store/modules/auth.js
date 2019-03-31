@@ -1,13 +1,14 @@
-import api                                           from "../../services/api"
-import router                                        from "../../router"
-import {parse, subMinutes, differenceInMilliseconds} from "date-fns"
+import api                                                                from "../../services/api"
+import router                                                             from "../../router"
+import {parse, subMinutes, differenceInMinutes, differenceInMilliseconds} from "date-fns"
 
 const state = {
-    remember:      0,
-    userId:        null,
-    token:         null,
-    expiration:    0,
-    authRefresher: null
+    remember:             0,
+    userId:               null,
+    token:                null,
+    expiration:           0,
+    authRefresher:        null,
+    authRefreshThreshold: 5
 }
 
 const getters = {
@@ -133,18 +134,46 @@ const actions = {
             if (+new Date() >= expiration || !token || !userId) {
                 reject()
                 return
+            } else if (differenceInMinutes(expiration, +new Date()) <= state.authRefreshThreshold + 1) {
+                api.post("/login/", {}, {
+                       auth: {
+                           username: state.token,
+                           password: ""
+                       }
+                   })
+                   .then(response => {
+                       const data = response.data
+                       if (data.token) {
+                           const jwtData = JSON.parse(atob(data.token.split(".")[0]))
+                           const jwtUser = JSON.parse(atob(data.token.split(".")[1]))
+
+                           const authData = {
+                               userId:     (jwtUser && "id" in jwtUser) ? Number(jwtUser.id) : null,
+                               token:      data.token,
+                               expiration: jwtData ? Number(jwtData.exp) * 1000 : 0
+                           }
+
+                           commit("setAuthData", authData)
+                           dispatch("refreshToken")
+
+                           resolve(authData)
+                       }
+                   })
+                   .catch(() => {
+                       dispatch("logout")
+                   })
+            } else {
+                const authData = {
+                    userId:     userId,
+                    token:      token,
+                    expiration: expiration
+                }
+
+                commit("setAuthData", authData)
+                dispatch("refreshToken")
+
+                resolve(authData)
             }
-
-            const authData = {
-                userId:     userId,
-                token:      token,
-                expiration: expiration
-            }
-
-            commit("setAuthData", authData)
-            dispatch("refreshToken")
-
-            resolve(authData)
         })
     },
 
@@ -182,7 +211,7 @@ const actions = {
                                                 dispatch("logout")
                                             })
                                      },
-                                     differenceInMilliseconds(subMinutes(parse(state.expiration), 5), new Date()))
+                                     differenceInMilliseconds(subMinutes(parse(state.expiration), state.authRefreshThreshold), new Date()))
 
         commit("setAuthRefresher", refresher)
     }
