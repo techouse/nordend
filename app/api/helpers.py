@@ -1,5 +1,3 @@
-from functools import reduce
-
 from flask import current_app
 from flask import url_for
 

@@ -53,7 +53,9 @@ class AuthenticationResource(Resource):
             return auth_error()
         return jsonify(
             {
-                "token": g.current_user.generate_auth_token(expiration=current_app.config["JWT_TOKEN_EXPIRATION_TIME"]),
+                "token": g.current_user.generate_auth_token(
+                    expiration=current_app.config["JWT_TOKEN_EXPIRATION_TIME"]
+                ),
                 "expiration": current_app.config["JWT_TOKEN_EXPIRATION_TIME"],
             }
         )

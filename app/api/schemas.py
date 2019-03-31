@@ -2,7 +2,8 @@ from flask_marshmallow import Marshmallow
 from marshmallow import fields, pre_load
 from marshmallow import validate
 
-from ..models import Post, User, Role, Category, Permission
+from .validators import valid_permission
+from ..models import Post, User, Role, Category
 
 ma = Marshmallow()
 
@@ -19,15 +20,12 @@ class RoleSchema(ma.Schema):
     write = fields.Boolean(dump_only=True)
     moderate = fields.Boolean(dump_only=True)
     admin = fields.Boolean(dump_only=True)
-    permissions = fields.Integer(load_only=True,
-                                 validate=lambda x: x >= 0 and Role.query.filter(Role.permissions == x).count() == 0)
+    permissions = fields.Integer(load_only=True, validate=valid_permission)
     links = ma.Hyperlinks(
         {
             "self": ma.URLFor("api.role", id="<id>", _external=True),
             "collection": ma.URLFor("api.roles", _external=True),
-            "relationships": {
-                "users": ma.URLFor("api.role_users", id="<id>", _external=True),
-            }
+            "relationships": {"users": ma.URLFor("api.role_users", id="<id>", _external=True)},
         }
     )
 
@@ -43,9 +41,7 @@ class CategorySchema(ma.Schema):
         {
             "self": ma.URLFor("api.category", id="<id>", _external=True),
             "collection": ma.URLFor("api.categories", _external=True),
-            "relationships": {
-                "posts": ma.URLFor("api.category_posts", id="<id>", _external=True),
-            }
+            "relationships": {"posts": ma.URLFor("api.category_posts", id="<id>", _external=True)},
         }
     )
 
@@ -62,8 +58,7 @@ class PostSchema(ma.Schema):
     created_at = fields.DateTime(dump_only=True, format="iso8601")
     updated_at = fields.DateTime(dump_only=True, format="iso8601")
     author = fields.Nested("UserSchema", dump_only=True, exclude=("posts",))
-    category_id = fields.Integer(required=True,
-                                 validate=lambda x: x >= 0 and Category.query.get(x) is not None)
+    category_id = fields.Integer(required=True, validate=lambda x: x >= 0 and Category.query.get(x) is not None)
     category = fields.Nested("CategorySchema", dump_only=True, exclude=("posts",))
     links = ma.Hyperlinks(
         {
@@ -108,8 +103,6 @@ class UserSchema(ma.Schema):
         {
             "self": ma.URLFor("api.user", id="<id>", _external=True),
             "collection": ma.URLFor("api.users", _external=True),
-            "relationships": {
-                "posts": ma.URLFor("api.user_posts", id="<id>", _external=True),
-            }
+            "relationships": {"posts": ma.URLFor("api.user_posts", id="<id>", _external=True)},
         }
     )

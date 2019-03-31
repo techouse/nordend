@@ -15,6 +15,13 @@
                         <el-form-item label="Name" prop="name">
                             <el-input v-model="role.name" type="string" required />
                         </el-form-item>
+                        <el-form-item label="Permissions">
+                            <el-checkbox v-model="role.follow" label="Follow" />
+                            <el-checkbox v-model="role.comment" label="Comment" />
+                            <el-checkbox v-model="role.write" label="Write" />
+                            <el-checkbox v-model="role.moderate" label="Moderate" />
+                            <el-checkbox v-model="role.admin" label="Admin" />
+                        </el-form-item>
                     </div>
                     <div class="card-footer">
                         <el-button type="success" @click="submit">
@@ -56,6 +63,7 @@
 
         methods: {
             ...mapActions("role", ["createRole"]),
+
 
             submit() {
                 this.$refs[this.formRef].validate((valid) => {

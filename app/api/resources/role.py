@@ -1,5 +1,6 @@
 from flask import request
 from sqlalchemy import desc
+from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields, validate
 from webargs.flaskparser import use_args
 
@@ -7,7 +8,7 @@ from .authentication import TokenRequiredResource
 from .user import user_schema
 from ..helpers import PaginationHelper
 from ..schemas import RoleSchema
-from ... import status
+from ... import status, db
 from ...models import Role, User
 
 role_schema = RoleSchema()
@@ -23,12 +24,39 @@ class RoleResource(TokenRequiredResource):
         return self.patch(id)
 
     def patch(self, id):
-        resp = {"message": "Method not implemented"}
-        return resp, status.HTTP_501_NOT_IMPLEMENTED
+        role = Role.query.get_or_404(id)
+        request_dict = request.get_json()
+        if not request_dict:
+            response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        errors = role_schema.validate(request_dict)
+        if errors:
+            return errors, status.HTTP_400_BAD_REQUEST
+        try:
+            if "name" in request_dict:
+                role_name = request_dict["name"]
+                if Role.is_unique(id=0, name=role_name):
+                    role.name = role_name
+                else:
+                    response = {"message": "A role with the same name already exists"}
+                    return response, status.HTTP_400_BAD_REQUEST
+            role.update()
+            return self.get(id)
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            resp = {"message": str(e)}
+            return resp, status.HTTP_400_BAD_REQUEST
 
     def delete(self, id):
-        resp = {"message": "Method not implemented"}
-        return resp, status.HTTP_501_NOT_IMPLEMENTED
+        role = Role.query.get_or_404(id)
+        try:
+            role.delete(role)
+            resp = {}
+            return resp, status.HTTP_204_NO_CONTENT
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            resp = {"message": str(e)}
+            return resp, status.HTTP_401_UNAUTHORIZED
 
 
 class RoleListResource(TokenRequiredResource):
@@ -36,7 +64,7 @@ class RoleListResource(TokenRequiredResource):
         "search": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "sort": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "name": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 64),
-        "default": fields.Boolean(allow_none=True, ),
+        "default": fields.Boolean(allow_none=True),
         "permissions": fields.Integer(allow_none=True, validate=lambda x: x > 0),
     }
 
@@ -78,8 +106,31 @@ class RoleListResource(TokenRequiredResource):
         return result
 
     def post(self):
-        resp = {"message": "Method not implemented"}
-        return resp, status.HTTP_501_NOT_IMPLEMENTED
+        request_dict = request.get_json()
+        if not request_dict:
+            response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        errors = role_schema.validate(request_dict)
+        if errors:
+            return errors, status.HTTP_400_BAD_REQUEST
+        role_name = request_dict["name"]
+        if not Role.is_unique(id=0, name=role_name):
+            response = {"message": "A role with the same name already exists"}
+            return response, status.HTTP_400_BAD_REQUEST
+        try:
+            role = Role(
+                name=role_name,
+                default=request_dict["default"] if "default" in request_dict else False,
+                permissions=request_dict["permissions"] if "permissions" in request_dict else 0
+            )
+            role.add(role)
+            query = Role.query.get(role.id)
+            result = role_schema.dump(query).data
+            return result, status.HTTP_201_CREATED
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            resp = {"message": str(e)}
+            return resp, status.HTTP_400_BAD_REQUEST
 
 
 class RoleUserListResource(TokenRequiredResource):

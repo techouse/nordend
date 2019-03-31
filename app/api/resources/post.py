@@ -142,7 +142,7 @@ class PostListResource(TokenRequiredResource):
                 body=request_dict["body"],
                 slug=request_dict["slug"] if "slug" in request_dict else "",
                 author_id=g.current_user.id,
-                category_id=request_dict["category_id"]
+                category_id=request_dict["category_id"],
             )
             post.add(post)
             query = Post.query.get(post.id)
