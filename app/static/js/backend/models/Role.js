@@ -24,7 +24,6 @@ export default class Role {
         return {
             name:        this.name,
             default:     this.default,
-            follow:      this.follow,
             permissions: permissions
         }
     }
