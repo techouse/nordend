@@ -105,7 +105,7 @@ class Role(db.Model, AddUpdateDelete):
 
     @follow.expression
     def follow(cls):
-        return cls.permissions >= Permission.FOLLOW
+        return cls.permissions.op("&")(Permission.FOLLOW) == Permission.FOLLOW
 
     @hybrid_property
     def comment(self):
@@ -113,7 +113,7 @@ class Role(db.Model, AddUpdateDelete):
 
     @comment.expression
     def comment(cls):
-        return cls.permissions >= Permission.COMMENT
+        return cls.permissions.op("&")(Permission.COMMENT) == Permission.COMMENT
 
     @hybrid_property
     def write(self):
@@ -121,7 +121,7 @@ class Role(db.Model, AddUpdateDelete):
 
     @write.expression
     def write(cls):
-        return cls.permissions >= Permission.WRITE
+        return cls.permissions.op("&")(Permission.WRITE) == Permission.WRITE
 
     @hybrid_property
     def moderate(self):
@@ -129,7 +129,7 @@ class Role(db.Model, AddUpdateDelete):
 
     @moderate.expression
     def moderate(cls):
-        return cls.permissions >= Permission.MODERATE
+        return cls.permissions.op("&")(Permission.MODERATE) == Permission.MODERATE
 
     @hybrid_property
     def admin(self):
@@ -137,7 +137,7 @@ class Role(db.Model, AddUpdateDelete):
 
     @admin.expression
     def admin(cls):
-        return cls.permissions >= Permission.ADMIN
+        return cls.permissions.op("&")(Permission.ADMIN) == Permission.ADMIN
 
     def __repr__(self):
         return "<Role {}>".format(self.name)
