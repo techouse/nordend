@@ -21,7 +21,7 @@ const getters = {
     },
 
     isAuthenticated(state) {
-        return state.token !== null && +new Date() < Number(state.expiration)
+        return state.token !== null && differenceInMilliseconds(state.expiration, +new Date()) > 0
     }
 }
 
@@ -214,6 +214,29 @@ const actions = {
                                      differenceInMilliseconds(subMinutes(parse(state.expiration), state.authRefreshThreshold), new Date()))
 
         commit("setAuthRefresher", refresher)
+    },
+
+    verifyPasswordResetToken({dispatch}, token) {
+        return new Promise((resolve, reject) => {
+            api.post("reset_password", {token: token}, {
+                   headers: {
+                       common: {
+                           "X-CSRF-TOKEN": window.csrfToken
+                       }
+                   }
+               })
+               .then(response => {
+                   resolve(response)
+               })
+               .catch(error => {
+                   try {
+                       dispatch("alert/error", error.response.data.message, {root: true})
+                   } catch (e) {
+                       console.log(error)
+                   }
+                   reject(error)
+               })
+        })
     }
 }
 

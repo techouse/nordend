@@ -1,11 +1,30 @@
 from flask_marshmallow import Marshmallow
-from marshmallow import fields, pre_load
+from marshmallow import fields, pre_load, validates_schema, ValidationError
 from marshmallow import validate
 
-from .validators import valid_permission
+from .validators import valid_permission, valid_password_reset_token
 from ..models import Post, User, Role, Category
 
 ma = Marshmallow()
+
+
+class ResetPasswordRequestSchema(ma.Schema):
+    email = fields.Email(required=True, load_only=True)
+
+
+class ResetPasswordTokenSchema(ma.Schema):
+    token = fields.String(required=True, load_only=True, validate=valid_password_reset_token)
+
+
+class ResetPasswordSchema(ma.Schema):
+    token = fields.String(required=True, load_only=True, validate=valid_password_reset_token)
+    password = fields.String(load_only=True, validate=lambda x: 8 <= len(x) <= 128)
+    password_repeat = fields.String(load_only=True, validate=lambda x: 8 <= len(x) <= 128)
+
+    @validates_schema
+    def validate_passwords(self, data):
+        if data["password"] != data["password_repeat"]:
+            raise ValidationError("The password confirmation does not match the password", "password_repeat")
 
 
 class RoleSchema(ma.Schema):

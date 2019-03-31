@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 
-from .resources.authentication import AuthenticationResource
+from .resources.authentication import AuthenticationResource, ResetPasswordRequestResource, ResetPasswordResource
 from .resources.category import CategoryListResource, CategoryResource, CategoryPostListResource
 from .resources.post import PostListResource, PostResource
 from .resources.role import RoleListResource, RoleResource, RoleUserListResource
@@ -11,7 +11,8 @@ api_bp = Blueprint("api", __name__, url_prefix="/api/v1")
 api = Api(api_bp)
 
 api.add_resource(AuthenticationResource, "/login/", endpoint="auth")
-# TODO maybe add registration route
+api.add_resource(ResetPasswordRequestResource, "/reset_password_request", endpoint="reset_password_request")
+api.add_resource(ResetPasswordResource, "/reset_password", endpoint="reset_password")
 
 api.add_resource(RoleListResource, "/roles/", endpoint="roles")
 api.add_resource(RoleResource, "/roles/<int:id>", endpoint="role")

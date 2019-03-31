@@ -1,8 +1,10 @@
-from flask import g, jsonify, current_app
+from flask import g, jsonify, current_app, request
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from flask_restful import Resource
 
+from ..schemas import ResetPasswordRequestSchema, ResetPasswordTokenSchema, ResetPasswordSchema
 from ... import status, csrf
+from ...auth.email import send_password_reset_email
 from ...models import User
 
 basic_auth = HTTPBasicAuth()
@@ -59,3 +61,52 @@ class AuthenticationResource(Resource):
                 "expiration": current_app.config["JWT_TOKEN_EXPIRATION_TIME"],
             }
         )
+
+
+class ResetPasswordResource(Resource):
+    def post(self):
+        csrf.protect()
+        request_dict = request.get_json()
+        if not request_dict:
+            response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        reset_password_token_schema = ResetPasswordTokenSchema()
+        errors = reset_password_token_schema.validate(request_dict)
+        if errors:
+            return errors, status.HTTP_400_BAD_REQUEST
+        response = {"message": "OK"}
+        return response, status.HTTP_200_OK
+
+    def patch(self):
+        csrf.protect()
+        request_dict = request.get_json()
+        if not request_dict:
+            response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        reset_password_schema = ResetPasswordSchema()
+        errors = reset_password_schema.validate(request_dict)
+        if errors:
+            return errors, status.HTTP_400_BAD_REQUEST
+        user = User.verify_reset_password_token(request_dict["token"])
+        user.password = request_dict["password"]
+        user.update()
+        response = {"message": "Your password has been reset"}
+        return response, status.HTTP_200_OK
+
+
+class ResetPasswordRequestResource(Resource):
+    def post(self):
+        csrf.protect()
+        request_dict = request.get_json()
+        if not request_dict:
+            response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        reset_password_request_schema = ResetPasswordRequestSchema()
+        errors = reset_password_request_schema.validate(request_dict)
+        if errors:
+            return errors, status.HTTP_400_BAD_REQUEST
+        user = User.query.filter_by(email=request_dict["email"]).first()
+        if user:
+            send_password_reset_email(user)
+        response = {"message": "Check your email for the instructions to reset your password"}
+        return response, status.HTTP_200_OK

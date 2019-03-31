@@ -1,35 +1,141 @@
 <template>
     <div class="col-md-6">
         <div class="card mx-4">
-            <form action="" method="post" class="card-body p-4">
+            <el-form :ref="formRef" :model="form" :rules="rules" class="card-body p-4">
                 <h1>Reset Your Password</h1>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">
-                            <i class="icon-lock" />
-                        </span>
-                    </div>
-                    <input name="password" type="password" class="form-control" placeholder="Password">
-                    <div />
-                </div>
-                <div class="input-group mb-4">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">
-                            <i class="icon-lock" />
-                        </span>
-                    </div>
-                    <input name="password2" type="password" class="form-control" placeholder="Repeat password">
-                </div>
-                <p>
-                    <input type="submit" class="btn btn-block btn-success" value="Submit">
-                </p>
-            </form>
+                <el-form-item class="input-group mb-3" prop="password">
+                    <el-input v-model="form.password" type="password" placeholder="Password">
+                        <template slot="prepend">
+                            <i class="icon-lock"/>
+                        </template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item class="input-group mb-3" prop="password_repeat">
+                    <el-input v-model="form.password_repeat" type="password" placeholder="Repeat password">
+                        <template slot="prepend">
+                            <i class="icon-lock"/>
+                        </template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="success" class="btn btn-block btn-success" @click.prevent="submit">
+                        Submit
+                    </el-button>
+                </el-form-item>
+            </el-form>
         </div>
     </div>
 </template>
 
 <script>
+    import {mapActions, mapGetters} from "vuex"
+    import api                      from "../../services/api"
+
     export default {
-        name: "ResetPassword"
+        name: "ResetPassword",
+
+        props: {
+            token: {
+                type:     String,
+                required: true
+            }
+        },
+
+        data() {
+            return {
+                formRef: "reset-password-form",
+                form:  {
+                    token:           this.token,
+                    password:        null,
+                    password_repeat: null
+                },
+                rules: {
+                    password:        [
+                        {required: true, message: "Please enter a password", trigger: "blur"},
+                        {
+                            validator: (rule, value, callback) => {
+                                if (!value) {
+                                    callback(new Error("Please enter a password"))
+                                } else if (value.length > 0 && value.length < 8) {
+                                    callback(new Error("Password is too short"))
+                                } else {
+                                    if (this.form.password_repeat !== "") {
+                                        this.$refs[this.formRef].validateField("password_repeat")
+                                    }
+                                    callback()
+                                }
+                            },
+                            trigger:   "blur"
+                        }
+                    ],
+                    password_repeat: [
+                        {required: true, message: "Please re-enter the password", trigger: "blur"},
+                        {
+                            validator: (rule, value, callback) => {
+                                if (!value) {
+                                    callback(new Error("Please re-enter the password"))
+                                } else if (value !== this.form.password) {
+                                    callback(new Error("The password confirmation does not match the password"))
+                                } else {
+                                    callback()
+                                }
+                            },
+                            trigger:   "blur"
+                        }
+                    ],
+                }
+            }
+        },
+
+        computed: {
+            ...mapGetters("auth", ["isAuthenticated"])
+        },
+
+        created() {
+            if (this.isAuthenticated) {
+                this.$router.push({"name": "Dashboard"})
+            }
+
+            this.verifyPasswordResetToken(this.token)
+                .catch(() => {
+                    this.$router.push({"name": "Login"})
+                })
+        },
+
+        methods: {
+            ...mapActions("alert", ["error", "info", "clear"]),
+
+            ...mapActions("auth", ["verifyPasswordResetToken"]),
+
+            submit() {
+                this.$refs[this.formRef].validate((valid) => {
+                    if (valid) {
+                        this.clear()
+
+                        api.patch("reset_password", this.form, {
+                               headers: {
+                                   common: {
+                                       "X-CSRF-TOKEN": window.csrfToken
+                                   },
+                               }
+                           })
+                           .then(({data}) => {
+                               this.info(data.message)
+                               this.$router.push({name: "Login"})
+                           })
+                           .catch(error => {
+                               try {
+                                   this.error(error.response.data.message)
+                               } catch (e) {
+                                   console.log(error)
+                               }
+                           })
+                    } else {
+                        this.error("The provided data is invalid!")
+                        return false
+                    }
+                })
+            }
+        }
     }
 </script>

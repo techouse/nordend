@@ -1,24 +1,95 @@
 <template>
     <div class="col-md-6">
         <div class="card mx-4">
-            <form action="" method="post" class="card-body p-4">
+            <el-form :ref="formRef" :model="form" :rules="rules" class="card-body p-4">
                 <h1>Reset Password</h1>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">@</span>
-                    </div>
-                    <input name="email" type="email" class="form-control" placeholder="E-mail">
-                </div>
-                <p>
-                    <input type="submit" class="btn btn-block btn-success" value="Submit">
-                </p>
-            </form>
+                <el-form-item class="input-group mb-3" prop="email">
+                    <el-input v-model="form.email" placeholder="E-mail">
+                        <template slot="prepend">
+                            @
+                        </template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="success" class="btn btn-block btn-success" @click.prevent="submit">
+                        Submit
+                    </el-button>
+                </el-form-item>
+            </el-form>
         </div>
     </div>
 </template>
 
 <script>
+    import {mapActions, mapGetters} from "vuex"
+    import api                      from "../../services/api"
+
     export default {
-        name: "ResetPasswordRequest"
+        name: "ResetPasswordRequest",
+
+        data() {
+            return {
+                formRef: "rest-password-request-form",
+                form:    {
+                    email: null
+                },
+                rules:   {
+                    email: [
+                        {required: true, message: "Please input email address", trigger: "blur"},
+                        {type: "email", message: "Please input correct email address", trigger: ["blur"]}
+                    ]
+                }
+            }
+        },
+
+        computed: {
+            ...mapGetters("auth", ["isAuthenticated"])
+        },
+
+        created() {
+            if (this.isAuthenticated) {
+                this.$router.push({"name": "Dashboard"})
+            }
+        },
+
+        methods: {
+            ...mapActions("alert", ["error", "info", "clear"]),
+
+            submit() {
+                this.$refs[this.formRef].validate((valid) => {
+                    if (valid) {
+                        this.clear()
+
+                        api.post("reset_password_request", this.form, {
+                               headers: {
+                                   common: {
+                                       "X-CSRF-TOKEN": window.csrfToken
+                                   },
+                               }
+                           })
+                           .then(({data}) => {
+                               this.info(data.message)
+                               this.$router.push({name: "Login"})
+                           })
+                           .catch(error => {
+                               try {
+                                   this.error(error.response.data.message)
+                               } catch (e) {
+                                   console.log(error)
+                               }
+                           })
+                    } else {
+                        this.error("The provided data is invalid!")
+                        return false
+                    }
+                })
+            }
+        }
     }
 </script>
+
+<style lang="scss">
+    .el-form-item__content {
+        width: 100%;
+    }
+</style>

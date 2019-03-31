@@ -1,4 +1,4 @@
-from flask import request, make_response
+from flask import request
 from sqlalchemy import desc
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields

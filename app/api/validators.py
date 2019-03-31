@@ -2,7 +2,7 @@ from itertools import combinations
 
 from marshmallow import ValidationError
 
-from ..models import Permission
+from ..models import Permission, User
 
 
 def valid_permission(value):
@@ -16,3 +16,11 @@ def valid_permission(value):
 
         if value not in set([sum(permission_combination) for permission_combination in permission_combinations]):
             raise ValidationError("Invalid permission.")
+
+
+def valid_password_reset_token(value):
+    if not value:
+        raise ValidationError("Reset token not provided.")
+    else:
+        if not User.verify_reset_password_token(value):
+            raise ValidationError("Invalid reset token")
