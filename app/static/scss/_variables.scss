@@ -2,6 +2,9 @@
 $body-bg: #f8fafc;
 
 // Typography
+@import "~@fortawesome/fontawesome-free/scss/variables";
+$fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
+$simple-line-font-path: "~simple-line-icons/fonts/";
 $font-family-sans-serif: "Montserrat", sans-serif;
 $font-size-base: 0.9rem;
 $line-height-base: 1.6;

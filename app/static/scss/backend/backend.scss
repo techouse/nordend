@@ -1,12 +1,12 @@
 // Fonts
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,700&subset=latin-ext');
 
+@import "../variables";
+
 @import "~@fortawesome/fontawesome-free/scss/fontawesome";
 @import "~@fortawesome/fontawesome-free/scss/regular";
 @import "~@fortawesome/fontawesome-free/scss/solid";
 @import "~simple-line-icons/scss/simple-line-icons";
-
-@import "../variables";
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
