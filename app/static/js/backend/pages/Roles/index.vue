@@ -10,7 +10,7 @@
         </template>
         <template v-slot:body>
             <el-table :data="roles" class="w-100" @sort-change="orderBy">
-                <el-table-column label="#" prop="id" width="50" sortable="custom" />
+                <el-table-column label="#" prop="id" width="60" sortable="custom" />
                 <el-table-column label="Name" prop="name" sortable="custom" />
                 <el-table-column label="Default" prop="default" align="center" width="120" sortable="custom">
                     <template slot-scope="scope">

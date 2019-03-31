@@ -10,7 +10,7 @@
         </template>
         <template v-slot:body>
             <el-table :data="categories" class="w-100" @sort-change="orderBy">
-                <el-table-column label="#" prop="id" width="50" sortable="custom"/>
+                <el-table-column label="#" prop="id" width="60" sortable="custom"/>
                 <el-table-column label="Name" prop="name" sortable="custom"/>
                 <el-table-column label="Slug" prop="slug" sortable="custom"/>
                 <el-table-column align="right">
