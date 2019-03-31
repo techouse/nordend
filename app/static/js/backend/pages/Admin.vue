@@ -94,11 +94,16 @@
             </main>
         </div>
         <footer class="app-footer">
+            <div>
+                Flask CMS
+                <span>&copy; 2019 <a href="https://github.com/techouse" target="_blank">Klemen Tušar</a></span>
+            </div>
             <div class="ml-auto">
                 <span>Shamelessly powered by</span>
                 <a href="http://flask.pocoo.org" target="_blank">Flask</a>,
-                <a href="https://vuejs.org">Vue.js</a> and
-                <a href="https://getbootstrap.com" target="_blank">Bootstrap</a>.
+                <a href="https://vuejs.org">Vue.js</a>,
+                <a href="https://getbootstrap.com" target="_blank">Bootstrap</a> and
+                <a href="https://coreui.io" target="_blank">CoreUI</a>.
             </div>
         </footer>
     </div>
