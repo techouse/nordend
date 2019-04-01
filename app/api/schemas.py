@@ -9,7 +9,7 @@ ma = Marshmallow()
 
 
 class ResetPasswordRequestSchema(ma.Schema):
-    email = fields.Email(required=True, load_only=True)
+    email = fields.Email(required=True, load_only=True, validate=validate.Email())
 
 
 class ResetPasswordTokenSchema(ma.Schema):
@@ -18,13 +18,29 @@ class ResetPasswordTokenSchema(ma.Schema):
 
 class ResetPasswordSchema(ma.Schema):
     token = fields.String(required=True, load_only=True, validate=valid_password_reset_token)
-    password = fields.String(load_only=True, validate=lambda x: 8 <= len(x) <= 128)
-    password_repeat = fields.String(load_only=True, validate=lambda x: 8 <= len(x) <= 128)
+    password = fields.String(required=True, load_only=True, validate=lambda x: 8 <= len(x) <= 128)
+    password_repeat = fields.String(required=True, load_only=True, validate=lambda x: 8 <= len(x) <= 128)
 
     @validates_schema
     def validate_passwords(self, data):
         if data["password"] != data["password_repeat"]:
             raise ValidationError("The password confirmation does not match the password", "password_repeat")
+
+
+class RegistrationSchema(ma.Schema):
+    name = fields.String(required=True, load_only=True, validate=lambda x: 3 <= len(x) <= 255)
+    email = fields.Email(required=True, load_only=True, validate=validate.Email())
+    password = fields.String(required=True, load_only=True, validate=lambda x: 8 <= len(x) <= 128)
+    password_repeat = fields.String(required=True, load_only=True, validate=lambda x: 8 <= len(x) <= 128)
+
+    @validates_schema
+    def validate_passwords(self, data):
+        if data["password"] != data["password_repeat"]:
+            raise ValidationError("The password confirmation does not match the password", "password_repeat")
+
+
+class RegistrationConfirmationSchema(ma.Schema):
+    token = fields.String(required=True, load_only=True)
 
 
 class RoleSchema(ma.Schema):
@@ -109,7 +125,7 @@ class UserSchema(ma.Schema):
     email = fields.Email(required=True, validate=validate.Email())
     password = fields.String(load_only=True, validate=lambda x: 8 <= len(x) <= 128)
     confirmed = fields.Boolean(required=True)
-    name = fields.String(required=True, validate=validate.Length(3))
+    name = fields.String(required=True, validate=lambda x: 3 <= len(x) <= 255)
     location = fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255)
     about_me = fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 2 ** 16)
     member_since = fields.DateTime(dump_only=True, format="iso8601")

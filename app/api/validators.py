@@ -1,6 +1,6 @@
 from itertools import combinations
 
-from marshmallow import ValidationError
+from marshmallow import ValidationError, validate
 
 from ..models import Permission, User
 

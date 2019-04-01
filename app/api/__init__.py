@@ -1,7 +1,12 @@
 from flask import Blueprint
 from flask_restful import Api
 
-from .resources.authentication import AuthenticationResource, ResetPasswordRequestResource, ResetPasswordResource
+from .resources.authentication import (
+    AuthenticationResource,
+    ResetPasswordRequestResource,
+    ResetPasswordResource,
+    RegistrationResource,
+    RegistrationConfirmationResource)
 from .resources.category import CategoryListResource, CategoryResource, CategoryPostListResource
 from .resources.post import PostListResource, PostResource
 from .resources.role import RoleListResource, RoleResource, RoleUserListResource
@@ -10,7 +15,9 @@ from .resources.user import UserListResource, UserResource, UserPostListResource
 api_bp = Blueprint("api", __name__, url_prefix="/api/v1")
 api = Api(api_bp)
 
-api.add_resource(AuthenticationResource, "/login/", endpoint="auth")
+api.add_resource(AuthenticationResource, "/login", endpoint="auth")
+api.add_resource(RegistrationResource, "/register", endpoint="register")
+api.add_resource(RegistrationConfirmationResource, "/confirm", endpoint="confirm")
 api.add_resource(ResetPasswordRequestResource, "/reset_password_request", endpoint="reset_password_request")
 api.add_resource(ResetPasswordResource, "/reset_password", endpoint="reset_password")
 

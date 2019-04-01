@@ -8,7 +8,7 @@ const state = {
     token:                null,
     expiration:           0,
     authRefresher:        null,
-    authRefreshThreshold: 5
+    authRefreshThreshold: 5,
 }
 
 const getters = {
@@ -52,6 +52,10 @@ const mutations = {
         state.authRefresher = refresher
     },
 
+    setPublicRegistrationEnabled(state, enabled) {
+        state.publicRegistrationEnabled = enabled
+    },
+
     clearAuthData(state) {
         state.remember = false
         state.userId = null
@@ -81,7 +85,7 @@ const actions = {
         dispatch("alert/clear", null, {root: true})
 
         return new Promise((resolve, reject) => {
-            api.post("/login/", {}, {
+            api.post("login", {}, {
                    auth:    {
                        username: email,
                        password: password
@@ -108,7 +112,7 @@ const actions = {
                        commit("setAuthData", authData)
                        dispatch("refreshToken")
 
-                       resolve(authData)
+                       return resolve(authData)
                    }
                })
                .catch(error => {
@@ -117,7 +121,7 @@ const actions = {
                    } catch (e) {
                        console.log(error)
                    }
-                   reject(error)
+                   return reject(error)
                })
         })
     },
@@ -135,7 +139,7 @@ const actions = {
                 reject()
                 return
             } else if (differenceInMinutes(expiration, +new Date()) <= state.authRefreshThreshold + 1) {
-                api.post("/login/", {}, {
+                api.post("login", {}, {
                        auth: {
                            username: state.token,
                            password: ""
@@ -156,7 +160,7 @@ const actions = {
                            commit("setAuthData", authData)
                            dispatch("refreshToken")
 
-                           resolve(authData)
+                           return resolve(authData)
                        }
                    })
                    .catch(() => {
@@ -172,7 +176,7 @@ const actions = {
                 commit("setAuthData", authData)
                 dispatch("refreshToken")
 
-                resolve(authData)
+                return resolve(authData)
             }
         })
     },
@@ -185,7 +189,7 @@ const actions = {
 
     refreshToken({state, commit, dispatch}) {
         const refresher = setTimeout(() => {
-                                         api.post("/login/", {}, {
+                                         api.post("login", {}, {
                                                 auth: {
                                                     username: state.token,
                                                     password: ""
@@ -216,6 +220,28 @@ const actions = {
         commit("setAuthRefresher", refresher)
     },
 
+    checkIfPublicRegistrationEnabled({dispatch}) {
+        return new Promise((resolve, reject) => {
+            api.get("register", {
+                   headers: {
+                       common: {
+                           "X-CSRF-TOKEN": window.csrfToken
+                       }
+                   }
+               })
+               .then(response => resolve(response))
+               .catch(error => {
+                   try {
+                       dispatch("alert/error", error.response.data.message, {root: true})
+                   } catch (e) {
+                       console.log(error)
+                   }
+
+                   return reject(error)
+               })
+        })
+    },
+
     verifyPasswordResetToken({dispatch}, token) {
         return new Promise((resolve, reject) => {
             api.post("reset_password", {token: token}, {
@@ -225,8 +251,32 @@ const actions = {
                        }
                    }
                })
+               .then(response => resolve(response))
+               .catch(error => {
+                   try {
+                       dispatch("alert/error", error.response.data.message, {root: true})
+                   } catch (e) {
+                       console.log(error)
+                   }
+
+                   return reject(error)
+               })
+        })
+    },
+
+    confirmUserViaToken({dispatch}, token) {
+        return new Promise((resolve, reject) => {
+            api.post("confirm", {token: token}, {
+                   headers: {
+                       common: {
+                           "X-CSRF-TOKEN": window.csrfToken
+                       }
+                   }
+               })
                .then(response => {
-                   resolve(response)
+                   dispatch("alert/success", response.data.message, {root: true})
+
+                   return resolve(response)
                })
                .catch(error => {
                    try {
@@ -234,7 +284,8 @@ const actions = {
                    } catch (e) {
                        console.log(error)
                    }
-                   reject(error)
+
+                   return reject(error)
                })
         })
     }

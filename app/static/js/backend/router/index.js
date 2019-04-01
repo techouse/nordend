@@ -43,16 +43,27 @@ const routerOptions = [
         }
     },
     {
-        path:      "/auth/register/",
+        path:      "/auth/register/:csrfToken",
         component: Register,
         name:      "Register",
+        props:     true,
         meta:      {
-            auth:  true,
-            guest: true
+            auth:         true,
+            registration: true
         }
     },
     {
-        path:      "/auth/reset_password/:token/",
+        path:      "/auth/confirm/:token",
+        component: Login,
+        name:      "ConfirmRegistration",
+        props:     true,
+        meta:      {
+            auth:    true,
+            confirm: true
+        }
+    },
+    {
+        path:      "/auth/reset_password/:token",
         component: ResetPassword,
         name:      "ResetPassword",
         props:     true,
@@ -243,7 +254,7 @@ router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
         if (+new Date() >= expiration || !token || !userId) {
             store.commit("auth/clearAuthData")
-            next({name: "Login", params: {nextUrl: to.fullPath}})
+            next({name: "Login"})
         } else {
             next()
         }
@@ -251,16 +262,46 @@ router.beforeEach((to, from, next) => {
         if (+new Date() >= expiration || !token || !userId) {
             next()
         } else {
-            next({name: "Dashboard", params: {nextUrl: to.fullPath}})
+            next({name: "Dashboard"})
         }
     } else if (to.matched.some(record => record.meta.passwordReset)) {
         if (+new Date() < expiration && token && userId) {
-            next({name: "Dashboard", params: {nextUrl: to.fullPath}})
+            next({name: "Dashboard"})
         } else {
-            this.store.dispatch("auth/verifyPasswordResetToken", to.params.token)
-                .catch(() => {
-                    next({name: "Dashboard", params: {nextUrl: to.fullPath}})
-                })
+            store.dispatch("auth/verifyPasswordResetToken", to.params.token)
+                 .then(() => {
+                     next()
+                 })
+                 .catch(() => {
+                     store.commit("auth/clearAuthData")
+                     next({name: "Login"})
+                 })
+        }
+    } else if (to.matched.some(record => record.meta.registration)) {
+        if (+new Date() < expiration && token && userId) {
+            next({name: "Dashboard"})
+        } else if (to.params.csrfToken !== window.csrfToken) {
+            store.commit("auth/clearAuthData")
+            next({name: "Login"})
+        } else {
+            store.dispatch("auth/checkIfPublicRegistrationEnabled")
+                 .then(() => {
+                     next()
+                 })
+                 .catch(() => {
+                     store.commit("auth/clearAuthData")
+                     next({name: "Login"})
+                 })
+        }
+    } else if (to.matched.some(record => record.meta.confirm)) {
+        if (+new Date() < expiration && token && userId) {
+            next({name: "Dashboard"})
+        } else if (!to.params.token) {
+            store.commit("auth/clearAuthData")
+            next({name: "Login"})
+        } else {
+            store.dispatch("auth/confirmUserViaToken", to.params.token)
+            next({name: "Login"})
         }
     } else {
         next()

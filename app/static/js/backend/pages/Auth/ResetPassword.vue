@@ -122,3 +122,9 @@
         }
     }
 </script>
+
+<style lang="scss">
+    .el-form-item__content {
+        width: 100%;
+    }
+</style>

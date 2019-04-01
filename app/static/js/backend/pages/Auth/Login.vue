@@ -42,7 +42,8 @@
                     <div>
                         <h2>Sign up</h2>
                         <p>Not a user yet?</p>
-                        <router-link class="btn btn-primary active mt-3" type="button" :to="{name: 'Register'}">
+                        <router-link class="btn btn-primary active mt-3" type="button"
+                                     :to="{name: 'Register', params: {csrfToken: csrfToken}}">
                             Register Now!
                         </router-link>
                     </div>
@@ -61,14 +62,18 @@
 
         data() {
             return {
-                email:    null,
-                password: null,
-                remember: false
+                email:     null,
+                password:  null,
+                remember:  false
             }
         },
 
         computed: {
             ...mapGetters("alert", ["alert"]),
+
+            csrfToken() {
+                return window.csrfToken
+            }
         },
 
         methods: {

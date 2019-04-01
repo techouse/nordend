@@ -1,10 +1,18 @@
 from flask import g, jsonify, current_app, request
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from flask_restful import Resource
+from sqlalchemy.exc import SQLAlchemyError
 
-from ..schemas import ResetPasswordRequestSchema, ResetPasswordTokenSchema, ResetPasswordSchema
-from ... import status, csrf
+from ..schemas import (
+    ResetPasswordRequestSchema,
+    ResetPasswordTokenSchema,
+    ResetPasswordSchema,
+    RegistrationSchema,
+    RegistrationConfirmationSchema,
+)
+from ... import status, csrf, db
 from ...auth.email import send_password_reset_email
+from ...email import send_email
 from ...models import User
 
 basic_auth = HTTPBasicAuth()
@@ -110,3 +118,59 @@ class ResetPasswordRequestResource(Resource):
             send_password_reset_email(user)
         response = {"message": "Check your email for the instructions to reset your password"}
         return response, status.HTTP_200_OK
+
+
+class RegistrationResource(Resource):
+    def get(self):
+        csrf.protect()
+        if not current_app.config["PUBLIC_REGISTRATION_ENABLED"]:
+            response = {"message": "Public registration is disabled! Contact your system administrator."}
+            return response, status.HTTP_403_FORBIDDEN
+        response = {"message": "OK"}
+        return response, status.HTTP_200_OK
+
+    def post(self):
+        csrf.protect()
+        request_dict = request.get_json()
+        if not request_dict:
+            response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        registration_schema = RegistrationSchema()
+        errors = registration_schema.validate(request_dict)
+        if errors:
+            return errors, status.HTTP_400_BAD_REQUEST
+        if not User.is_unique(id=0, email=request_dict["email"]):
+            response = {"message": "A user with the same e-mail address already exists"}
+            return response, status.HTTP_409_CONFLICT
+        try:
+            user = User(name=request_dict["name"], email=request_dict["email"], password=request_dict["password"])
+            user.add(user)
+            token = user.generate_confirmation_token(expiration=current_app.config["JWT_TOKEN_EXPIRATION_TIME"])
+            send_email(user.email, "Confirm your account", "auth/email/confirm", user=user, token=token)
+            response = {
+                "message": "You have been successfully registered! A confirmation email has been sent to you by email."
+            }
+            return response, status.HTTP_201_CREATED
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            resp = {"message": str(e)}
+            return resp, status.HTTP_400_BAD_REQUEST
+
+
+class RegistrationConfirmationResource(Resource):
+    def post(self):
+        csrf.protect()
+        request_dict = request.get_json()
+        if not request_dict:
+            response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        registration_confirmation_schema = RegistrationConfirmationSchema()
+        errors = registration_confirmation_schema.validate(request_dict)
+        if errors:
+            return errors, status.HTTP_400_BAD_REQUEST
+        if not User.confirm(request_dict["token"]):
+            response = {"message": "The confirmation link is invalid or has expired."}
+            return response, status.HTTP_400_BAD_REQUEST
+        else:
+            response = {"message": "You have confirmed your account. Thanks!"}
+            return response, status.HTTP_200_OK

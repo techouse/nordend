@@ -1,6 +1,7 @@
 import os
 
 from dotenv import load_dotenv
+from str2bool import str2bool
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, ".env"))
@@ -14,6 +15,7 @@ class Config(object):
     SECRET_KEY = os.environ.get("SECRET_KEY") or "im-not-lazy-im-just-very-relaxed"
     WTF_CSRF_TIME_LIMIT = int(os.environ.get("WTF_CSRF_TIME_LIMIT")) or 3600
     JWT_TOKEN_EXPIRATION_TIME = int(os.environ.get("JWT_TOKEN_EXPIRATION_TIME")) or 3600
+    PUBLIC_REGISTRATION_ENABLED = str2bool(os.environ.get("PUBLIC_REGISTRATION_ENABLED")) or False
     # Database settings
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or "sqlite:///" + os.path.join(basedir, "db.sqlite3")
     SQLALCHEMY_TRACK_MODIFICATIONS = False

@@ -27,11 +27,11 @@
             ...mapGetters("auth", ["isAuthenticated"]),
 
             isAuthPage() {
-                return "auth" in this.$route.meta && this.$route.meta.auth === true
+                return "meta" in this.$route && "auth" in this.$route.meta && this.$route.meta.auth === true
             },
 
             isErrorPage() {
-                return "error" in this.$route.meta && this.$route.meta.error === true
+                return "meta" in this.$route && "error" in this.$route.meta && this.$route.meta.error === true
             }
         },
 

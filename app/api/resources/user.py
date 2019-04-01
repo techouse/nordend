@@ -151,7 +151,7 @@ class UserListResource(TokenRequiredResource):
         user_email = request_dict["email"]
         if not User.is_unique(id=0, email=user_email):
             response = {"message": "A user with the same e-mail address already exists"}
-            return response, status.HTTP_400_BAD_REQUEST
+            return response, status.HTTP_409_CONFLICT
         try:
             user = User(
                 name=request_dict["name"],

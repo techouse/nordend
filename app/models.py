@@ -188,8 +188,8 @@ class User(UserMixin, db.Model, AddUpdateDelete):
             algorithm="HS256",
         ).decode("utf-8")
 
-    def generate_confirmation_token(self, expires=3600):
-        s = Serializer(current_app.config["SECRET_KEY"], expires)
+    def generate_confirmation_token(self, expiration=3600):
+        s = Serializer(current_app.config["SECRET_KEY"], expires_in=expiration)
         return s.dumps({"confirm": self.id}).decode("utf-8")
 
     def generate_auth_token(self, expiration):
@@ -205,16 +205,31 @@ class User(UserMixin, db.Model, AddUpdateDelete):
             return None
         return User.query.get(data["id"])
 
-    def confirm(self, token):
+    # FIXME: remove this deprecated method and fix tests
+    # def confirm(self, token):
+    #     s = Serializer(current_app.config["SECRET_KEY"])
+    #     try:
+    #         data = s.loads(token.encode("utf-8"))
+    #     except:
+    #         return False
+    #     if data.get("confirm") != self.id:
+    #         return False
+    #     self.confirmed = True
+    #     db.session.add(self)
+    #     return True
+
+    @staticmethod
+    def confirm(token):
         s = Serializer(current_app.config["SECRET_KEY"])
         try:
             data = s.loads(token.encode("utf-8"))
         except:
             return False
-        if data.get("confirm") != self.id:
+        user = User.query.get(data["confirm"])
+        if not user:
             return False
-        self.confirmed = True
-        db.session.add(self)
+        user.confirmed = True
+        user.update()
         return True
 
     @staticmethod
@@ -227,7 +242,7 @@ class User(UserMixin, db.Model, AddUpdateDelete):
 
     @classmethod
     def is_unique(cls, id, email):
-        existing_user = cls.query.filter_by(name=email).first()
+        existing_user = cls.query.filter_by(email=email).first()
         if existing_user is None:
             return True
         else:
