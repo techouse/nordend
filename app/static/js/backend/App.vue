@@ -1,8 +1,9 @@
 <template>
     <div id="app">
         <auth v-if="isAuthPage" />
+        <admin v-else-if="isAdministrationPage && isAuthenticated" />
         <error v-else-if="isErrorPage && !isAuthenticated" />
-        <admin v-else />
+        <div v-else/>
     </div>
 </template>
 
@@ -32,6 +33,10 @@
 
             isErrorPage() {
                 return "meta" in this.$route && "error" in this.$route.meta && this.$route.meta.error === true
+            },
+
+            isAdministrationPage() {
+                return "meta" in this.$route && "requiresAuth" in this.$route.meta && this.$route.meta.requiresAuth === true
             }
         },
 
