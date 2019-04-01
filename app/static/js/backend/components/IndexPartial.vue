@@ -62,6 +62,7 @@
             ...mapActions("alert", ["error", "success", "info", "warning"]),
 
             getData() {
+                console.warn("Implement getData in a child component!")
             },
 
             searchData() {
