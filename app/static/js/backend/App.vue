@@ -1,6 +1,7 @@
 <template>
     <div id="app">
-        <auth v-if="$route.path.startsWith('/auth/')" />
+        <auth v-if="isAuthPage" />
+        <error v-else-if="isErrorPage && !isAuthenticated" />
         <admin v-else />
     </div>
 </template>
@@ -9,23 +10,29 @@
     import {mapGetters, mapActions} from "vuex"
     import Auth                     from "./pages/Auth"
     import Admin                    from "./pages/Admin"
+    import Error                    from "./pages/Errors"
 
     export default {
         name: "App",
 
         components: {
             Auth,
-            Admin
+            Admin,
+            Error
         },
 
         computed: {
-            ...mapGetters("alert", ["alert"])
-        },
+            ...mapGetters("alert", ["alert"]),
 
-        methods: {
-            ...mapActions("alert", {
-                clearAlert: "clear"
-            })
+            ...mapGetters("auth", ["isAuthenticated"]),
+
+            isAuthPage() {
+                return "auth" in this.$route.meta && this.$route.meta.auth === true
+            },
+
+            isErrorPage() {
+                return "error" in this.$route.meta && this.$route.meta.error === true
+            }
         },
 
         watch: {
@@ -38,6 +45,12 @@
                 },
                 deep: true
             }
+        },
+
+        methods: {
+            ...mapActions("alert", {
+                clearAlert: "clear"
+            })
         }
     }
 </script>

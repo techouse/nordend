@@ -38,6 +38,7 @@ const routerOptions = [
         component: Login,
         name:      "Login",
         meta:      {
+            auth:  true,
             guest: true
         }
     },
@@ -46,6 +47,7 @@ const routerOptions = [
         component: Register,
         name:      "Register",
         meta:      {
+            auth:  true,
             guest: true
         }
     },
@@ -54,7 +56,8 @@ const routerOptions = [
         component: ResetPassword,
         name:      "ResetPassword",
         props:     true,
-        meta: {
+        meta:      {
+            auth:          true,
             passwordReset: true
         }
     },
@@ -63,6 +66,7 @@ const routerOptions = [
         component: ResetPasswordRequest,
         name:      "ResetPasswordRequest",
         meta:      {
+            auth:  true,
             guest: true
         }
     },
@@ -212,7 +216,10 @@ const routerOptions = [
     {
         path:      "*",
         component: Error404,
-        name:      "Error404"
+        name:      "Error404",
+        meta:      {
+            error: true
+        }
     }
 ]
 

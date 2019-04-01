@@ -21,7 +21,7 @@ const getters = {
     },
 
     isAuthenticated(state) {
-        return state.token !== null && differenceInMilliseconds(state.expiration, +new Date()) > 0
+        return state.token !== null && state.userId !== null && differenceInMilliseconds(state.expiration, +new Date()) > 0
     }
 }
 
