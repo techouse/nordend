@@ -9,6 +9,7 @@ import Login                from "../pages/Auth/Login"
 import Register             from "../pages/Auth/Register"
 import ResetPassword        from "../pages/Auth/ResetPassword"
 import ResetPasswordRequest from "../pages/Auth/ResetPasswordRequest"
+import Unconfirmed          from "../pages/Auth/Unconfirmed"
 // Posts
 import Posts                from "../pages/Posts"
 import CreatePost           from "../pages/Posts/create"
@@ -50,6 +51,15 @@ const routerOptions = [
         meta:      {
             auth:         true,
             registration: true
+        }
+    },
+    {
+        path:      "/auth/unconfirmed/:token",
+        component: Unconfirmed,
+        name:      "Unconfirmed",
+        props:     true,
+        meta:      {
+            auth:        true
         }
     },
     {

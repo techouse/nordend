@@ -62,9 +62,9 @@
 
         data() {
             return {
-                email:     null,
-                password:  null,
-                remember:  false
+                email:    null,
+                password: null,
+                remember: false
             }
         },
 
@@ -98,6 +98,16 @@
                                 })
 
                             this.$router.push({name: "Dashboard"})
+                        })
+                        .catch(error => {
+                            try {
+                                const response = error.response
+                                if (response.status === 403) {
+                                    this.$router.push({name: "Unconfirmed", params: {token: response.data.token}})
+                                }
+                            } catch (e) {
+                                console.log(error)
+                            }
                         })
                 }
             }

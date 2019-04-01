@@ -60,14 +60,20 @@ class AuthenticationResource(Resource):
     def post(self):
         if g.current_user.is_anonymous or g.token_used:
             return auth_error()
-        return jsonify(
-            {
-                "token": g.current_user.generate_auth_token(
-                    expiration=current_app.config["JWT_TOKEN_EXPIRATION_TIME"]
-                ),
-                "expiration": current_app.config["JWT_TOKEN_EXPIRATION_TIME"],
-            }
-        )
+        elif not g.current_user.confirmed:
+            response = {"message": "Unconfirmed account! Please confirm your account before trying to log in again.",
+                        "token": g.current_user.generate_confirmation_send_again_token()}
+            return response, status.HTTP_403_FORBIDDEN
+        else:
+            return (
+                {
+                    "token": g.current_user.generate_auth_token(
+                        expiration=current_app.config["JWT_TOKEN_EXPIRATION_TIME"]
+                    ),
+                    "expiration": current_app.config["JWT_TOKEN_EXPIRATION_TIME"],
+                },
+                status.HTTP_200_OK
+            )
 
 
 class ResetPasswordResource(Resource):
@@ -156,6 +162,26 @@ class RegistrationResource(Resource):
 
 
 class RegistrationConfirmationResource(Resource):
+    def put(self):
+        csrf.protect()
+        request_dict = request.get_json()
+        if not request_dict:
+            response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        registration_confirmation_schema = RegistrationConfirmationSchema()
+        errors = registration_confirmation_schema.validate(request_dict)
+        if errors:
+            return errors, status.HTTP_400_BAD_REQUEST
+        user = User.verify_confirmation_send_again_token(request_dict["token"])
+        if not user:
+            response = {"message": "The re-confirmation link is invalid or has expired."}
+            return response, status.HTTP_400_BAD_REQUEST
+        send_registration_confirmation_email(user)
+        response = {
+            "message": "Another confirmation email has been sent to you by email. Please be more prompt this time :)"
+        }
+        return response, status.HTTP_200_OK
+
     def post(self):
         csrf.protect()
         request_dict = request.get_json()
@@ -169,6 +195,5 @@ class RegistrationConfirmationResource(Resource):
         if not User.confirm(request_dict["token"]):
             response = {"message": "The confirmation link is invalid or has expired."}
             return response, status.HTTP_400_BAD_REQUEST
-        else:
-            response = {"message": "You have confirmed your account. Thanks!"}
-            return response, status.HTTP_200_OK
+        response = {"message": "You have confirmed your account. Thanks!"}
+        return response, status.HTTP_200_OK

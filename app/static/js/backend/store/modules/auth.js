@@ -288,6 +288,32 @@ const actions = {
                    return reject(error)
                })
         })
+    },
+
+    sendAnotherConfirmationEmail({dispatch}, token) {
+        return new Promise((resolve, reject) => {
+            api.put("confirm", {token: token}, {
+                   headers: {
+                       common: {
+                           "X-CSRF-TOKEN": window.csrfToken
+                       }
+                   }
+               })
+               .then(response => {
+                   dispatch("alert/success", response.data.message, {root: true})
+
+                   return resolve(response)
+               })
+               .catch(error => {
+                   try {
+                       dispatch("alert/error", error.response.data.message, {root: true})
+                   } catch (e) {
+                       console.log(error)
+                   }
+
+                   return reject(error)
+               })
+        })
     }
 }
 

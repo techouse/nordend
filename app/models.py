@@ -192,6 +192,13 @@ class User(UserMixin, db.Model, AddUpdateDelete):
         s = Serializer(current_app.config["SECRET_KEY"], expires_in=expiration)
         return s.dumps({"confirm": self.id}).decode("utf-8")
 
+    def generate_confirmation_send_again_token(self, expires_in=600):
+        return jwt.encode(
+            {"send_again": self.id, "exp": time() + expires_in},
+            current_app.config["SECRET_KEY"],
+            algorithm="HS256",
+        ).decode("utf-8")
+
     def generate_auth_token(self, expiration):
         s = Serializer(current_app.config["SECRET_KEY"], expires_in=expiration)
         return s.dumps({"id": self.id}).decode("utf-8")
@@ -204,19 +211,6 @@ class User(UserMixin, db.Model, AddUpdateDelete):
         except:
             return None
         return User.query.get(data["id"])
-
-    # FIXME: remove this deprecated method and fix tests
-    # def confirm(self, token):
-    #     s = Serializer(current_app.config["SECRET_KEY"])
-    #     try:
-    #         data = s.loads(token.encode("utf-8"))
-    #     except:
-    #         return False
-    #     if data.get("confirm") != self.id:
-    #         return False
-    #     self.confirmed = True
-    #     db.session.add(self)
-    #     return True
 
     @staticmethod
     def confirm(token):
@@ -236,6 +230,14 @@ class User(UserMixin, db.Model, AddUpdateDelete):
     def verify_reset_password_token(token):
         try:
             id = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])["reset_password"]
+        except:
+            return
+        return User.query.get(id)
+
+    @staticmethod
+    def verify_confirmation_send_again_token(token):
+        try:
+            id = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])["send_again"]
         except:
             return
         return User.query.get(id)
