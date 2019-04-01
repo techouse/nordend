@@ -11,7 +11,7 @@ from ..schemas import (
     RegistrationConfirmationSchema,
 )
 from ... import status, csrf, db
-from ...auth.email import send_password_reset_email, send_registration_confirmation_email
+from ..email import send_password_reset_email, send_registration_confirmation_email
 from ...models import User
 
 basic_auth = HTTPBasicAuth()
