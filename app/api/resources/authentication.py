@@ -11,8 +11,7 @@ from ..schemas import (
     RegistrationConfirmationSchema,
 )
 from ... import status, csrf, db
-from ...auth.email import send_password_reset_email
-from ...email import send_email
+from ...auth.email import send_password_reset_email, send_registration_confirmation_email
 from ...models import User
 
 basic_auth = HTTPBasicAuth()
@@ -145,8 +144,7 @@ class RegistrationResource(Resource):
         try:
             user = User(name=request_dict["name"], email=request_dict["email"], password=request_dict["password"])
             user.add(user)
-            token = user.generate_confirmation_token(expiration=current_app.config["JWT_TOKEN_EXPIRATION_TIME"])
-            send_email(user.email, "Confirm your account", "auth/email/confirm", user=user, token=token)
+            send_registration_confirmation_email(user)
             response = {
                 "message": "You have been successfully registered! A confirmation email has been sent to you by email."
             }
