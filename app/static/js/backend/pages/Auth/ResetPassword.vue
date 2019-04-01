@@ -28,8 +28,8 @@
 </template>
 
 <script>
-    import {mapActions, mapGetters} from "vuex"
-    import api                      from "../../services/api"
+    import {mapActions} from "vuex"
+    import api          from "../../services/api"
 
     export default {
         name: "ResetPassword",
@@ -44,12 +44,12 @@
         data() {
             return {
                 formRef: "reset-password-form",
-                form:  {
+                form:    {
                     token:           this.token,
                     password:        null,
                     password_repeat: null
                 },
-                rules: {
+                rules:   {
                     password:        [
                         {required: true, message: "Please enter a password", trigger: "blur"},
                         {
@@ -87,25 +87,8 @@
             }
         },
 
-        computed: {
-            ...mapGetters("auth", ["isAuthenticated"])
-        },
-
-        created() {
-            if (this.isAuthenticated) {
-                this.$router.push({"name": "Dashboard"})
-            }
-
-            this.verifyPasswordResetToken(this.token)
-                .catch(() => {
-                    this.$router.push({"name": "Login"})
-                })
-        },
-
         methods: {
             ...mapActions("alert", ["error", "info", "clear"]),
-
-            ...mapActions("auth", ["verifyPasswordResetToken"]),
 
             submit() {
                 this.$refs[this.formRef].validate((valid) => {

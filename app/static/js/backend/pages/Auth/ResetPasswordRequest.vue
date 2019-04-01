@@ -21,8 +21,8 @@
 </template>
 
 <script>
-    import {mapActions, mapGetters} from "vuex"
-    import api                      from "../../services/api"
+    import {mapActions} from "vuex"
+    import api          from "../../services/api"
 
     export default {
         name: "ResetPasswordRequest",
@@ -39,16 +39,6 @@
                         {type: "email", message: "Please input correct email address", trigger: ["blur"]}
                     ]
                 }
-            }
-        },
-
-        computed: {
-            ...mapGetters("auth", ["isAuthenticated"])
-        },
-
-        created() {
-            if (this.isAuthenticated) {
-                this.$router.push({"name": "Dashboard"})
             }
         },
 

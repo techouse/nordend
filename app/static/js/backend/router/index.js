@@ -27,7 +27,6 @@ import CreateRole           from "../pages/Roles/create"
 import EditRole             from "../pages/Roles/edit"
 // Errors
 import Error404             from "../pages/Errors/404"
-import Error500             from "../pages/Errors/500"
 
 const routerOptions = [
     {
@@ -55,8 +54,8 @@ const routerOptions = [
         component: ResetPassword,
         name:      "ResetPassword",
         props:     true,
-        meta:      {
-            guest: true
+        meta: {
+            passwordReset: true
         }
     },
     {
@@ -246,6 +245,15 @@ router.beforeEach((to, from, next) => {
             next()
         } else {
             next({name: "Dashboard", params: {nextUrl: to.fullPath}})
+        }
+    } else if (to.matched.some(record => record.meta.passwordReset)) {
+        if (+new Date() < expiration && token && userId) {
+            next({name: "Dashboard", params: {nextUrl: to.fullPath}})
+        } else {
+            this.store.dispatch("auth/verifyPasswordResetToken", to.params.token)
+                .catch(() => {
+                    next({name: "Dashboard", params: {nextUrl: to.fullPath}})
+                })
         }
     } else {
         next()
