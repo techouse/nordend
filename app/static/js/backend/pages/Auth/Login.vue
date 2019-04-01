@@ -31,7 +31,7 @@
                         </div>
                         <div class="col-6 text-right">
                             <router-link class="btn btn-link px-0" type="button" :to="{name: 'ResetPasswordRequest'}">
-                                Forgot your password?
+                                Forgot password?
                             </router-link>
                         </div>
                     </div>
