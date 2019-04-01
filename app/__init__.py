@@ -40,10 +40,6 @@ def create_app(config_class=Config):
 
     app.register_blueprint(errors)
 
-    from .auth import auth
-
-    app.register_blueprint(auth, url_prefix="/auth/")
-
     from .admin import admin
 
     app.register_blueprint(admin, url_prefix="/admin/")
