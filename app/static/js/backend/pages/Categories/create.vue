@@ -2,7 +2,7 @@
     <div>
         <div class="row">
             <div class="col-sm-12">
-                <el-form :ref="formRef" :model="category" :rules="rules" label-width="160px" class="card">
+                <el-form :ref="formRef" :model="category" :rules="rules" :label-width="labelWidth" class="card">
                     <div class="card-header">
                         <b>{{ title }}</b> <i>{{ category.name }}</i>
                         <div v-if="category.id" class="card-header-actions">

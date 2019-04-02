@@ -1,8 +1,8 @@
 <template>
     <div id="app">
         <auth v-if="isAuthPage" />
-        <admin v-else-if="isAdministrationPage && isAuthenticated" />
-        <error v-else-if="isErrorPage && !isAuthenticated" />
+        <admin v-else-if="isAdministrationPage" />
+        <error v-else-if="isErrorPage" />
         <div v-else/>
     </div>
 </template>

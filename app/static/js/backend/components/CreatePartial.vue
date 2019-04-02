@@ -6,14 +6,15 @@
 
         data() {
             return {
-                formRef: "create-form",
-                title:   "Create",
-                rules:   {}
+                labelWidth: "140px",
+                formRef:    "create-form",
+                title:      "Create",
+                rules:      {}
             }
         },
 
         computed: {
-            ...mapGetters("alert", ["alert"])
+            ...mapGetters("alert", ["alert"]),
         },
 
         methods: {
@@ -27,3 +28,11 @@
         }
     }
 </script>
+
+<style lang="scss" scoped>
+    .el-form-item__content {
+        &>div:first-child {
+            width: calc(100% - 140px);
+        }
+    }
+</style>
