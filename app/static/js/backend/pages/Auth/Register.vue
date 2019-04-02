@@ -35,7 +35,7 @@
                     </el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="success" class="btn btn-block btn-success" @click.prevent="submit">
+                    <el-button type="primary" class="btn btn-block btn-primary" @click.prevent="submit">
                         Submit
                     </el-button>
                 </el-form-item>

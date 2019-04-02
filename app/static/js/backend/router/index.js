@@ -5,11 +5,11 @@ import store                from "../store"
 // Dashboard
 import Dashboard            from "../pages/Dashboard"
 // Auth
-import Login                from "../pages/Auth/Login"
-import Register             from "../pages/Auth/Register"
-import ResetPassword        from "../pages/Auth/ResetPassword"
-import ResetPasswordRequest from "../pages/Auth/ResetPasswordRequest"
-import Unconfirmed          from "../pages/Auth/Unconfirmed"
+import Login                from "../pages/Auth/login"
+import Register             from "../pages/Auth/register"
+import ResetPassword        from "../pages/Auth/reset_password"
+import ResetPasswordRequest from "../pages/Auth/reset_password_request"
+import Unconfirmed          from "../pages/Auth/unconfirmed"
 // Posts
 import Posts                from "../pages/Posts"
 import CreatePost           from "../pages/Posts/create"
