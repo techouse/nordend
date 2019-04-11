@@ -32,3 +32,5 @@ class Config(object):
     POSTS_PER_PAGE = int(os.environ.get("POSTS_PER_PAGE")) or 20
     PAGINATION_PAGE_ARGUMENT_NAME = os.environ.get("PAGINATION_PAGE_ARGUMENT_NAME") or "page"
     PAGINATION_PER_PAGE_ARGUMENT_NAME = os.environ.get("PAGINATION_PER_PAGE_ARGUMENT_NAME") or "per_page"
+    # Images
+    PUBLIC_IMAGE_PATH = "static/images/public/"

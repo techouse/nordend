@@ -27,6 +27,7 @@
             this.getPost(this.postId)
                 .then(({data}) => {
                     this.$set(this, "post", new Post(data))
+                    this.editor.setContent(this.post.body)
                 })
         },
 

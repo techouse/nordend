@@ -3,7 +3,7 @@ from marshmallow import fields, pre_load, validates_schema, ValidationError
 from marshmallow import validate
 
 from .validators import valid_permission, valid_password_reset_token
-from ..models import Post, User, Role, Category
+from ..models import Post, User, Role, Category, Image
 
 ma = Marshmallow()
 
@@ -65,6 +65,32 @@ class RoleSchema(ma.Schema):
     )
 
 
+class UserSchema(ma.Schema):
+    class Meta:
+        model = User
+
+    id = fields.Integer(dump_only=True)
+    email = fields.Email(required=True, validate=validate.Email())
+    password = fields.String(load_only=True, validate=lambda x: 8 <= len(x) <= 128)
+    confirmed = fields.Boolean(required=True)
+    name = fields.String(required=True, validate=lambda x: 3 <= len(x) <= 255)
+    location = fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255)
+    about_me = fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 2 ** 16)
+    member_since = fields.DateTime(dump_only=True, format="iso8601")
+    last_seen = fields.DateTime(dump_only=True, format="iso8601")
+    created_at = fields.DateTime(dump_only=True, format="iso8601")
+    updated_at = fields.DateTime(dump_only=True, format="iso8601")
+    role = fields.Nested("RoleSchema", exclude=("users",))
+    role_id = fields.Integer(required=True, validate=lambda x: x > 0 and Role.query.get(x) is not None)
+    links = ma.Hyperlinks(
+        {
+            "self": ma.URLFor("api.user", id="<id>", _external=True),
+            "collection": ma.URLFor("api.users", _external=True),
+            "relationships": {"posts": ma.URLFor("api.user_posts", id="<id>", _external=True)},
+        }
+    )
+
+
 class CategorySchema(ma.Schema):
     class Meta:
         model = Category
@@ -117,27 +143,19 @@ class PostSchema(ma.Schema):
         return data
 
 
-class UserSchema(ma.Schema):
+class ImageSchema(ma.Schema):
     class Meta:
-        model = User
+        model = Image
 
     id = fields.Integer(dump_only=True)
-    email = fields.Email(required=True, validate=validate.Email())
-    password = fields.String(load_only=True, validate=lambda x: 8 <= len(x) <= 128)
-    confirmed = fields.Boolean(required=True)
-    name = fields.String(required=True, validate=lambda x: 3 <= len(x) <= 255)
-    location = fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255)
-    about_me = fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 2 ** 16)
-    member_since = fields.DateTime(dump_only=True, format="iso8601")
-    last_seen = fields.DateTime(dump_only=True, format="iso8601")
+    title = fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255)
+    path = fields.String(dump_only=True)
+    original_filename = fields.String(nullable=True)
+    author_id = fields.Integer(dump_only=True)
     created_at = fields.DateTime(dump_only=True, format="iso8601")
-    updated_at = fields.DateTime(dump_only=True, format="iso8601")
-    role = fields.Nested("RoleSchema", exclude=("users",))
-    role_id = fields.Integer(required=True, validate=lambda x: x > 0 and Role.query.get(x) is not None)
     links = ma.Hyperlinks(
         {
-            "self": ma.URLFor("api.user", id="<id>", _external=True),
-            "collection": ma.URLFor("api.users", _external=True),
-            "relationships": {"posts": ma.URLFor("api.user_posts", id="<id>", _external=True)},
+            "self": ma.URLFor("api.images", id="<id>", _external=True),
+            "collection": ma.URLFor("api.images", _external=True),
         }
     )

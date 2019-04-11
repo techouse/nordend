@@ -9,6 +9,7 @@ from flask_login import UserMixin, AnonymousUserMixin, login_manager
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from markdown import markdown
 from slugify.slugify import slugify
+from sqlalchemy import ForeignKeyConstraint
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -194,9 +195,7 @@ class User(UserMixin, db.Model, AddUpdateDelete):
 
     def generate_confirmation_send_again_token(self, expires_in=600):
         return jwt.encode(
-            {"send_again": self.id, "exp": time() + expires_in},
-            current_app.config["SECRET_KEY"],
-            algorithm="HS256",
+            {"send_again": self.id, "exp": time() + expires_in}, current_app.config["SECRET_KEY"], algorithm="HS256"
         ).decode("utf-8")
 
     def generate_auth_token(self, expiration):
@@ -322,6 +321,13 @@ class Category(db.Model, AddUpdateDelete):
 
 db.event.listen(Category.name, "set", Category.on_changed_name)
 
+post_images = db.Table(
+    "post_images",
+    db.Column("post_id", db.Integer, db.ForeignKey("posts.id"), primary_key=True),
+    db.Column("image_id", db.Integer, db.ForeignKey("images.id"), primary_key=True),
+    db.Column("created_at", db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
+)
+
 
 class Post(db.Model, AddUpdateDelete):
     __tablename__ = "posts"
@@ -332,6 +338,9 @@ class Post(db.Model, AddUpdateDelete):
     body_html = db.Column(db.Text)
     author_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id", ondelete="CASCADE"), nullable=False)
+    images = db.relationship(
+        "Image", secondary=post_images, backref=db.backref("images", lazy="dynamic"), lazy="dynamic"
+    )
     created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
     updated_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp())
 
@@ -382,3 +391,13 @@ class Post(db.Model, AddUpdateDelete):
 
 db.event.listen(Post.title, "set", Post.on_changed_title)
 db.event.listen(Post.body, "set", Post.on_changed_body)
+
+
+class Image(db.Model, AddUpdateDelete):
+    __tablename__ = "images"
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=True)
+    path = db.Column(db.String(255), index=True)
+    original_filename = db.Column(db.String(255))
+    author_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)

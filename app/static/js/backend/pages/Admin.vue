@@ -8,11 +8,11 @@
                 <span class="navbar-toggler-icon"/>
             </button>
             <a class="navbar-brand" href="#">
-                <img class="navbar-brand-full" src="/static/images/admin.png" width="48"
+                <img class="navbar-brand-full" src="/static/images/admin/admin.png" width="48"
                      height="48"
                      alt="Administration"
                 >
-                <img class="navbar-brand-minimized" src="/static/images/admin.png"
+                <img class="navbar-brand-minimized" src="/static/images/admin/admin.png"
                      width="48"
                      height="48" alt="Administration"
                 >

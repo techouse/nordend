@@ -24,7 +24,124 @@
                                 />
                             </el-select>
                         </el-form-item>
-                        <vue-editor v-model="post.body"/>
+                        <el-form-item label="Content">
+                            <div class="editor">
+                                <editor-menu-bar :editor="editor">
+                                    <div slot-scope="{ commands, isActive }" class="menubar">
+                                        <button class="menubar__button"
+                                                :class="{ 'is-active': isActive.bold() }"
+                                                @click.prevent="commands.bold"
+                                        >
+                                            <i class="fas fa-bold"/>
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                :class="{ 'is-active': isActive.italic() }"
+                                                @click.prevent="commands.italic"
+                                        >
+                                            <i class="fas fa-italic"/>
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                :class="{ 'is-active': isActive.strike() }"
+                                                @click.prevent="commands.strike"
+                                        >
+                                            <i class="fas fa-strikethrough"/>
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                :class="{ 'is-active': isActive.underline() }"
+                                                @click.prevent="commands.underline"
+                                        >
+                                            <i class="fas fa-underline"/>
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                :class="{ 'is-active': isActive.code() }"
+                                                @click.prevent="commands.code"
+                                        >
+                                            <i class="fas fa-code"/>
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                :class="{ 'is-active': isActive.paragraph() }"
+                                                @click.prevent="commands.paragraph"
+                                        >
+                                            <i class="fas fa-paragraph"/>
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                :class="{ 'is-active': isActive.heading({ level: 1 }) }"
+                                                @click.prevent="commands.heading({ level: 1 })"
+                                        >
+                                            H1
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                :class="{ 'is-active': isActive.heading({ level: 2 }) }"
+                                                @click.prevent="commands.heading({ level: 2 })"
+                                        >
+                                            H2
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                :class="{ 'is-active': isActive.heading({ level: 3 }) }"
+                                                @click.prevent="commands.heading({ level: 3 })"
+                                        >
+                                            H3
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                :class="{ 'is-active': isActive.bullet_list() }"
+                                                @click.prevent="commands.bullet_list"
+                                        >
+                                            <i class="fas fa-list-ul"/>
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                :class="{ 'is-active': isActive.ordered_list() }"
+                                                @click.prevent="commands.ordered_list"
+                                        >
+                                            <i class="fas fa-list-ol"/>
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                :class="{ 'is-active': isActive.blockquote() }"
+                                                @click.prevent="commands.blockquote"
+                                        >
+                                            <i class="fas fa-quote-right"/>
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                :class="{ 'is-active': isActive.code_block() }"
+                                                @click.prevent="commands.code_block"
+                                        >
+                                            <i class="fas fa-laptop-code"/>
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                @click.prevent="commands.horizontal_rule"
+                                        >
+                                            –
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                @click.prevent="commands.undo"
+                                        >
+                                            <i class="fas fa-undo"/>
+                                        </button>
+
+                                        <button class="menubar__button"
+                                                @click.prevent="commands.redo"
+                                        >
+                                            <i class="fas fa-redo"/>
+                                        </button>
+                                    </div>
+                                </editor-menu-bar>
+
+                                <editor-content class="editor__content" :editor="editor"/>
+                            </div>
+                        </el-form-item>
                     </div>
                     <div class="card-footer">
                         <el-button type="success" @click="submit">
@@ -41,17 +158,23 @@
 </template>
 
 <script>
-    import {mapActions}  from "vuex"
-    import {VueEditor}   from "vue2-editor"
-    import CreatePartial from "../../components/CreatePartial"
-    import Post          from "../../models/Post"
-    import Category      from "../../models/Category"
+    import {mapActions}                           from "vuex"
+    import {Editor, EditorContent, EditorMenuBar} from "tiptap"
+    import {
+        Blockquote, CodeBlock, HardBreak, Heading, HorizontalRule,
+        OrderedList, BulletList, ListItem, TodoItem, TodoList,
+        Bold, Code, Italic, Link, Strike, Underline, History,
+    }                                             from "tiptap-extensions"
+    import CreatePartial                          from "../../components/CreatePartial"
+    import Post                                   from "../../models/Post"
+    import Category                               from "../../models/Category"
 
     export default {
         name: "CreatePost",
 
         components: {
-            VueEditor
+            EditorContent,
+            EditorMenuBar,
         },
 
         extends: CreatePartial,
@@ -71,6 +194,32 @@
                         {required: true, message: "Please select a category", trigger: "blur"},
                     ],
                 },
+                editor:     new Editor({
+                                           extensions: [
+                                               new Blockquote(),
+                                               new BulletList(),
+                                               new CodeBlock(),
+                                               new HardBreak(),
+                                               new Heading({levels: [1, 2, 3]}),
+                                               new HorizontalRule(),
+                                               new ListItem(),
+                                               new OrderedList(),
+                                               new TodoItem(),
+                                               new TodoList(),
+                                               new Bold(),
+                                               new Code(),
+                                               new Italic(),
+                                               new Link(),
+                                               new Strike(),
+                                               new Underline(),
+                                               new History(),
+                                           ],
+                                           content:    null,
+                                           onUpdate:   ({getJSON, getHTML}) => {
+                                               const json = getJSON()
+                                               this.$set(this.post, "body", getHTML())
+                                           }
+                                       }),
             }
         },
 
@@ -102,7 +251,11 @@
                         return false
                     }
                 })
-            }
-        }
+            },
+        },
+
+        beforeDestroy() {
+            this.editor.destroy()
+        },
     }
 </script>
