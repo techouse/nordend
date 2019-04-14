@@ -2,11 +2,17 @@
   position: relative;
 
   &__content {
-
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
+    padding: 12px 15px;
     word-wrap: break-word;
 
     * {
       caret-color: currentColor;
+    }
+
+    .ProseMirror-focused {
+      outline: none;
     }
 
     pre {

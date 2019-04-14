@@ -6,14 +6,14 @@
                     <div class="card-header">
                         <b>{{ title }}</b> <i>{{ post.title }}</i>
                         <div v-if="post.id" class="card-header-actions">
-                            <button class="btn btn-sm btn-danger" @click.prevent="remove">
+                            <el-button class="btn btn-sm btn-danger" @click="remove">
                                 Delete post
-                            </button>
+                            </el-button>
                         </div>
                     </div>
                     <div class="card-body">
                         <el-form-item label="Title" prop="title">
-                            <el-input v-model="post.title" type="string" required/>
+                            <el-input v-model="post.title" type="string" required />
                         </el-form-item>
                         <el-form-item label="Category" prop="category_id">
                             <el-select v-model="post.category_id" placeholder="Post category" required>
@@ -28,118 +28,188 @@
                             <div class="editor">
                                 <editor-menu-bar :editor="editor">
                                     <div slot-scope="{ commands, isActive }" class="menubar">
-                                        <button class="menubar__button"
-                                                :class="{ 'is-active': isActive.bold() }"
-                                                @click.prevent="commands.bold"
-                                        >
-                                            <i class="fas fa-bold"/>
-                                        </button>
+                                        <el-button-group>
+                                            <el-tooltip class="item" effect="dark" content="Bold" placement="top-start">
+                                                <el-button size="mini"
+                                                           :class="{ 'is-active': isActive.bold() }"
+                                                           @click="commands.bold"
+                                                >
+                                                    <i class="fas fa-bold" />
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                :class="{ 'is-active': isActive.italic() }"
-                                                @click.prevent="commands.italic"
-                                        >
-                                            <i class="fas fa-italic"/>
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Italic"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           :class="{ 'is-active': isActive.italic() }"
+                                                           @click="commands.italic"
+                                                >
+                                                    <i class="fas fa-italic" />
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                :class="{ 'is-active': isActive.strike() }"
-                                                @click.prevent="commands.strike"
-                                        >
-                                            <i class="fas fa-strikethrough"/>
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Strikethrough"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           :class="{ 'is-active': isActive.strike() }"
+                                                           @click="commands.strike"
+                                                >
+                                                    <i class="fas fa-strikethrough" />
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                :class="{ 'is-active': isActive.underline() }"
-                                                @click.prevent="commands.underline"
-                                        >
-                                            <i class="fas fa-underline"/>
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Underline"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           :class="{ 'is-active': isActive.underline() }"
+                                                           @click="commands.underline"
+                                                >
+                                                    <i class="fas fa-underline" />
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                :class="{ 'is-active': isActive.code() }"
-                                                @click.prevent="commands.code"
-                                        >
-                                            <i class="fas fa-code"/>
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Code" placement="top-start">
+                                                <el-button size="mini"
+                                                           :class="{ 'is-active': isActive.code() }"
+                                                           @click="commands.code"
+                                                >
+                                                    <i class="fas fa-code" />
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                :class="{ 'is-active': isActive.paragraph() }"
-                                                @click.prevent="commands.paragraph"
-                                        >
-                                            <i class="fas fa-paragraph"/>
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Paragraph"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           :class="{ 'is-active': isActive.paragraph() }"
+                                                           @click="commands.paragraph"
+                                                >
+                                                    <i class="fas fa-paragraph" />
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                :class="{ 'is-active': isActive.heading({ level: 1 }) }"
-                                                @click.prevent="commands.heading({ level: 1 })"
-                                        >
-                                            H1
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Heading 1"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           :class="{ 'is-active': isActive.heading({ level: 1 }) }"
+                                                           @click="commands.heading({ level: 1 })"
+                                                >
+                                                    <span>H1</span>
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                :class="{ 'is-active': isActive.heading({ level: 2 }) }"
-                                                @click.prevent="commands.heading({ level: 2 })"
-                                        >
-                                            H2
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Heading 2"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           :class="{ 'is-active': isActive.heading({ level: 2 }) }"
+                                                           @click="commands.heading({ level: 2 })"
+                                                >
+                                                    <span>H2</span>
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                :class="{ 'is-active': isActive.heading({ level: 3 }) }"
-                                                @click.prevent="commands.heading({ level: 3 })"
-                                        >
-                                            H3
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Heading 3"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           title="Heading 3"
+                                                           :class="{ 'is-active': isActive.heading({ level: 3 }) }"
+                                                           @click="commands.heading({ level: 3 })"
+                                                >
+                                                    <span>H3</span>
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                :class="{ 'is-active': isActive.bullet_list() }"
-                                                @click.prevent="commands.bullet_list"
-                                        >
-                                            <i class="fas fa-list-ul"/>
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Unordered list"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           :class="{ 'is-active': isActive.bullet_list() }"
+                                                           @click="commands.bullet_list"
+                                                >
+                                                    <i class="fas fa-list-ul" />
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                :class="{ 'is-active': isActive.ordered_list() }"
-                                                @click.prevent="commands.ordered_list"
-                                        >
-                                            <i class="fas fa-list-ol"/>
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Ordered list"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           :class="{ 'is-active': isActive.ordered_list() }"
+                                                           @click="commands.ordered_list"
+                                                >
+                                                    <i class="fas fa-list-ol" />
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                :class="{ 'is-active': isActive.blockquote() }"
-                                                @click.prevent="commands.blockquote"
-                                        >
-                                            <i class="fas fa-quote-right"/>
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Blockquote"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           :class="{ 'is-active': isActive.blockquote() }"
+                                                           @click="commands.blockquote"
+                                                >
+                                                    <i class="fas fa-quote-right" />
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                :class="{ 'is-active': isActive.code_block() }"
-                                                @click.prevent="commands.code_block"
-                                        >
-                                            <i class="fas fa-laptop-code"/>
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Code block"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           :class="{ 'is-active': isActive.code_block() }"
+                                                           @click="commands.code_block"
+                                                >
+                                                    <i class="fas fa-laptop-code" />
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                @click.prevent="commands.horizontal_rule"
-                                        >
-                                            –
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Horizontal ruler"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           @click="commands.horizontal_rule"
+                                                >
+                                                    <span>–</span>
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                @click.prevent="commands.undo"
-                                        >
-                                            <i class="fas fa-undo"/>
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Undo" placement="top-start">
+                                                <el-button size="mini"
+                                                           @click="commands.undo"
+                                                >
+                                                    <i class="fas fa-undo" />
+                                                </el-button>
+                                            </el-tooltip>
 
-                                        <button class="menubar__button"
-                                                @click.prevent="commands.redo"
-                                        >
-                                            <i class="fas fa-redo"/>
-                                        </button>
+                                            <el-tooltip class="item" effect="dark" content="Redo" placement="top-start">
+                                                <el-button size="mini"
+                                                           title="Redo"
+                                                           @click="commands.redo"
+                                                >
+                                                    <i class="fas fa-redo" />
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Insert image"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           @click.prevent="showImagePrompt(commands.image)"
+                                                >
+                                                    <i class="fas fa-image" />
+                                                </el-button>
+                                            </el-tooltip>
+                                        </el-button-group>
                                     </div>
                                 </editor-menu-bar>
 
-                                <editor-content class="editor__content" :editor="editor"/>
+                                <editor-content class="editor__content" :editor="editor" />
                             </div>
                         </el-form-item>
                     </div>
@@ -161,9 +231,24 @@
     import {mapActions}                           from "vuex"
     import {Editor, EditorContent, EditorMenuBar} from "tiptap"
     import {
-        Blockquote, CodeBlock, HardBreak, Heading, HorizontalRule,
-        OrderedList, BulletList, ListItem, TodoItem, TodoList,
-        Bold, Code, Italic, Link, Strike, Underline, History,
+        Blockquote,
+        Bold,
+        BulletList,
+        Code,
+        CodeBlock,
+        HardBreak,
+        Heading,
+        History,
+        HorizontalRule,
+        Image,
+        Italic,
+        Link,
+        ListItem,
+        OrderedList,
+        Strike,
+        TodoItem,
+        TodoList,
+        Underline,
     }                                             from "tiptap-extensions"
     import CreatePartial                          from "../../components/CreatePartial"
     import Post                                   from "../../models/Post"
@@ -197,26 +282,27 @@
                 editor:     new Editor({
                                            extensions: [
                                                new Blockquote(),
+                                               new Bold(),
                                                new BulletList(),
+                                               new Code(),
                                                new CodeBlock(),
                                                new HardBreak(),
                                                new Heading({levels: [1, 2, 3]}),
+                                               new History(),
                                                new HorizontalRule(),
-                                               new ListItem(),
-                                               new OrderedList(),
-                                               new TodoItem(),
-                                               new TodoList(),
-                                               new Bold(),
-                                               new Code(),
+                                               new Image(),
                                                new Italic(),
                                                new Link(),
+                                               new ListItem(),
+                                               new OrderedList(),
                                                new Strike(),
+                                               new TodoItem(),
+                                               new TodoList(),
                                                new Underline(),
-                                               new History(),
                                            ],
                                            content:    null,
                                            onUpdate:   ({getJSON, getHTML}) => {
-                                               const json = getJSON()
+                                               console.log(getJSON())
                                                this.$set(this.post, "body", getHTML())
                                            }
                                        }),
@@ -230,10 +316,21 @@
                 })
         },
 
+        beforeDestroy() {
+            this.editor.destroy()
+        },
+
         methods: {
             ...mapActions("post", ["createPost"]),
 
             ...mapActions("category", ["getCategories"]),
+
+            showImagePrompt(command) {
+                const src = prompt("Enter the url of your image here")
+                if (src !== null) {
+                    command({src})
+                }
+            },
 
             submit() {
                 this.$refs[this.formRef].validate((valid) => {
@@ -252,10 +349,6 @@
                     }
                 })
             },
-        },
-
-        beforeDestroy() {
-            this.editor.destroy()
         },
     }
 </script>
