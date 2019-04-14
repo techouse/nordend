@@ -400,4 +400,7 @@ class Image(db.Model, AddUpdateDelete):
     path = db.Column(db.String(255), index=True)
     original_filename = db.Column(db.String(255))
     author_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    width = db.Column(db.BigInteger, default=0)
+    height = db.Column(db.BigInteger, default=0)
+    sizes = db.Column(db.JSON, nullable=True)
     created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)

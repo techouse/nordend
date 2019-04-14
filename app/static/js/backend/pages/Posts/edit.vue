@@ -23,7 +23,7 @@
             }
         },
 
-        created() {
+        mounted() {
             this.getPost(this.postId)
                 .then(({data}) => {
                     this.$set(this, "post", new Post(data))

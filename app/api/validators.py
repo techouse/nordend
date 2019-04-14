@@ -2,6 +2,7 @@ from itertools import combinations
 
 from marshmallow import ValidationError, validate
 
+from flask import current_app
 from ..models import Permission, User
 
 
@@ -24,3 +25,7 @@ def valid_password_reset_token(value):
     else:
         if not User.verify_reset_password_token(value):
             raise ValidationError("Invalid reset token")
+
+
+def allowed_image_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in current_app.config["ALLOWED_IMAGE_EXTENSIONS"]

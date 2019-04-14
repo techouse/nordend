@@ -34,3 +34,7 @@ class Config(object):
     PAGINATION_PER_PAGE_ARGUMENT_NAME = os.environ.get("PAGINATION_PER_PAGE_ARGUMENT_NAME") or "per_page"
     # Images
     PUBLIC_IMAGE_PATH = "static/images/public/"
+    MAX_IMAGE_CONTENT_LENGTH = int(os.environ.get("MAX_IMAGE_CONTENT_LENGTH")) or 2 * 1024 ** 2  # 2MB
+    ALLOWED_IMAGE_EXTENSIONS = set(os.environ.get("ALLOWED_IMAGE_EXTENSIONS").lower().split()) or {"png", "jpg", "jpeg", "gif"}
+    JPEG_COMPRESSION_QUALITY = int(os.environ.get("JPEG_COMPRESSION_QUALITY")) or 90
+    IMAGE_SIZES = {(220, 132), (280, 168), (440, 264), (620, 372), (920, 552), (1920, 1152)}

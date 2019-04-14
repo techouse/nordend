@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 
+from .resources.image import ImageResource, ImageListResource
 from .resources.authentication import (
     AuthenticationResource,
     ResetPasswordRequestResource,
@@ -35,3 +36,6 @@ api.add_resource(CategoryPostListResource, "/categories/<int:id>/posts/", endpoi
 
 api.add_resource(PostListResource, "/posts/", endpoint="posts")
 api.add_resource(PostResource, "/posts/<int:id>", endpoint="post")
+
+api.add_resource(ImageListResource, "/images/", endpoint="images")
+api.add_resource(ImageResource, "/images/<int:id>", endpoint="image")

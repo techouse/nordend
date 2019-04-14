@@ -1,12 +1,19 @@
-from flask import request, g
+from hashlib import sha256
+from io import BytesIO
+from os import makedirs
+from os.path import join, dirname
+
+from flask import request, g, current_app
 from sqlalchemy import desc
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields
 from webargs.flaskparser import use_args
+from PIL import Image as PImage
 
 from .authentication import TokenRequiredResource
 from ..helpers import PaginationHelper
 from ..schemas import ImageSchema
+from ..validators import allowed_image_file
 from ... import db, status
 from ...models import Post, Image, User
 
@@ -114,31 +121,65 @@ class ImageListResource(TokenRequiredResource):
         return result
 
     def post(self):
-        request_dict = request.get_json()
-        if not request_dict:
-            response = {"message": "No input data provided"}
+        if "file" not in request.files:
+            response = {"message": "No file part"}
             return response, status.HTTP_400_BAD_REQUEST
-        errors = image_schema.validate(request_dict)
-        if errors:
-            return errors, status.HTTP_400_BAD_REQUEST
-        try:
-            if "original_filename" not in request_dict:
-                response = {"message": "original_filename required for image creation"}
-                return response, status.HTTP_400_BAD_REQUEST
-            # FIXME dunno if this will work out of the box just quite yet
-            image = Image(
-                title=request_dict["name"] if "name" in request_dict else None,
-                original_filename=request_dict["original_filename"],
-                author_id=g.current_user.id,
-            )
-            image.add(image)
-            query = Image.query.get(image.id)
-            result = image_schema.dump(query).data
-            return result, status.HTTP_201_CREATED
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            resp = {"message": str(e)}
-            return resp, status.HTTP_400_BAD_REQUEST
+        file = request.files.get("file")
+        if file.filename == "":
+            response = {"message": "No selected file"}
+            return response, status.HTTP_400_BAD_REQUEST
+        if file and allowed_image_file(file.filename):
+            try:
+                root_path = join(dirname(current_app.instance_path), 'app')
+                digest = sha256(file.read()).hexdigest()
+                path = join(current_app.config["PUBLIC_IMAGE_PATH"], digest)
+                makedirs(join(root_path, path), exist_ok=True)
+                original_image_path = join(root_path, path, "original.jpg")
+                width, height = 0, 0
+                sizes = []
+                file.seek(0)
+                with PImage.open(BytesIO(file.read())) as img:
+                    width, height = img.size
+
+                    if img.format == "JPEG":
+                        if img.mode != "RGB":
+                            img = img.convert("RGB")
+                    else:
+                        fill_color = (255, 255, 255)  # make all transparent blocks white
+                        img = img.convert("RGBA")
+                        if img.mode in ('RGBA', 'LA'):
+                            background = PImage.new(img.mode[:-1], img.size, fill_color)
+                            background.paste(img, img.split()[-1])
+                            img = background
+                        img = img.convert("RGB")
+                    img.save(original_image_path, quality=current_app.config["JPEG_COMPRESSION_QUALITY"])
+
+                    for size in current_app.config["IMAGE_SIZES"]:
+                        if width > size[0]:
+                            thumb = img.copy()
+                            thumb.thumbnail(size)
+                            thumb.save(join(root_path, path, "{}x{}.jpg".format(*size)))
+                            sizes.append("{}x{}".format(*size))
+                image = Image(
+                    original_filename=file.filename,
+                    path=digest,
+                    author_id=g.current_user.id,
+                    width=width,
+                    height=height,
+                    sizes=sizes
+                )
+                image.add(image)
+                query = Image.query.get(image.id)
+                result = image_schema.dump(query).data
+                return result, status.HTTP_201_CREATED
+            except SQLAlchemyError as e:
+                db.session.rollback()
+                resp = {"message": str(e)}
+                return resp, status.HTTP_400_BAD_REQUEST
+            except Exception as e:
+                db.session.rollback()
+                resp = {"message": str(e)}
+                return resp, status.HTTP_400_BAD_REQUEST
 
 
 class ImagePostListResource(TokenRequiredResource):
