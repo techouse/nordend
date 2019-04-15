@@ -3,6 +3,7 @@ from io import BytesIO
 from math import ceil
 from os import makedirs
 from os.path import join, dirname
+from shutil import copy2
 
 from flask import request, g, current_app
 from sqlalchemy import desc
@@ -141,7 +142,6 @@ class ImageListResource(TokenRequiredResource):
                 file.seek(0)
                 with PImage.open(BytesIO(file.read())) as img:
                     width, height = img.size
-
                     if img.format == "JPEG":
                         if img.mode != "RGB":
                             img = img.convert("RGB")
@@ -154,12 +154,11 @@ class ImageListResource(TokenRequiredResource):
                             img = background
                         img = img.convert("RGB")
                     img.save(original_image_path, quality=current_app.config["JPEG_COMPRESSION_QUALITY"])
-
+                    # create thumbs
                     for thumb_width in current_app.config["IMAGE_SIZES"]:
                         if width >= thumb_width:
                             if width == thumb_width:
-                                img.save(join(root_path, path, "{}.jpg".format(thumb_width)),
-                                         quality=current_app.config["JPEG_COMPRESSION_QUALITY"])
+                                copy2(original_image_path, join(root_path, path, "{}.jpg".format(thumb_width)))
                             else:
                                 thumb = img.copy()
                                 thumb_height = int(ceil((thumb_width / width) * height))

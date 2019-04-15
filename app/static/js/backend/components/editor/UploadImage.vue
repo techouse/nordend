@@ -98,12 +98,12 @@
             },
 
             handleTabChange(tab, event) {
-                console.log(tab, event)
+                // console.log(tab, event)
             },
 
             handleImageSuccess(response, file) {
-                this.$set(this, "Photo", new Photo(response))
-                this.$set(this, "imageUrl", `${response.public_path}/${response.sizes.original}`)
+                this.$set(this, "photo", new Photo(response))
+                this.$set(this, "imageUrl", `${response.public_path}/original.jpg`)
             },
 
             beforeImageUpload(file) {

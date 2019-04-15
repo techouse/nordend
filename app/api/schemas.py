@@ -154,7 +154,7 @@ class ImageSchema(ma.Schema):
     id = fields.Integer(dump_only=True)
     title = fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255)
     public_path = fields.Method("get_public_path", dump_only=True)
-    sizes = fields.Method("get_sizes", dump_only=True)
+    sizes = fields.List(fields.String(), dump_only=True)
     original_filename = fields.String(nullable=True)
     author_id = fields.Integer(dump_only=True)
     created_at = fields.DateTime(dump_only=True, format="iso8601")
@@ -167,6 +167,3 @@ class ImageSchema(ma.Schema):
 
     def get_public_path(self, obj):
         return urljoin(join("/", current_app.config["PUBLIC_IMAGE_PATH"]), obj.path)
-
-    def get_sizes(self, obj):
-        return {**{"original": "original.jpg"}, **{size: "{}.jpg".format(size) for size in obj.sizes}}
