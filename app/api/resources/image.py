@@ -1,5 +1,6 @@
 from hashlib import sha256
 from io import BytesIO
+from math import ceil
 from os import makedirs
 from os.path import join, dirname
 
@@ -154,12 +155,19 @@ class ImageListResource(TokenRequiredResource):
                         img = img.convert("RGB")
                     img.save(original_image_path, quality=current_app.config["JPEG_COMPRESSION_QUALITY"])
 
-                    for size in current_app.config["IMAGE_SIZES"]:
-                        if width > size[0]:
-                            thumb = img.copy()
-                            thumb.thumbnail(size)
-                            thumb.save(join(root_path, path, "{}x{}.jpg".format(*size)))
-                            sizes.append("{}x{}".format(*size))
+                    for thumb_width in current_app.config["IMAGE_SIZES"]:
+                        if width >= thumb_width:
+                            if width == thumb_width:
+                                img.save(join(root_path, path, "{}.jpg".format(thumb_width)),
+                                         quality=current_app.config["JPEG_COMPRESSION_QUALITY"])
+                            else:
+                                thumb = img.copy()
+                                thumb_height = int(ceil((thumb_width / width) * height))
+                                thumb_size = thumb_width, thumb_height
+                                thumb.thumbnail(thumb_size, PImage.LANCZOS)
+                                thumb.save(join(root_path, path, "{}.jpg".format(thumb_width)),
+                                           quality=current_app.config["JPEG_COMPRESSION_QUALITY"])
+                            sizes.append(thumb_width)
                 image = Image(
                     original_filename=file.filename,
                     path=digest,
