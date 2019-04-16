@@ -396,10 +396,10 @@ db.event.listen(Post.body, "set", Post.on_changed_body)
 class Image(db.Model, AddUpdateDelete):
     __tablename__ = "images"
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255), nullable=True)
-    path = db.Column(db.String(255), index=True)
-    original_filename = db.Column(db.String(255))
     author_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    hash = db.Column(db.CHAR(64), index=True, nullable=False)
+    title = db.Column(db.String(255), nullable=True)
+    original_filename = db.Column(db.String(255))
     width = db.Column(db.BigInteger, default=0)
     height = db.Column(db.BigInteger, default=0)
     sizes = db.Column(db.JSON, nullable=True)

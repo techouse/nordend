@@ -1,3 +1,5 @@
+import pytz
+from datetime import datetime
 from hashlib import sha256
 from io import BytesIO
 from math import ceil
@@ -132,9 +134,16 @@ class ImageListResource(TokenRequiredResource):
             return response, status.HTTP_400_BAD_REQUEST
         if file and allowed_image_file(file.filename):
             try:
-                root_path = join(dirname(current_app.instance_path), 'app')
+                local_datetime = datetime.now(pytz.utc).astimezone(current_app.config["TIMEZONE"])
+                root_path = join(dirname(current_app.instance_path), "app")
                 digest = sha256(file.read()).hexdigest()
-                path = join(current_app.config["PUBLIC_IMAGE_PATH"], digest)
+                path = join(
+                    current_app.config["PUBLIC_IMAGE_PATH"],
+                    str(local_datetime.year),
+                    str(local_datetime.month),
+                    str(local_datetime.day),
+                    digest,
+                )
                 makedirs(join(root_path, path), exist_ok=True)
                 original_image_path = join(root_path, path, "original.jpg")
                 width, height = 0, 0
@@ -148,7 +157,7 @@ class ImageListResource(TokenRequiredResource):
                     else:
                         fill_color = (255, 255, 255)  # make all transparent blocks white
                         img = img.convert("RGBA")
-                        if img.mode in ('RGBA', 'LA'):
+                        if img.mode in ("RGBA", "LA"):
                             background = PImage.new(img.mode[:-1], img.size, fill_color)
                             background.paste(img, img.split()[-1])
                             img = background
@@ -164,16 +173,19 @@ class ImageListResource(TokenRequiredResource):
                                 thumb_height = int(ceil((thumb_width / width) * height))
                                 thumb_size = thumb_width, thumb_height
                                 thumb.thumbnail(thumb_size, PImage.LANCZOS)
-                                thumb.save(join(root_path, path, "{}.jpg".format(thumb_width)),
-                                           quality=current_app.config["JPEG_COMPRESSION_QUALITY"])
+                                thumb.save(
+                                    join(root_path, path, "{}.jpg".format(thumb_width)),
+                                    quality=current_app.config["JPEG_COMPRESSION_QUALITY"],
+                                )
                             sizes.append(thumb_width)
                 image = Image(
                     original_filename=file.filename,
-                    path=digest,
+                    hash=digest,
                     author_id=g.current_user.id,
                     width=width,
                     height=height,
-                    sizes=sizes
+                    sizes=sizes,
+                    created_at=local_datetime,
                 )
                 image.add(image)
                 query = Image.query.get(image.id)

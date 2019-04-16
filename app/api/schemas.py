@@ -157,7 +157,7 @@ class ImageSchema(ma.Schema):
     sizes = fields.List(fields.String(), dump_only=True)
     original_filename = fields.String(nullable=True)
     author_id = fields.Integer(dump_only=True)
-    created_at = fields.DateTime(dump_only=True, format="iso8601")
+    created_at = fields.DateTime(format="iso8601")
     links = ma.Hyperlinks(
         {
             "self": ma.URLFor("api.image", id="<id>", _external=True),
@@ -166,4 +166,14 @@ class ImageSchema(ma.Schema):
     )
 
     def get_public_path(self, obj):
-        return urljoin(join("/", current_app.config["PUBLIC_IMAGE_PATH"]), obj.path)
+        return urljoin(
+            "/"
+            + join(
+                current_app.config["PUBLIC_IMAGE_PATH"],
+                str(obj.created_at.year),
+                str(obj.created_at.month),
+                str(obj.created_at.day),
+            )
+            + "/",
+            obj.hash,
+        )

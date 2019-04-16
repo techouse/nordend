@@ -1,4 +1,5 @@
 import os
+import pytz
 
 from dotenv import load_dotenv
 from str2bool import str2bool
@@ -16,6 +17,8 @@ class Config(object):
     WTF_CSRF_TIME_LIMIT = int(os.environ.get("WTF_CSRF_TIME_LIMIT")) or 3600
     JWT_TOKEN_EXPIRATION_TIME = int(os.environ.get("JWT_TOKEN_EXPIRATION_TIME")) or 3600
     PUBLIC_REGISTRATION_ENABLED = str2bool(os.environ.get("PUBLIC_REGISTRATION_ENABLED")) or False
+    # Timezone
+    TIMEZONE = pytz.timezone(os.environ.get("TIMEZONE")) or pytz.utc
     # Database settings
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or "sqlite:///" + os.path.join(basedir, "db.sqlite3")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
