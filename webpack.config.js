@@ -7,6 +7,8 @@ const path                    = require('path'),
       OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin'),
       UglifyJsPlugin          = require('uglifyjs-webpack-plugin'),
       env                     = process.env.NODE_ENV,
+      npm_config_argv         = JSON.parse(process.env.npm_config_argv),
+      isWatch                 = npm_config_argv.remain.some(el => el.startsWith("--watch")),
       sourceMap               = env === 'development',
       production              = env === 'production',
       webpack                 = require('webpack')
@@ -83,17 +85,27 @@ const config = {
                 use:  [{
                     loader:  'file-loader',
                     options: {
-                        name:       '[name].[ext]',
-                        outputPath: 'fonts/',
-                        publicPath: '/static/dist/fonts/',
+                        name:       "[name].[ext]",
+                        outputPath: "fonts/",
+                        publicPath: "/static/dist/fonts/",
                     }
                 }]
+            },
+            {
+                test:    /\.(ico|jpe?g|png|gif|webp)(\?.*)?$/,
+                loader:  "file-loader",
+                options: {
+                    name:       "[name].[ext]",
+                    outputPath: "images/",
+                    publicPath: "/static/dist/images/",
+                }
             }
         ]
     },
     plugins:      [
+        new webpack.ProgressPlugin(),
         new VueLoaderPlugin(),
-        new CleanWebpackPlugin(),
+        new CleanWebpackPlugin({cleanStaleWebpackAssets: !isWatch}),
         new MiniCssExtractPlugin({
                                      path:          outputPath + '/css',
                                      filename:      'css/[name].css',

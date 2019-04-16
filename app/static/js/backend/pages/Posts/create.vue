@@ -13,7 +13,7 @@
                     </div>
                     <div class="card-body">
                         <el-form-item label="Title" prop="title">
-                            <el-input v-model="post.title" type="string" required/>
+                            <el-input v-model="post.title" type="string" required />
                         </el-form-item>
                         <el-form-item label="Category" prop="category_id">
                             <el-select v-model="post.category_id" placeholder="Post category" required>
@@ -34,7 +34,7 @@
                                                            :class="{ 'is-active': isActive.bold() }"
                                                            @click="commands.bold"
                                                 >
-                                                    <i class="fas fa-bold"/>
+                                                    <i class="fas fa-bold" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -45,7 +45,7 @@
                                                            :class="{ 'is-active': isActive.italic() }"
                                                            @click="commands.italic"
                                                 >
-                                                    <i class="fas fa-italic"/>
+                                                    <i class="fas fa-italic" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -56,7 +56,7 @@
                                                            :class="{ 'is-active': isActive.strike() }"
                                                            @click="commands.strike"
                                                 >
-                                                    <i class="fas fa-strikethrough"/>
+                                                    <i class="fas fa-strikethrough" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -67,7 +67,7 @@
                                                            :class="{ 'is-active': isActive.underline() }"
                                                            @click="commands.underline"
                                                 >
-                                                    <i class="fas fa-underline"/>
+                                                    <i class="fas fa-underline" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -76,7 +76,7 @@
                                                            :class="{ 'is-active': isActive.code() }"
                                                            @click="commands.code"
                                                 >
-                                                    <i class="fas fa-code"/>
+                                                    <i class="fas fa-code" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -87,7 +87,7 @@
                                                            :class="{ 'is-active': isActive.paragraph() }"
                                                            @click="commands.paragraph"
                                                 >
-                                                    <i class="fas fa-paragraph"/>
+                                                    <i class="fas fa-paragraph" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -132,7 +132,7 @@
                                                            :class="{ 'is-active': isActive.bullet_list() }"
                                                            @click="commands.bullet_list"
                                                 >
-                                                    <i class="fas fa-list-ul"/>
+                                                    <i class="fas fa-list-ul" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -143,7 +143,7 @@
                                                            :class="{ 'is-active': isActive.ordered_list() }"
                                                            @click="commands.ordered_list"
                                                 >
-                                                    <i class="fas fa-list-ol"/>
+                                                    <i class="fas fa-list-ol" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -154,7 +154,7 @@
                                                            :class="{ 'is-active': isActive.blockquote() }"
                                                            @click="commands.blockquote"
                                                 >
-                                                    <i class="fas fa-quote-right"/>
+                                                    <i class="fas fa-quote-right" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -165,7 +165,7 @@
                                                            :class="{ 'is-active': isActive.code_block() }"
                                                            @click="commands.code_block"
                                                 >
-                                                    <i class="fas fa-laptop-code"/>
+                                                    <i class="fas fa-laptop-code" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -183,7 +183,7 @@
                                                 <el-button size="mini"
                                                            @click="commands.undo"
                                                 >
-                                                    <i class="fas fa-undo"/>
+                                                    <i class="fas fa-undo" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -192,24 +192,98 @@
                                                            title="Redo"
                                                            @click="commands.redo"
                                                 >
-                                                    <i class="fas fa-redo"/>
+                                                    <i class="fas fa-redo" />
                                                 </el-button>
                                             </el-tooltip>
 
                                             <el-tooltip class="item" effect="dark" content="Insert image"
                                                         placement="top-start"
                                             >
-                                                <el-button size="mini"
-                                                           @click="openUploadImageModal(commands.image)"
-                                                >
-                                                    <i class="fas fa-image"/>
+                                                <el-button size="mini" @click="openUploadImageModal(commands.image)">
+                                                    <i class="fas fa-image" />
                                                 </el-button>
                                             </el-tooltip>
                                         </el-button-group>
                                     </div>
                                 </editor-menu-bar>
 
-                                <editor-content class="editor__content" :editor="editor"/>
+                                <editor-menu-bubble :editor="editor">
+                                    <div slot-scope="{ commands, isActive, getMarkAttrs, menu }"
+                                         class="menububble"
+                                         :class="{ 'is-active': menu.isActive || linkMenuIsActive }"
+                                         :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
+                                    >
+                                        <form v-if="linkMenuIsActive" class="menububble__form"
+                                              @submit.prevent="setLinkUrl(commands.link, linkUrl)"
+                                        >
+                                            <input ref="linkInput" v-model="linkUrl" class="menububble__input"
+                                                   type="text" placeholder="https://" @keydown.esc="hideLinkMenu"
+                                            >
+                                            <button class="menububble__button" type="button"
+                                                    @click.prevent="setLinkUrl(commands.link, null)"
+                                            >
+                                                <i class="far fa-times-circle" />
+                                            </button>
+                                        </form>
+
+                                        <template v-else>
+                                            <template v-if="selectedType === 'text'">
+                                                <button class="menububble__button"
+                                                        :class="{ 'is-active': isActive.bold() }"
+                                                        @click.prevent="commands.bold"
+                                                >
+                                                    <i class="fas fa-bold" />
+                                                </button>
+
+                                                <button class="menububble__button"
+                                                        :class="{ 'is-active': isActive.italic() }"
+                                                        @click.prevent="commands.italic"
+                                                >
+                                                    <i class="fas fa-italic" />
+                                                </button>
+
+                                                <button class="menububble__button"
+                                                        :class="{ 'is-active': isActive.strike() }"
+                                                        @click.prevent="commands.strike"
+                                                >
+                                                    <i class="fas fa-strikethrough" />
+                                                </button>
+
+                                                <button class="menububble__button"
+                                                        :class="{ 'is-active': isActive.underline() }"
+                                                        @click.prevent="commands.underline"
+                                                >
+                                                    <i class="fas fa-underline" />
+                                                </button>
+
+                                                <button class="menububble__button"
+                                                        :class="{ 'is-active': isActive.code() }"
+                                                        @click.prevent="commands.code"
+                                                >
+                                                    <i class="fas fa-code" />
+                                                </button>
+                                            </template>
+
+                                            <template v-if="selectedType === 'image'">
+                                                <button class="menububble__button" @click.prevent="openEditImageModal">
+                                                    <i class="fas fa-image" />
+                                                </button>
+                                            </template>
+
+                                            <button class="menububble__button"
+                                                    :class="{ 'is-active': isActive.link() }"
+                                                    @click.prevent="showLinkMenu(getMarkAttrs('link'))"
+                                            >
+                                                <i class="fas fa-link" />
+                                                <span v-if="isActive.link()" :style="{textIndent: '.5rem'}">
+                                                    Update Link
+                                                </span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </editor-menu-bubble>
+
+                                <editor-content class="editor__content" :editor="editor" />
                             </div>
                         </el-form-item>
                     </div>
@@ -224,13 +298,13 @@
                 </el-form>
             </div>
         </div>
-        <upload-image-modal ref="upload-image-modal" :post-id="post.id" @onConfirm="addCommand"/>
+        <upload-image-modal ref="upload-image-modal" :post-id="post.id" @onConfirm="addCommand" />
     </div>
 </template>
 
 <script>
-    import {mapActions}                           from "vuex"
-    import {Editor, EditorContent, EditorMenuBar} from "tiptap"
+    import {mapActions}                                             from "vuex"
+    import {Editor, EditorContent, EditorMenuBar, EditorMenuBubble} from "tiptap"
     import {
         Blockquote,
         Bold,
@@ -250,11 +324,12 @@
         TodoItem,
         TodoList,
         Underline,
-    }                                             from "tiptap-extensions"
-    import UploadImageModal                       from "../../components/editor/UploadImage"
-    import CreatePartial                          from "../../components/CreatePartial"
-    import Post                                   from "../../models/Post"
-    import Category                               from "../../models/Category"
+    }                                                               from "tiptap-extensions"
+    import UploadImageModal                                         from "../../components/editor/UploadImage"
+    import Iframe                                                   from "../../components/editor/Iframe"
+    import CreatePartial                                            from "../../components/CreatePartial"
+    import Post                                                     from "../../models/Post"
+    import Category                                                 from "../../models/Category"
 
     export default {
         name: "CreatePost",
@@ -262,6 +337,7 @@
         components: {
             EditorContent,
             EditorMenuBar,
+            EditorMenuBubble,
             "upload-image-modal": UploadImageModal
         },
 
@@ -269,11 +345,11 @@
 
         data() {
             return {
-                formRef:    "create-post-form",
-                title:      "Create post",
-                post:       new Post(),
-                categories: [],
-                rules:      {
+                formRef:          "create-post-form",
+                title:            "Create post",
+                post:             new Post(),
+                categories:       [],
+                rules:            {
                     title:       [
                         {required: true, message: "Please enter a title", trigger: "blur"},
                         {min: 1, max: 255, message: "Length should be between 1 and 255 characters", trigger: "blur"}
@@ -282,34 +358,45 @@
                         {required: true, message: "Please select a category", trigger: "blur"},
                     ],
                 },
-                editor:     new Editor({
-                                           extensions: [
-                                               new Blockquote(),
-                                               new Bold(),
-                                               new BulletList(),
-                                               new Code(),
-                                               new CodeBlock(),
-                                               new HardBreak(),
-                                               new Heading({levels: [1, 2, 3]}),
-                                               new History(),
-                                               new HorizontalRule(),
-                                               new Image(),
-                                               new Italic(),
-                                               new Link(),
-                                               new ListItem(),
-                                               new OrderedList(),
-                                               new Strike(),
-                                               new TodoItem(),
-                                               new TodoList(),
-                                               new Underline(),
-                                           ],
-                                           content:    "",
-                                           onUpdate:   ({getJSON, getHTML}) => {
-                                               console.log(getJSON())
-                                               this.$set(this.post, "body", getHTML())
-                                           }
-                                       }),
+                editor:           new Editor({
+                                                 extensions: [
+                                                     new Blockquote(),
+                                                     new Bold(),
+                                                     new BulletList(),
+                                                     new Code(),
+                                                     new CodeBlock(),
+                                                     new HardBreak(),
+                                                     new Heading({levels: [1, 2, 3]}),
+                                                     new History(),
+                                                     new HorizontalRule(),
+                                                     new Image(),
+                                                     new Italic(),
+                                                     new Link(),
+                                                     new ListItem(),
+                                                     new OrderedList(),
+                                                     new Strike(),
+                                                     new TodoItem(),
+                                                     new TodoList(),
+                                                     new Underline(),
+                                                     // custom extensions
+                                                     new Iframe()
+                                                 ],
+                                                 content:    "",
+                                                 onUpdate:   ({getJSON, getHTML}) => {
+                                                     console.log(getJSON()) // TODO use me
+                                                     this.$set(this.post, "body", getHTML())
+                                                 }
+                                             }),
+                linkUrl:          null,
+                linkMenuIsActive: false,
             }
+        },
+
+        computed: {
+            selectedType() {
+                const selection = this.editor.state.selection
+                return selection.node ? selection.node.type.name : selection.toJSON().type
+            },
         },
 
         created() {
@@ -328,15 +415,29 @@
 
             ...mapActions("category", ["getCategories"]),
 
-            showImagePrompt(command) {
-                const src = prompt("Enter the url of your image here")
-                if (src !== null) {
-                    command({src})
-                }
+            showLinkMenu(attrs) {
+                this.$set(this, "linkUrl", attrs.href)
+                this.$set(this, "linkMenuIsActive", true)
+                this.$nextTick(() => {
+                    this.$refs.linkInput.focus()
+                })
+            },
+            hideLinkMenu() {
+                this.$set(this, "linkMenuIsActive", false)
+                this.$set(this, "linkUrl", null)
+            },
+            setLinkUrl(command, url) {
+                command({href: url})
+                this.hideLinkMenu()
+                this.editor.focus()
             },
 
             openUploadImageModal(command) {
                 this.$refs["upload-image-modal"].showModal(command)
+            },
+
+            openEditImageModal(command) {
+                console.log("LOL")
             },
 
             addCommand(data) {

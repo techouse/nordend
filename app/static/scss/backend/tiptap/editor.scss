@@ -6,6 +6,7 @@
     border-radius: 4px;
     padding: 12px 15px;
     word-wrap: break-word;
+    line-height: 1.5rem;
 
     * {
       caret-color: currentColor;
@@ -50,7 +51,7 @@
     }
 
     a {
-      color: inherit;
+      //color: inherit;
     }
 
     blockquote {
@@ -67,6 +68,10 @@
     img {
       max-width: 100%;
       border-radius: 3px;
+
+      &.ProseMirror-selectednode {
+        outline: thin dashed dimgrey;
+      }
     }
 
     table {
@@ -128,5 +133,22 @@
       cursor: col-resize;
     }
 
+    .iframe {
+      &__embed {
+        width: 100%;
+        height: 15rem;
+        border: 0;
+      }
+
+      &__input {
+        display: block;
+        width: 100%;
+        font: inherit;
+        border: 0;
+        border-radius: 5px;
+        background-color: rgba($black, 0.1);
+        padding: 0.3rem 0.5rem;
+      }
+    }
   }
 }
