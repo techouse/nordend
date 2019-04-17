@@ -166,8 +166,8 @@ class ImageSchema(ma.Schema):
 
     def get_public_path(self, obj):
         return "/" + "/".join(
-            quote_plus(arg.strip("/"), safe="/")
-            for arg in (
+            quote_plus(part.strip("/"), safe="/")
+            for part in (
                 current_app.config["PUBLIC_IMAGE_PATH"],
                 str(obj.created_at.year),
                 str(obj.created_at.month),
