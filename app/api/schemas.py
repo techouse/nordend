@@ -1,5 +1,4 @@
-from os.path import join
-from urllib.parse import urljoin
+from urllib.parse import quote_plus
 
 from flask import current_app
 from flask_marshmallow import Marshmallow
@@ -166,14 +165,13 @@ class ImageSchema(ma.Schema):
     )
 
     def get_public_path(self, obj):
-        return urljoin(
-            "/"
-            + join(
+        return "/" + "/".join(
+            quote_plus(arg.strip("/"))
+            for arg in (
                 current_app.config["PUBLIC_IMAGE_PATH"],
                 str(obj.created_at.year),
                 str(obj.created_at.month),
                 str(obj.created_at.day),
+                obj.hash,
             )
-            + "/",
-            obj.hash,
         )
