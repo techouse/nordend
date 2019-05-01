@@ -13,7 +13,7 @@
                     </div>
                     <div class="card-body">
                         <el-form-item label="Title" prop="title">
-                            <el-input v-model="post.title" type="string" required />
+                            <el-input v-model="post.title" type="string" required/>
                         </el-form-item>
                         <el-form-item label="Category" prop="category_id">
                             <el-select v-model="post.category_id" placeholder="Post category" required>
@@ -34,7 +34,7 @@
                                                            :class="{ 'is-active': isActive.bold() }"
                                                            @click="commands.bold"
                                                 >
-                                                    <i class="fas fa-bold" />
+                                                    <i class="fas fa-bold"/>
                                                 </el-button>
                                             </el-tooltip>
 
@@ -45,7 +45,7 @@
                                                            :class="{ 'is-active': isActive.italic() }"
                                                            @click="commands.italic"
                                                 >
-                                                    <i class="fas fa-italic" />
+                                                    <i class="fas fa-italic"/>
                                                 </el-button>
                                             </el-tooltip>
 
@@ -56,7 +56,7 @@
                                                            :class="{ 'is-active': isActive.strike() }"
                                                            @click="commands.strike"
                                                 >
-                                                    <i class="fas fa-strikethrough" />
+                                                    <i class="fas fa-strikethrough"/>
                                                 </el-button>
                                             </el-tooltip>
 
@@ -67,7 +67,7 @@
                                                            :class="{ 'is-active': isActive.underline() }"
                                                            @click="commands.underline"
                                                 >
-                                                    <i class="fas fa-underline" />
+                                                    <i class="fas fa-underline"/>
                                                 </el-button>
                                             </el-tooltip>
 
@@ -76,7 +76,7 @@
                                                            :class="{ 'is-active': isActive.code() }"
                                                            @click="commands.code"
                                                 >
-                                                    <i class="fas fa-code" />
+                                                    <i class="fas fa-code"/>
                                                 </el-button>
                                             </el-tooltip>
 
@@ -87,7 +87,7 @@
                                                            :class="{ 'is-active': isActive.paragraph() }"
                                                            @click="commands.paragraph"
                                                 >
-                                                    <i class="fas fa-paragraph" />
+                                                    <i class="fas fa-paragraph"/>
                                                 </el-button>
                                             </el-tooltip>
 
@@ -132,7 +132,7 @@
                                                            :class="{ 'is-active': isActive.bullet_list() }"
                                                            @click="commands.bullet_list"
                                                 >
-                                                    <i class="fas fa-list-ul" />
+                                                    <i class="fas fa-list-ul"/>
                                                 </el-button>
                                             </el-tooltip>
 
@@ -143,7 +143,7 @@
                                                            :class="{ 'is-active': isActive.ordered_list() }"
                                                            @click="commands.ordered_list"
                                                 >
-                                                    <i class="fas fa-list-ol" />
+                                                    <i class="fas fa-list-ol"/>
                                                 </el-button>
                                             </el-tooltip>
 
@@ -154,7 +154,7 @@
                                                            :class="{ 'is-active': isActive.blockquote() }"
                                                            @click="commands.blockquote"
                                                 >
-                                                    <i class="fas fa-quote-right" />
+                                                    <i class="fas fa-quote-right"/>
                                                 </el-button>
                                             </el-tooltip>
 
@@ -165,7 +165,7 @@
                                                            :class="{ 'is-active': isActive.code_block() }"
                                                            @click="commands.code_block"
                                                 >
-                                                    <i class="fas fa-laptop-code" />
+                                                    <i class="fas fa-laptop-code"/>
                                                 </el-button>
                                             </el-tooltip>
 
@@ -183,7 +183,7 @@
                                                 <el-button size="mini"
                                                            @click="commands.undo"
                                                 >
-                                                    <i class="fas fa-undo" />
+                                                    <i class="fas fa-undo"/>
                                                 </el-button>
                                             </el-tooltip>
 
@@ -192,7 +192,7 @@
                                                            title="Redo"
                                                            @click="commands.redo"
                                                 >
-                                                    <i class="fas fa-redo" />
+                                                    <i class="fas fa-redo"/>
                                                 </el-button>
                                             </el-tooltip>
 
@@ -200,7 +200,7 @@
                                                         placement="top-start"
                                             >
                                                 <el-button size="mini" @click="openUploadImageModal(commands.image)">
-                                                    <i class="fas fa-image" />
+                                                    <i class="fas fa-image"/>
                                                 </el-button>
                                             </el-tooltip>
                                         </el-button-group>
@@ -222,7 +222,7 @@
                                             <button class="menububble__button" type="button"
                                                     @click.prevent="setLinkUrl(commands.link, null)"
                                             >
-                                                <i class="far fa-times-circle" />
+                                                <i class="far fa-times-circle"/>
                                             </button>
                                         </form>
 
@@ -232,41 +232,42 @@
                                                         :class="{ 'is-active': isActive.bold() }"
                                                         @click.prevent="commands.bold"
                                                 >
-                                                    <i class="fas fa-bold" />
+                                                    <i class="fas fa-bold"/>
                                                 </button>
 
                                                 <button class="menububble__button"
                                                         :class="{ 'is-active': isActive.italic() }"
                                                         @click.prevent="commands.italic"
                                                 >
-                                                    <i class="fas fa-italic" />
+                                                    <i class="fas fa-italic"/>
                                                 </button>
 
                                                 <button class="menububble__button"
                                                         :class="{ 'is-active': isActive.strike() }"
                                                         @click.prevent="commands.strike"
                                                 >
-                                                    <i class="fas fa-strikethrough" />
+                                                    <i class="fas fa-strikethrough"/>
                                                 </button>
 
                                                 <button class="menububble__button"
                                                         :class="{ 'is-active': isActive.underline() }"
                                                         @click.prevent="commands.underline"
                                                 >
-                                                    <i class="fas fa-underline" />
+                                                    <i class="fas fa-underline"/>
                                                 </button>
 
                                                 <button class="menububble__button"
                                                         :class="{ 'is-active': isActive.code() }"
                                                         @click.prevent="commands.code"
                                                 >
-                                                    <i class="fas fa-code" />
+                                                    <i class="fas fa-code"/>
                                                 </button>
                                             </template>
 
                                             <template v-if="selectedType === 'image'">
-                                                <button class="menububble__button" @click.prevent="openEditImageModal">
-                                                    <i class="fas fa-image" />
+                                                <button class="menububble__button"
+                                                        @click.prevent="openEditImageModal(commands.image, editor.state.selection)">
+                                                    <i class="fas fa-image"/>
                                                 </button>
                                             </template>
 
@@ -274,7 +275,7 @@
                                                     :class="{ 'is-active': isActive.link() }"
                                                     @click.prevent="showLinkMenu(getMarkAttrs('link'))"
                                             >
-                                                <i class="fas fa-link" />
+                                                <i class="fas fa-link"/>
                                                 <span v-if="isActive.link()" :style="{textIndent: '.5rem'}">
                                                     Update Link
                                                 </span>
@@ -283,7 +284,7 @@
                                     </div>
                                 </editor-menu-bubble>
 
-                                <editor-content class="editor__content" :editor="editor" />
+                                <editor-content class="editor__content" :editor="editor"/>
                             </div>
                         </el-form-item>
                     </div>
@@ -298,7 +299,8 @@
                 </el-form>
             </div>
         </div>
-        <upload-image-modal ref="upload-image-modal" :post-id="post.id" @onConfirm="addCommand" />
+        <upload-image-modal ref="upload-image-modal" :post-id="post.id" @onConfirm="addCommand"/>
+        <edit-image-modal ref="edit-image-modal" @onConfirm="editCommand"/>
     </div>
 </template>
 
@@ -315,7 +317,6 @@
         Heading,
         History,
         HorizontalRule,
-        Image,
         Italic,
         Link,
         ListItem,
@@ -326,10 +327,13 @@
         Underline,
     }                                                               from "tiptap-extensions"
     import UploadImageModal                                         from "../../components/editor/UploadImage"
+    import EditImageModal                                           from "../../components/editor/EditImage"
     import Iframe                                                   from "../../components/editor/Iframe"
+    import Image                                                    from "../../components/editor/Image"
     import CreatePartial                                            from "../../components/CreatePartial"
     import Post                                                     from "../../models/Post"
     import Category                                                 from "../../models/Category"
+    import Photo                                                    from "../../models/Image"
 
     export default {
         name: "CreatePost",
@@ -338,7 +342,8 @@
             EditorContent,
             EditorMenuBar,
             EditorMenuBubble,
-            "upload-image-modal": UploadImageModal
+            "upload-image-modal": UploadImageModal,
+            "edit-image-modal":   EditImageModal
         },
 
         extends: CreatePartial,
@@ -379,7 +384,7 @@
                                                      new TodoList(),
                                                      new Underline(),
                                                      // custom extensions
-                                                     new Iframe()
+                                                     new Iframe(),
                                                  ],
                                                  content:    "",
                                                  onUpdate:   ({getJSON, getHTML}) => {
@@ -396,7 +401,7 @@
             selectedType() {
                 const selection = this.editor.state.selection
                 return selection.node ? selection.node.type.name : selection.toJSON().type
-            },
+            }
         },
 
         created() {
@@ -436,11 +441,19 @@
                 this.$refs["upload-image-modal"].showModal(command)
             },
 
-            openEditImageModal(command) {
-                console.log("LOL")
+            openEditImageModal(command, selection) {
+                const photoId = selection.node ? selection.node.attrs["data-id"] : selection.toJSON().attrs["data-id"]
+                this.$refs["edit-image-modal"].showModal(command, photoId)
             },
 
             addCommand(data) {
+                if (data.command !== null) {
+                    data.command(data.data)
+                }
+            },
+
+            editCommand(data) {
+                // TODO figure out how to modify the SRC instead of creating a new image
                 if (data.command !== null) {
                     data.command(data.data)
                 }

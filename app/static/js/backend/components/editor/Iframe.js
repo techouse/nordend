@@ -1,7 +1,6 @@
 import {Node} from "tiptap"
 
 export default class Iframe extends Node {
-
     get name() {
         return "iframe"
     }
@@ -38,9 +37,7 @@ export default class Iframe extends Node {
                         return this.node.attrs.src
                     },
                     set(src) {
-                        this.updateAttrs({
-                                             src,
-                                         })
+                        this.updateAttrs({src})
                     },
                 },
             },
@@ -52,5 +49,4 @@ export default class Iframe extends Node {
           `,
         }
     }
-
 }

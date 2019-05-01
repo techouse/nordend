@@ -1,4 +1,4 @@
-export default class Photo {
+export default class Image {
     constructor(values = {}) {
         this.id = null
         this.title = null

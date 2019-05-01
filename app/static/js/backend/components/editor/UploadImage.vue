@@ -50,7 +50,7 @@
 <script>
     import {mapActions, mapGetters} from "vuex"
     import Modal                    from "../Modal"
-    import Photo                    from "../../models/Photo"
+    import Photo                    from "../../models/Image"
 
     export default {
         name: "UploadImage",
@@ -68,14 +68,41 @@
 
         data() {
             return {
-                loading:         false,
-                photo:           new Photo(),
-                imageUrl:        "",
-                previewImageUrl: "",
-                command:         null,
-                show:            false,
-                activeTab:       "file",
-                uploadHeaders:   {},
+                loading:          false,
+                photo:            new Photo(),
+                imageUrl:         "",
+                previewImageUrl:  "",
+                command:          null,
+                show:             false,
+                activeTab:        "file",
+                uploadHeaders:    {},
+                mediaBreakPoints: {
+                    // Extra small devices (portrait phones, less than 576px)
+                    xs: {
+                        mediaQuery: "(max-width: 575.98px)",
+                        fits:       size => size < 576
+                    },
+                    // Small devices (landscape phones, 576px and up)
+                    sm: {
+                        mediaQuery: "(min-width: 576px) and (max-width: 767.98px)",
+                        fits:       size => size >= 576 && size < 768
+                    },
+                    // Medium devices (tablets, 768px and up)
+                    md: {
+                        mediaQuery: "(min-width: 768px) and (max-width: 991.98px)",
+                        fits:       size => size >= 768 && size < 992
+                    },
+                    // Large devices (desktops, 992px and up)
+                    lg: {
+                        mediaQuery: "(min-width: 992px) and (max-width: 1199.98px)",
+                        fits:       size => size >= 992 && size < 1200
+                    },
+                    // Extra large devices (large desktops, 1200px and up)
+                    xl: {
+                        mediaQuery: "(min-width: 1200px)",
+                        fits:       size => size >= 1200
+                    }
+                }
             }
         },
 
@@ -123,12 +150,12 @@
                 this.$set(this.uploadHeaders, "Authorization", `Bearer ${this.token}`)
 
                 if (!["image/jpeg", "image/png", "image/gif", "image/bmp"].includes(file.type)) {
-                    this.error("Image must be of type JPG, PNG, GIF or BMP.")
+                    this.error("Photo must be of type JPG, PNG, GIF or BMP.")
                     return false
                 }
 
                 if (file.size / 1024 / 1024 > 2) {
-                    this.error("Image can not exceed 2 MB in size.")
+                    this.error("Photo can not exceed 2 MB in size.")
                     return false
                 }
 
@@ -139,9 +166,23 @@
                 const data = {
                     command: this.command,
                     data:    {
-                        src:   this.imageUrl,
-                        alt:   this.photo.original_title,
-                        title: this.photo.original_title,
+                        src:       this.imageUrl,
+                        alt:       this.photo.original_title,
+                        title:     this.photo.original_title,
+                        "data-id": this.photo.id,
+                        // srcset:    this.photo.sizes.sort()
+                        //                .map(size => `${this.photo.public_path}/${size}.jpg ${size}w`)
+                        //                .concat([`${this.photo.public_path}/original.jpg ${this.photo.width}w`])
+                        //                .join(", "),
+                        // sizes:     this.photo.sizes
+                        //                .map(size => {
+                        //                    for (let bp of Object.values(this.mediaBreakPoints)) {
+                        //                        if (bp.fits(size)) {
+                        //                            return `${bp.mediaQuery} ${size}px`
+                        //                        }
+                        //                    }
+                        //                })
+                        //                .join(", ")
                     }
                 }
 

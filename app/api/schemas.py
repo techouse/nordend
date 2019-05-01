@@ -153,6 +153,8 @@ class ImageSchema(ma.Schema):
     id = fields.Integer(dump_only=True)
     title = fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255)
     public_path = fields.Method("get_public_path", dump_only=True)
+    width = fields.Integer(dump_only=True)
+    height = fields.Integer(dump_only=True)
     sizes = fields.List(fields.String(), dump_only=True)
     original_filename = fields.String(nullable=True)
     author_id = fields.Integer(dump_only=True)
