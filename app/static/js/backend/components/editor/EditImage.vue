@@ -5,7 +5,7 @@
         </template>
         <template v-slot:body>
             <el-row :gutter="12">
-                <el-col v-for="(size, index) in sizes" :key="size.size" :span="8">
+                <el-col v-for="size in sizes" :key="size.size" :span="8">
                     <el-card :body-style="{padding: '0px'}" shadow="hover">
                         <el-image :style="{width: '100%', height: '100%'}"
                                   :src="`${photo.public_path}/220.jpg`"
@@ -79,8 +79,6 @@
             },
 
             useImageSize(size) {
-                console.log(size)
-
                 const data = {
                     command: this.command,
                     data:    {

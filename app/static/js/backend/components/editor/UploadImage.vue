@@ -68,41 +68,14 @@
 
         data() {
             return {
-                loading:          false,
-                photo:            new Photo(),
-                imageUrl:         "",
-                previewImageUrl:  "",
-                command:          null,
-                show:             false,
-                activeTab:        "file",
-                uploadHeaders:    {},
-                mediaBreakPoints: {
-                    // Extra small devices (portrait phones, less than 576px)
-                    xs: {
-                        mediaQuery: "(max-width: 575.98px)",
-                        fits:       size => size < 576
-                    },
-                    // Small devices (landscape phones, 576px and up)
-                    sm: {
-                        mediaQuery: "(min-width: 576px) and (max-width: 767.98px)",
-                        fits:       size => size >= 576 && size < 768
-                    },
-                    // Medium devices (tablets, 768px and up)
-                    md: {
-                        mediaQuery: "(min-width: 768px) and (max-width: 991.98px)",
-                        fits:       size => size >= 768 && size < 992
-                    },
-                    // Large devices (desktops, 992px and up)
-                    lg: {
-                        mediaQuery: "(min-width: 992px) and (max-width: 1199.98px)",
-                        fits:       size => size >= 992 && size < 1200
-                    },
-                    // Extra large devices (large desktops, 1200px and up)
-                    xl: {
-                        mediaQuery: "(min-width: 1200px)",
-                        fits:       size => size >= 1200
-                    }
-                }
+                loading:         false,
+                photo:           new Photo(),
+                imageUrl:        "",
+                previewImageUrl: "",
+                command:         null,
+                show:            false,
+                activeTab:       "file",
+                uploadHeaders:   {}
             }
         },
 
@@ -163,26 +136,35 @@
             },
 
             insertImage() {
+                let sources = this.photo.sizes
+                                  .map(size => Number(size))
+                                  .filter(size => size >= 440) // Minimum size for srcset
+                                  .sort((a, b) => a - b)
+                                  .map(size => {
+                                      return {
+                                          media:  Photo.getMediaBreakPoint(size),
+                                          srcset: `${this.photo.public_path}/${size}.jpg`
+                                      }
+                                  })
+                let src = `${this.photo.public_path}/original.jpg`
+
+                if (this.photo.sizes.map(size => Number(size)).includes(1920)) {
+                    src = `${this.photo.public_path}/1920.jpg`
+                } else {
+                    sources = sources.concat([{
+                        media:  Photo.getMediaBreakPoint(this.photo.width),
+                        srcset: `${this.photo.public_path}/original.jpg`
+                    }])
+                }
+
                 const data = {
                     command: this.command,
                     data:    {
-                        src:       this.imageUrl,
+                        src:       src,
                         alt:       this.photo.original_title,
                         title:     this.photo.original_title,
                         "data-id": this.photo.id,
-                        // srcset:    this.photo.sizes.sort()
-                        //                .map(size => `${this.photo.public_path}/${size}.jpg ${size}w`)
-                        //                .concat([`${this.photo.public_path}/original.jpg ${this.photo.width}w`])
-                        //                .join(", "),
-                        // sizes:     this.photo.sizes
-                        //                .map(size => {
-                        //                    for (let bp of Object.values(this.mediaBreakPoints)) {
-                        //                        if (bp.fits(size)) {
-                        //                            return `${bp.mediaQuery} ${size}px`
-                        //                        }
-                        //                    }
-                        //                })
-                        //                .join(", ")
+                        sources:   sources
                     }
                 }
 

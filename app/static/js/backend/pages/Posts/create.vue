@@ -199,7 +199,7 @@
                                             <el-tooltip class="item" effect="dark" content="Insert image"
                                                         placement="top-start"
                                             >
-                                                <el-button size="mini" @click="openUploadImageModal(commands.image)">
+                                                <el-button size="mini" @click="openUploadImageModal(commands.picture)">
                                                     <i class="fas fa-image"/>
                                                 </el-button>
                                             </el-tooltip>
@@ -264,9 +264,9 @@
                                                 </button>
                                             </template>
 
-                                            <template v-if="selectedType === 'image'">
+                                            <template v-if="['image', 'picture'].includes(selectedType)">
                                                 <button class="menububble__button"
-                                                        @click.prevent="openEditImageModal(commands.image, editor.state.selection)">
+                                                        @click.prevent="openEditImageModal(commands.picture, editor.state.selection)">
                                                     <i class="fas fa-image"/>
                                                 </button>
                                             </template>
@@ -325,15 +325,14 @@
         TodoItem,
         TodoList,
         Underline,
-    }                                                               from "tiptap-extensions"
-    import UploadImageModal                                         from "../../components/editor/UploadImage"
-    import EditImageModal                                           from "../../components/editor/EditImage"
-    import Iframe                                                   from "../../components/editor/Iframe"
-    import Image                                                    from "../../components/editor/Image"
-    import CreatePartial                                            from "../../components/CreatePartial"
-    import Post                                                     from "../../models/Post"
-    import Category                                                 from "../../models/Category"
-    import Photo                                                    from "../../models/Image"
+    }                       from "tiptap-extensions"
+    import UploadImageModal from "../../components/editor/UploadImage"
+    import EditImageModal   from "../../components/editor/EditImage"
+    import Iframe           from "../../components/editor/Iframe"
+    import Picture          from "../../components/editor/Picture"
+    import CreatePartial    from "../../components/CreatePartial"
+    import Post             from "../../models/Post"
+    import Category         from "../../models/Category"
 
     export default {
         name: "CreatePost",
@@ -374,7 +373,6 @@
                                                      new Heading({levels: [1, 2, 3]}),
                                                      new History(),
                                                      new HorizontalRule(),
-                                                     new Image(),
                                                      new Italic(),
                                                      new Link(),
                                                      new ListItem(),
@@ -385,6 +383,7 @@
                                                      new Underline(),
                                                      // custom extensions
                                                      new Iframe(),
+                                                     new Picture(),
                                                  ],
                                                  content:    "",
                                                  onUpdate:   ({getJSON, getHTML}) => {
