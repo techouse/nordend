@@ -33,10 +33,10 @@ export default class Picture extends Image {
             draggable:  true,
             parseDOM:   [
                 {
-                    tag: "picture",
+                    tag: "span.picture",
                     getAttrs(dom) {
                         return {
-                            "data-id": dom.dataset["id"],
+                            "data-id": dom.getElementsByTagName("picture")[0].dataset["id"],
                             src:       dom.getElementsByTagName("img")[0].getAttribute("src"),
                             title:     dom.getElementsByTagName("img")[0].getAttribute("title"),
                             alt:       dom.getElementsByTagName("img")[0].getAttribute("alt"),
@@ -46,19 +46,24 @@ export default class Picture extends Image {
                                     srcset: source.getAttribute("srcset")
                                 }
                             }),
-                            href:      dom.parentElement.nodeName.toLowerCase() === "a"
-                                       ? dom.parentElement.getAttribute("href")
+                            href:      dom.getElementsByTagName("a").length
+                                       ? dom.getElementsByTagName("a")[0].getAttribute("href")
                                        : null
                         }
                     },
                 },
             ],
             toDOM(node) {
+                const wrapper = [
+                    "span",
+                    {class: "picture"}
+                ]
+
                 const anchor = [
                     "a",
                     {
-                        href:  node.attrs.href,
-                        rel:   "noopener noreferrer nofollow"
+                        href: node.attrs.href,
+                        rel:  "noopener noreferrer nofollow"
                     }
                 ]
 
@@ -79,10 +84,10 @@ export default class Picture extends Image {
                 ]
 
                 if (node.attrs.href) {
-                    return [...anchor, picture]
+                    return [...wrapper, [...anchor, picture]]
                 }
 
-                return picture
+                return [...wrapper, picture]
             }
         }
     }
