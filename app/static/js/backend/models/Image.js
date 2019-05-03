@@ -5,7 +5,7 @@ export default class Image {
         this.author_id = null
         this.public_path = null
         this.original_filename = null
-        this.sizes = {}
+        this.sizes = []
         this.created_at = null
 
         Object.assign(this, values)

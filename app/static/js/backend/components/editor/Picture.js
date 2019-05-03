@@ -31,10 +31,10 @@ export default class Picture extends Image {
                 {
                     tag:      "picture",
                     getAttrs: dom => ({
+                        "data-id": dom.dataset["id"],
                         src:       dom.getElementsByTagName("img")[0].getAttribute("src"),
                         title:     dom.getElementsByTagName("img")[0].getAttribute("title"),
                         alt:       dom.getElementsByTagName("img")[0].getAttribute("alt"),
-                        "data-id": dom.dataset["id"],
                         sources:   [...dom.getElementsByTagName("source")].map(source => {
                             return {
                                 media:       source.getAttribute("media"),
@@ -53,8 +53,7 @@ export default class Picture extends Image {
                     {
                         src:       node.attrs.src,
                         title:     node.attrs.title,
-                        alt:       node.attrs.alt,
-                        "data-id": node.attrs["data-id"]
+                        alt:       node.attrs.alt
                     }
                 ]
             ],

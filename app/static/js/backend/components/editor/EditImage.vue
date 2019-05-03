@@ -49,7 +49,10 @@
         computed: {
             sizes() {
                 if (this.photo.sizes.length && this.photo.width) {
-                    return this.photo.sizes.sort()
+                    return this.photo.sizes
+                               .map(size => Number(size))
+                               .filter(size => size >= 440) // Minimum size for srcset
+                               .sort((a, b) => a - b)
                                .map(size => {
                                    return {url: `${this.photo.public_path}/${size}.jpg`, size: size}
                                })
@@ -64,9 +67,9 @@
             ...mapActions("alert", ["error"]),
             ...mapActions("image", ["getImage"]),
 
-            showModal(command, photoId) {
+            showModal(command, pictureId) {
                 this.$set(this, "command", command)
-                this.getImage(photoId)
+                this.getImage(pictureId)
                     .then(({data}) => {
                         this.$set(this, "photo", new Photo(data))
                         this.$set(this, "show", true)
@@ -86,19 +89,16 @@
                         alt:       this.photo.original_title,
                         title:     this.photo.original_title,
                         "data-id": this.photo.id,
-                        // srcset:    this.photo.sizes.sort()
-                        //                .map(size => `${this.photo.public_path}/${size}.jpg ${size}w`)
-                        //                .concat([`${this.photo.public_path}/original.jpg ${this.photo.width}w`])
-                        //                .join(", "),
-                        // sizes:     this.photo.sizes
-                        //                .map(size => {
-                        //                    for (let bp of Object.values(this.mediaBreakPoints)) {
-                        //                        if (bp.fits(size)) {
-                        //                            return `${bp.mediaQuery} ${size}px`
-                        //                        }
-                        //                    }
-                        //                })
-                        //                .join(", ")
+                        sources:   this.photo.sizes
+                                       .map(size => Number(size))
+                                       .filter(size => size >= 440) // Minimum size for srcset
+                                       .sort((a, b) => a - b)
+                                       .map(size => {
+                                           return {
+                                               media:  Photo.getMediaBreakPoint(size),
+                                               srcset: `${this.photo.public_path}/${size}.jpg`
+                                           }
+                                       })
                     }
                 }
 

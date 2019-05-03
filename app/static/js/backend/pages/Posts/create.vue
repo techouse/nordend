@@ -264,7 +264,7 @@
                                                 </button>
                                             </template>
 
-                                            <template v-if="['image', 'picture'].includes(selectedType)">
+                                            <template v-if="['image', 'picture'].includes(selectedType) && getPictureId(editor.state.selection)">
                                                 <button class="menububble__button"
                                                         @click.prevent="openEditImageModal(commands.picture, editor.state.selection)">
                                                     <i class="fas fa-image"/>
@@ -440,9 +440,13 @@
                 this.$refs["upload-image-modal"].showModal(command)
             },
 
+            getPictureId(selection) {
+                return selection.node ? selection.node.attrs["data-id"] : selection.toJSON().attrs["data-id"]
+            },
+
             openEditImageModal(command, selection) {
-                const photoId = selection.node ? selection.node.attrs["data-id"] : selection.toJSON().attrs["data-id"]
-                this.$refs["edit-image-modal"].showModal(command, photoId)
+                const pictureId = this.getPictureId(selection)
+                this.$refs["edit-image-modal"].showModal(command, pictureId)
             },
 
             addCommand(data) {

@@ -136,7 +136,11 @@
             },
 
             insertImage() {
-                let sources = this.photo.sizes
+                let sources = [],
+                    src     = this.imageUrl
+
+                if (this.photo.id) {
+                    sources = this.photo.sizes
                                   .map(size => Number(size))
                                   .filter(size => size >= 440) // Minimum size for srcset
                                   .sort((a, b) => a - b)
@@ -146,15 +150,15 @@
                                           srcset: `${this.photo.public_path}/${size}.jpg`
                                       }
                                   })
-                let src = `${this.photo.public_path}/original.jpg`
 
-                if (this.photo.sizes.map(size => Number(size)).includes(1920)) {
-                    src = `${this.photo.public_path}/1920.jpg`
-                } else {
-                    sources = sources.concat([{
-                        media:  Photo.getMediaBreakPoint(this.photo.width),
-                        srcset: `${this.photo.public_path}/original.jpg`
-                    }])
+                    if (this.photo.sizes.map(size => Number(size)).includes(1920)) {
+                        src = `${this.photo.public_path}/1920.jpg`
+                    } else {
+                        sources = sources.concat([{
+                            media:  Photo.getMediaBreakPoint(this.photo.width),
+                            srcset: `${this.photo.public_path}/original.jpg`
+                        }])
+                    }
                 }
 
                 const data = {
