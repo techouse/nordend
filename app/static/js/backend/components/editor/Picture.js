@@ -23,6 +23,9 @@ export default class Picture extends Image {
                 },
                 sources:   {
                     default: []
+                },
+                href:      {
+                    default: null
                 }
             },
             group:      "inline",
@@ -41,23 +44,47 @@ export default class Picture extends Image {
                                 media:  source.getAttribute("media"),
                                 srcset: source.getAttribute("srcset")
                             }
-                        })
+                        }),
+                        href:      dom.parentElement.nodeName.toLowerCase() === "a"
+                                   ? dom.parentElement.getAttribute("href")
+                                   : null
                     }),
                 },
             ],
-            toDOM:      node => [
-                "picture",
-                {"data-id": node.attrs["data-id"]},
-                ...node.attrs.sources.map(source => ["source", source]),
-                [
-                    "img",
-                    {
-                        src:   node.attrs.src,
-                        title: node.attrs.title,
-                        alt:   node.attrs.alt
-                    }
-                ]
-            ],
+            toDOM:      node => node.attrs.href ?
+                                [
+                                    "a",
+                                    {
+                                        href: node.attrs.href,
+                                        rel: "noopener noreferrer nofollow"
+                                    },
+                                    [
+                                        "picture",
+                                        {"data-id": node.attrs["data-id"]},
+                                        ...node.attrs.sources.map(source => ["source", source]),
+                                        [
+                                            "img",
+                                            {
+                                                src:   node.attrs.src,
+                                                title: node.attrs.title,
+                                                alt:   node.attrs.alt
+                                            }
+                                        ]
+                                    ]
+                                ] :
+                                [
+                                    "picture",
+                                    {"data-id": node.attrs["data-id"]},
+                                    ...node.attrs.sources.map(source => ["source", source]),
+                                    [
+                                        "img",
+                                        {
+                                            src:   node.attrs.src,
+                                            title: node.attrs.title,
+                                            alt:   node.attrs.alt
+                                        }
+                                    ]
+                                ],
         }
     }
 
@@ -97,6 +124,14 @@ export default class Picture extends Image {
                         this.updateAttrs({alt})
                     }
                 },
+                href:  {
+                    get() {
+                        return this.node.attrs.href
+                    },
+                    set(href) {
+                        this.updateAttrs({href})
+                    }
+                },
                 sources() {
                     return this.node.attrs.sources
                 },
@@ -114,6 +149,11 @@ export default class Picture extends Image {
                                 @show="popoverVisible = true"
                                 @hide="popoverVisible = false">
                         <el-form :ref="formRef">
+                            <el-form-item :style="{marginBottom: '10px'}">
+                                <el-input v-model="href" type="url" size="small" placeholder="Enter url ...">
+                                    <template slot="prepend">Url</template>
+                                </el-input>
+                            </el-form-item>
                             <el-form-item :style="{marginBottom: '10px'}">
                                 <el-input v-model="title" size="small" placeholder="Enter title ...">
                                     <template slot="prepend">Title</template>
