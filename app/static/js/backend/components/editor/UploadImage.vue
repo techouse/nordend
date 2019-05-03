@@ -146,8 +146,9 @@
                                   .sort((a, b) => a - b)
                                   .map(size => {
                                       return {
-                                          media:  Photo.getMediaBreakPoint(size),
-                                          srcset: `${this.photo.public_path}/${size}.jpg`
+                                          media:       Photo.getMediaBreakPoint(size),
+                                          srcset:      `${this.photo.public_path}/${size}.jpg`,
+                                          "data-size": size
                                       }
                                   })
 
@@ -155,8 +156,9 @@
                         src = `${this.photo.public_path}/1920.jpg`
                     } else {
                         sources = sources.concat([{
-                            media:  Photo.getMediaBreakPoint(this.photo.width),
-                            srcset: `${this.photo.public_path}/original.jpg`
+                            media:       Photo.getMediaBreakPoint(this.photo.width),
+                            srcset:      `${this.photo.public_path}/original.jpg`,
+                            "data-size": this.photo.width
                         }])
                     }
                 }

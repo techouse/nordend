@@ -29,62 +29,61 @@ export default class Picture extends Image {
                 }
             },
             group:      "inline",
-            selectable: false,
+            selectable: true,
             draggable:  true,
             parseDOM:   [
                 {
-                    tag:      "picture",
-                    getAttrs: dom => ({
-                        "data-id": dom.dataset["id"],
-                        src:       dom.getElementsByTagName("img")[0].getAttribute("src"),
-                        title:     dom.getElementsByTagName("img")[0].getAttribute("title"),
-                        alt:       dom.getElementsByTagName("img")[0].getAttribute("alt"),
-                        sources:   [...dom.getElementsByTagName("source")].map(source => {
-                            return {
-                                media:  source.getAttribute("media"),
-                                srcset: source.getAttribute("srcset")
-                            }
-                        }),
-                        href:      dom.parentElement.nodeName.toLowerCase() === "a"
-                                   ? dom.parentElement.getAttribute("href")
-                                   : null
-                    }),
+                    tag: "picture",
+                    getAttrs(dom) {
+                        return {
+                            "data-id": dom.dataset["id"],
+                            src:       dom.getElementsByTagName("img")[0].getAttribute("src"),
+                            title:     dom.getElementsByTagName("img")[0].getAttribute("title"),
+                            alt:       dom.getElementsByTagName("img")[0].getAttribute("alt"),
+                            sources:   [...dom.getElementsByTagName("source")].map(source => {
+                                return {
+                                    media:  source.getAttribute("media"),
+                                    srcset: source.getAttribute("srcset")
+                                }
+                            }),
+                            href:      dom.parentElement.nodeName.toLowerCase() === "a"
+                                       ? dom.parentElement.getAttribute("href")
+                                       : null
+                        }
+                    },
                 },
             ],
-            toDOM:      node => node.attrs.href ?
-                                [
-                                    "a",
-                                    {
-                                        href: node.attrs.href,
-                                        rel: "noopener noreferrer nofollow"
-                                    },
-                                    [
-                                        "picture",
-                                        {"data-id": node.attrs["data-id"]},
-                                        ...node.attrs.sources.map(source => ["source", source]),
-                                        [
-                                            "img",
-                                            {
-                                                src:   node.attrs.src,
-                                                title: node.attrs.title,
-                                                alt:   node.attrs.alt
-                                            }
-                                        ]
-                                    ]
-                                ] :
-                                [
-                                    "picture",
-                                    {"data-id": node.attrs["data-id"]},
-                                    ...node.attrs.sources.map(source => ["source", source]),
-                                    [
-                                        "img",
-                                        {
-                                            src:   node.attrs.src,
-                                            title: node.attrs.title,
-                                            alt:   node.attrs.alt
-                                        }
-                                    ]
-                                ],
+            toDOM(node) {
+                const anchor = [
+                    "a",
+                    {
+                        href:  node.attrs.href,
+                        rel:   "noopener noreferrer nofollow"
+                    }
+                ]
+
+                const picture = [
+                    "picture",
+                    {
+                        "data-id": node.attrs["data-id"],
+                    },
+                    ...node.attrs.sources.map(source => ["source", source]),
+                    [
+                        "img",
+                        {
+                            src:   node.attrs.src,
+                            title: node.attrs.title,
+                            alt:   node.attrs.alt
+                        }
+                    ]
+                ]
+
+                if (node.attrs.href) {
+                    return [...anchor, picture]
+                }
+
+                return picture
+            }
         }
     }
 
@@ -159,14 +158,14 @@ export default class Picture extends Image {
                                     <template slot="prepend">Title</template>
                                 </el-input>
                             </el-form-item>
-                            <el-form-item :style="{marginBottom: '10px'}">
+                            <el-form-item :style="{marginBottom: 0}">
                                 <el-input v-model="alt" size="small" placeholder="Enter alt ...">
                                     <template slot="prepend">Alt</template>
                                 </el-input>
                             </el-form-item>
                         </el-form>
                         <picture slot="reference" 
-                                :data-id="dataId" 
+                                :data-id="dataId"
                                 :style="{outline: popoverVisible ? 'thin dashed dimgrey' : 'none'}">
                             <source v-for="source in sources" 
                                     :key="source.srcset" 
