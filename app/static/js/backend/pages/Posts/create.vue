@@ -403,6 +403,12 @@
             }
         },
 
+        watch: {
+            selectedType(type) {
+                console.log(type)
+            }
+        },
+
         created() {
             this.getCategories()
                 .then(({data}) => {
