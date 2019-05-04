@@ -37,11 +37,17 @@ export default class Picture extends Image {
                 {
                     tag: "span.picture",
                     getAttrs(dom) {
+                        const pictures = dom.getElementsByTagName("picture")
+                        const img = dom.getElementsByTagName("img")[0]
+                        const anchors = dom.getElementsByTagName("a")
+
                         return {
-                            "data-id": dom.getElementsByTagName("picture")[0].dataset["id"],
-                            src:       dom.getElementsByTagName("img")[0].getAttribute("src"),
-                            title:     dom.getElementsByTagName("img")[0].getAttribute("title"),
-                            alt:       dom.getElementsByTagName("img")[0].getAttribute("alt"),
+                            "data-id": pictures.length
+                                       ? pictures[0].dataset["id"]
+                                       : img.dataset["id"],
+                            src:       img.getAttribute("src"),
+                            title:     img.getAttribute("title"),
+                            alt:       img.getAttribute("alt"),
                             sources:   [...dom.getElementsByTagName("source")].map(source => {
                                 return {
                                     media:       source.getAttribute("media"),
@@ -49,8 +55,8 @@ export default class Picture extends Image {
                                     "data-size": source.dataset["size"]
                                 }
                             }),
-                            href:      dom.getElementsByTagName("a").length
-                                       ? dom.getElementsByTagName("a")[0].getAttribute("href")
+                            href:      anchors.length
+                                       ? anchors[0].getAttribute("href")
                                        : null
                         }
                     },
@@ -79,9 +85,10 @@ export default class Picture extends Image {
                     [
                         "img",
                         {
-                            src:   node.attrs.src,
-                            title: node.attrs.title,
-                            alt:   node.attrs.alt
+                            src:       node.attrs.src,
+                            title:     node.attrs.title,
+                            alt:       node.attrs.alt,
+                            "data-id": node.attrs["data-id"],
                         }
                     ]
                 ]
@@ -97,6 +104,7 @@ export default class Picture extends Image {
             props:    ["node", "updateAttrs", "editable"],
             data() {
                 return {
+                    loading:        false,
                     popoverVisible: false,
                     photo:          new Photo()
                 }
@@ -163,15 +171,27 @@ export default class Picture extends Image {
             watch:    {
                 popoverVisible(visible) {
                     if (visible && !this.photo.id && this.dataId) {
+                        this.$set(this, "loading", true)
+
                         this.getImage(this.dataId)
-                            .then(({data}) => this.$set(this, "photo", new Photo(data)))
+                            .then(({data}) => {
+                                this.$set(this, "photo", new Photo(data))
+                                this.$set(this, "loading", false)
+                            })
                             .catch(() => this.error("Could not load image data"))
                     }
                 }
             },
             methods:  {
                 ...mapActions("alert", ["error"]),
-                ...mapActions("image", ["getImage"])
+                ...mapActions("image", ["getImage"]),
+                showPopover() {
+                    this.$set(this, "popoverVisible", true)
+                },
+                hidePopover() {
+                    this.$set(this, "popoverVisible", false)
+                    this.$set(this, "loading", false)
+                }
             },
             template: `
                 <div :style="{lineHeight: 0, fontSize: 0}">
@@ -180,9 +200,9 @@ export default class Picture extends Image {
                                 trigger="click"
                                 title="Picture details"
                                 :disabled="!editable"
-                                @show="popoverVisible = true"
-                                @hide="popoverVisible = false">
-                        <el-form :ref="formRef" label-position="right">
+                                @show="showPopover"
+                                @hide="hidePopover">
+                        <el-form v-loading="loading" :ref="formRef" label-position="right">
                             <el-form-item :style="{marginBottom: '10px'}">
                                 <el-input v-model="href" type="url" size="small" placeholder="Enter url ...">
                                     <template slot="prepend">Url</template>
@@ -198,7 +218,9 @@ export default class Picture extends Image {
                                     <template slot="prepend">Alt</template>
                                 </el-input>
                             </el-form-item>
-                            <el-form-item v-if="photo.id" :style="{marginBottom: 0}" label="Responsive sizes">
+                            <el-form-item v-if="photo.id" 
+                                          :style="{marginBottom: 0}" 
+                                          label="Responsive sizes">
                                 <el-checkbox-group size="small" v-model="sources">
                                     <el-checkbox-button v-for="size in photo.sizes" 
                                                         :label="size"
@@ -209,8 +231,8 @@ export default class Picture extends Image {
                             </el-form-item>
                         </el-form>
                         <picture slot="reference" 
-                                :data-id="dataId"
-                                :style="{outline: popoverVisible ? 'thin dashed dimgrey' : 'none'}">
+                                 :data-id="dataId"
+                                 :style="{outline: popoverVisible ? 'thin dashed dimgrey' : 'none'}">
                             <source v-for="source in sources" 
                                     :key="source.srcset" 
                                     :media="source.media" 

@@ -208,12 +208,14 @@
                                 </editor-menu-bar>
 
                                 <editor-menu-bubble :editor="editor">
-                                    <div v-show="!['image', 'picture'].includes(selectedType)"
-                                         slot-scope="{ commands, isActive, getMarkAttrs, menu }"
+                                    <div slot-scope="{ commands, isActive, getMarkAttrs, menu }"
                                          class="menububble"
-                                         :class="{ 'is-active': menu.isActive || linkMenuIsActive }"
+                                         :class="{ 'is-active': menu.isActive || linkMenuIsActive, 'bg-transparent': ['image', 'picture'].includes(selectedType) }"
                                          :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
                                     >
+                                        <template>
+
+                                        </template>
                                         <form v-if="linkMenuIsActive" class="menububble__form"
                                               @submit.prevent="setLinkUrl(commands.link, linkUrl)"
                                         >
