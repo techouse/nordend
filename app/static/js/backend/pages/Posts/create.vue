@@ -297,7 +297,6 @@
             </div>
         </div>
         <upload-image-modal ref="upload-image-modal" :post-id="post.id" @onConfirm="addCommand" />
-        <edit-image-modal ref="edit-image-modal" @onConfirm="editCommand" />
     </div>
 </template>
 
@@ -324,7 +323,6 @@
         Underline,
     }                       from "tiptap-extensions"
     import UploadImageModal from "../../components/editor/UploadImage"
-    import EditImageModal   from "../../components/editor/EditImage"
     import Iframe           from "../../components/editor/Iframe"
     import Picture          from "../../components/editor/Picture"
     import CreatePartial    from "../../components/CreatePartial"
@@ -338,8 +336,7 @@
             EditorContent,
             EditorMenuBar,
             EditorMenuBubble,
-            "upload-image-modal": UploadImageModal,
-            "edit-image-modal":   EditImageModal
+            "upload-image-modal": UploadImageModal
         },
 
         extends: CreatePartial,
@@ -437,23 +434,7 @@
                 this.$refs["upload-image-modal"].showModal(command)
             },
 
-            getPictureId(selection) {
-                return selection.node ? selection.node.attrs["data-id"] : selection.toJSON().attrs["data-id"]
-            },
-
-            openEditImageModal(command, selection) {
-                const pictureId = this.getPictureId(selection)
-                this.$refs["edit-image-modal"].showModal(command, pictureId)
-            },
-
             addCommand(data) {
-                if (data.command !== null) {
-                    data.command(data.data)
-                }
-            },
-
-            editCommand(data) {
-                // TODO figure out how to modify the SRC instead of creating a new image
                 if (data.command !== null) {
                     data.command(data.data)
                 }
