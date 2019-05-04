@@ -13,7 +13,7 @@
                     </div>
                     <div class="card-body">
                         <el-form-item label="Title" prop="title">
-                            <el-input v-model="post.title" type="string" required/>
+                            <el-input v-model="post.title" type="string" required />
                         </el-form-item>
                         <el-form-item label="Category" prop="category_id">
                             <el-select v-model="post.category_id" placeholder="Post category" required>
@@ -35,7 +35,7 @@
                                                 <el-button size="mini"
                                                            @click="commands.undo"
                                                 >
-                                                    <i class="far fa-undo"/>
+                                                    <i class="far fa-undo" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -46,7 +46,7 @@
                                                            title="Redo"
                                                            @click="commands.redo"
                                                 >
-                                                    <i class="far fa-redo"/>
+                                                    <i class="far fa-redo" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -55,7 +55,7 @@
                                                            :class="{ 'is-active': isActive.bold() }"
                                                            @click="commands.bold"
                                                 >
-                                                    <i class="far fa-bold"/>
+                                                    <i class="far fa-bold" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -66,7 +66,7 @@
                                                            :class="{ 'is-active': isActive.italic() }"
                                                            @click="commands.italic"
                                                 >
-                                                    <i class="far fa-italic"/>
+                                                    <i class="far fa-italic" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -77,7 +77,7 @@
                                                            :class="{ 'is-active': isActive.strike() }"
                                                            @click="commands.strike"
                                                 >
-                                                    <i class="far fa-strikethrough"/>
+                                                    <i class="far fa-strikethrough" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -88,7 +88,7 @@
                                                            :class="{ 'is-active': isActive.underline() }"
                                                            @click="commands.underline"
                                                 >
-                                                    <i class="far fa-underline"/>
+                                                    <i class="far fa-underline" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -97,7 +97,7 @@
                                                            :class="{ 'is-active': isActive.code() }"
                                                            @click="commands.code"
                                                 >
-                                                    <i class="far fa-code"/>
+                                                    <i class="far fa-code" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -108,7 +108,7 @@
                                                            :class="{ 'is-active': isActive.paragraph() }"
                                                            @click="commands.paragraph"
                                                 >
-                                                    <i class="far fa-paragraph"/>
+                                                    <i class="far fa-paragraph" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -119,7 +119,7 @@
                                                            :class="{ 'is-active': isActive.heading({ level: 1 }) }"
                                                            @click="commands.heading({ level: 1 })"
                                                 >
-                                                    <i class="far fa-h1"/>
+                                                    <i class="far fa-h1" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -130,7 +130,7 @@
                                                            :class="{ 'is-active': isActive.heading({ level: 2 }) }"
                                                            @click="commands.heading({ level: 2 })"
                                                 >
-                                                    <i class="far fa-h2"/>
+                                                    <i class="far fa-h2" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -142,7 +142,7 @@
                                                            :class="{ 'is-active': isActive.heading({ level: 3 }) }"
                                                            @click="commands.heading({ level: 3 })"
                                                 >
-                                                    <i class="far fa-h3"/>
+                                                    <i class="far fa-h3" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -153,7 +153,7 @@
                                                            :class="{ 'is-active': isActive.bullet_list() }"
                                                            @click="commands.bullet_list"
                                                 >
-                                                    <i class="far fa-list-ul"/>
+                                                    <i class="far fa-list-ul" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -164,7 +164,7 @@
                                                            :class="{ 'is-active': isActive.ordered_list() }"
                                                            @click="commands.ordered_list"
                                                 >
-                                                    <i class="far fa-list-ol"/>
+                                                    <i class="far fa-list-ol" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -175,7 +175,7 @@
                                                            :class="{ 'is-active': isActive.blockquote() }"
                                                            @click="commands.blockquote"
                                                 >
-                                                    <i class="far fa-quote-right"/>
+                                                    <i class="far fa-quote-right" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -186,7 +186,7 @@
                                                            :class="{ 'is-active': isActive.code_block() }"
                                                            @click="commands.code_block"
                                                 >
-                                                    <i class="far fa-laptop-code"/>
+                                                    <i class="far fa-laptop-code" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -196,7 +196,7 @@
                                                 <el-button size="mini"
                                                            @click="commands.horizontal_rule"
                                                 >
-                                                    <i class="far fa-minus"/>
+                                                    <i class="far fa-minus" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -206,7 +206,7 @@
                                                 <el-button size="mini"
                                                            @click="openUploadImageModal(commands.picture)"
                                                 >
-                                                    <i class="fas fa-image"/>
+                                                    <i class="fas fa-image" />
                                                 </el-button>
                                             </el-tooltip>
 
@@ -216,7 +216,7 @@
                                                 <el-button size="mini"
                                                            @click="commands.createTable({rowsCount: 3, colsCount: 3, withHeaderRow: false })"
                                                 >
-                                                    <i class="fal fa-table"/>
+                                                    <i class="fal fa-table" />
                                                 </el-button>
                                             </el-tooltip>
                                         </el-button-group>
@@ -226,63 +226,70 @@
                                                         placement="top-start"
                                             >
                                                 <el-button size="mini" @click="commands.deleteTable">
-                                                    <i class="fal fa-table"/>
+                                                    <i class="fal fa-table" />
                                                     <i class="fas fa-times-circle text-danger"
-                                                       :style="{fontSize: '.66rem'}"/>
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
                                                 </el-button>
                                             </el-tooltip>
                                             <el-tooltip class="item" effect="dark" content="Insert column before"
                                                         placement="top-start"
                                             >
                                                 <el-button size="mini" @click="commands.addColumnBefore">
-                                                    <i class="fal fa-th-list"/>
+                                                    <i class="fal fa-th-list" />
                                                     <i class="fas fa-plus-circle text-success"
-                                                       :style="{fontSize: '.66rem'}"/>
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
                                                 </el-button>
                                             </el-tooltip>
                                             <el-tooltip class="item" effect="dark" content="Insert column after"
                                                         placement="top-start"
                                             >
                                                 <el-button size="mini" @click="commands.addColumnAfter">
-                                                    <i class="fal fa-th-list fa-flip-horizontal"/>
+                                                    <i class="fal fa-th-list fa-flip-horizontal" />
                                                     <i class="fas fa-plus-circle text-success"
-                                                       :style="{fontSize: '.66rem'}"/>
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
                                                 </el-button>
                                             </el-tooltip>
                                             <el-tooltip class="item" effect="dark" content="Delete column"
                                                         placement="top-start"
                                             >
                                                 <el-button size="mini" @click="commands.deleteColumn">
-                                                    <i class="fal fa-th-list"/>
+                                                    <i class="fal fa-th-list" />
                                                     <i class="fas fa-times-circle text-danger"
-                                                       :style="{fontSize: '.66rem'}"/>
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
                                                 </el-button>
                                             </el-tooltip>
                                             <el-tooltip class="item" effect="dark" content="Insert row before"
                                                         placement="top-start"
                                             >
                                                 <el-button size="mini" @click="commands.addRowBefore">
-                                                    <i class="fal fa-th-list fa-rotate-90"/>
+                                                    <i class="fal fa-th-list fa-rotate-90" />
                                                     <i class="fas fa-plus-circle text-success"
-                                                       :style="{fontSize: '.66rem'}"/>
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
                                                 </el-button>
                                             </el-tooltip>
                                             <el-tooltip class="item" effect="dark" content="Insert row after"
                                                         placement="top-start"
                                             >
                                                 <el-button size="mini" @click="commands.addRowAfter">
-                                                    <i class="fal fa-th-list fa-rotate-270"/>
+                                                    <i class="fal fa-th-list fa-rotate-270" />
                                                     <i class="fas fa-plus-circle text-success"
-                                                       :style="{fontSize: '.66rem'}"/>
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
                                                 </el-button>
                                             </el-tooltip>
                                             <el-tooltip class="item" effect="dark" content="Delete row"
                                                         placement="top-start"
                                             >
                                                 <el-button size="mini" @click="commands.deleteRow">
-                                                    <i class="fal fa-th-list fa-rotate-90"/>
+                                                    <i class="fal fa-th-list fa-rotate-90" />
                                                     <i class="fas fa-times-circle text-danger"
-                                                       :style="{fontSize: '.66rem'}"/>
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
                                                 </el-button>
                                             </el-tooltip>
                                             <el-tooltip class="item" effect="dark" content="Merge cells"
@@ -290,10 +297,12 @@
                                             >
                                                 <el-button size="mini" @click="commands.toggleCellMerge">
                                                     <i class="fas fa-arrow-alt-circle-right text-primary"
-                                                       :style="{fontSize: '.66rem'}"/>
-                                                    <i class="fal fa-columns"/>
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
+                                                    <i class="fal fa-columns" />
                                                     <i class="fas fa-arrow-alt-circle-left text-primary"
-                                                       :style="{fontSize: '.66rem'}"/>
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
                                                 </el-button>
                                             </el-tooltip>
                                         </el-button-group>
@@ -306,7 +315,7 @@
                                          :class="{ 'is-active': menu.isActive || linkMenuIsActive, 'bg-transparent': ['image', 'picture'].includes(selectedType) }"
                                          :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
                                     >
-                                        <template/>
+                                        <template />
                                         <form v-if="linkMenuIsActive" class="menububble__form"
                                               @submit.prevent="setLinkUrl(commands.link, linkUrl)"
                                         >
@@ -316,7 +325,7 @@
                                             <button class="menububble__button" type="button"
                                                     @click.prevent="setLinkUrl(commands.link, null)"
                                             >
-                                                <i class="far fa-times-circle"/>
+                                                <i class="far fa-times-circle" />
                                             </button>
                                         </form>
 
@@ -326,35 +335,35 @@
                                                         :class="{ 'is-active': isActive.bold() }"
                                                         @click.prevent="commands.bold"
                                                 >
-                                                    <i class="far fa-bold"/>
+                                                    <i class="far fa-bold" />
                                                 </button>
 
                                                 <button class="menububble__button"
                                                         :class="{ 'is-active': isActive.italic() }"
                                                         @click.prevent="commands.italic"
                                                 >
-                                                    <i class="far fa-italic"/>
+                                                    <i class="far fa-italic" />
                                                 </button>
 
                                                 <button class="menububble__button"
                                                         :class="{ 'is-active': isActive.strike() }"
                                                         @click.prevent="commands.strike"
                                                 >
-                                                    <i class="far fa-strikethrough"/>
+                                                    <i class="far fa-strikethrough" />
                                                 </button>
 
                                                 <button class="menububble__button"
                                                         :class="{ 'is-active': isActive.underline() }"
                                                         @click.prevent="commands.underline"
                                                 >
-                                                    <i class="far fa-underline"/>
+                                                    <i class="far fa-underline" />
                                                 </button>
 
                                                 <button class="menububble__button"
                                                         :class="{ 'is-active': isActive.code() }"
                                                         @click.prevent="commands.code"
                                                 >
-                                                    <i class="far fa-code"/>
+                                                    <i class="far fa-code" />
                                                 </button>
                                             </template>
 
@@ -363,7 +372,7 @@
                                                     :class="{ 'is-active': isActive.link() }"
                                                     @click.prevent="showLinkMenu(getMarkAttrs('link'))"
                                             >
-                                                <i class="far fa-link"/>
+                                                <i class="far fa-link" />
                                                 <span v-if="isActive.link()" :style="{textIndent: '.5rem'}">
                                                     Update Link
                                                 </span>
@@ -372,7 +381,7 @@
                                     </div>
                                 </editor-menu-bubble>
 
-                                <editor-content class="editor__content" :editor="editor"/>
+                                <editor-content class="editor__content" :editor="editor" />
                             </div>
                         </el-form-item>
                     </div>
@@ -387,7 +396,7 @@
                 </el-form>
             </div>
         </div>
-        <upload-image-modal ref="upload-image-modal" :post-id="post.id" @onConfirm="addCommand"/>
+        <upload-image-modal ref="upload-image-modal" :post-id="post.id" @onConfirm="addCommand" />
     </div>
 </template>
 
@@ -399,7 +408,7 @@
         Bold,
         BulletList,
         Code,
-        CodeBlock,
+        CodeBlockHighlight,
         HardBreak,
         Heading,
         History,
@@ -423,6 +432,21 @@
     import CreatePartial                                            from "../../components/CreatePartial"
     import Post                                                     from "../../models/Post"
     import Category                                                 from "../../models/Category"
+    // Code highlighting
+    import css                                                      from "highlight.js/lib/languages/css"
+    import http                                                     from "highlight.js/lib/languages/http"
+    import javascript                                               from "highlight.js/lib/languages/javascript"
+    import json                                                     from "highlight.js/lib/languages/json"
+    import less                                                     from "highlight.js/lib/languages/less"
+    import markdown                                                 from "highlight.js/lib/languages/markdown"
+    import perl                                                     from "highlight.js/lib/languages/perl"
+    import php                                                      from "highlight.js/lib/languages/php"
+    import python                                                   from "highlight.js/lib/languages/python"
+    import ruby                                                     from "highlight.js/lib/languages/ruby"
+    import scss                                                     from "highlight.js/lib/languages/scss"
+    import shell                                                    from "highlight.js/lib/languages/shell"
+    import sql                                                      from "highlight.js/lib/languages/sql"
+    import swift                                                    from "highlight.js/lib/languages/swift"
 
     export default {
         name: "CreatePost",
@@ -457,7 +481,26 @@
                                                      new Bold(),
                                                      new BulletList(),
                                                      new Code(),
-                                                     new CodeBlock(),
+                                                     new CodeBlockHighlight(
+                                                         {
+                                                             languages: {
+                                                                 css,
+                                                                 http,
+                                                                 javascript,
+                                                                 json,
+                                                                 less,
+                                                                 markdown,
+                                                                 perl,
+                                                                 php,
+                                                                 python,
+                                                                 ruby,
+                                                                 scss,
+                                                                 shell,
+                                                                 sql,
+                                                                 swift,
+                                                             },
+                                                         }
+                                                     ),
                                                      new HardBreak(),
                                                      new Heading({levels: [1, 2, 3]}),
                                                      new History(),

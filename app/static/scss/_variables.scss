@@ -6,7 +6,8 @@ $body-bg: #f8fafc;
 $fa-font-path: "~@fortawesome/fontawesome-pro/webfonts";
 $simple-line-font-path: "~simple-line-icons/fonts/";
 $font-family-sans-serif: "Montserrat", sans-serif;
-$font-size-base: 0.9rem;
+$font-family-monospace: "Source Code Pro", monospace;
+$font-size-base: .9rem;
 $line-height-base: 1.6;
 
 // Colors
@@ -23,3 +24,5 @@ $cyan: #6cb2eb;
 $black: #000000;
 $white: #ffffff;
 $grey: #dddddd;
+$code-text: #f8f8f2;
+$code-background: #282a36;

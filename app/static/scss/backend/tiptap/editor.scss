@@ -17,15 +17,24 @@
     }
 
     pre {
-      padding: 0.7rem 1rem;
+      padding: .7rem 1rem;
       border-radius: 5px;
-      background: $black;
-      color: $white;
-      font-size: 0.8rem;
+      color: $code-text;
+      background: $code-background;
+      font-size: .9rem;
       overflow-x: auto;
 
-      code {
+      &::before {
+        content: attr(data-language);
+        text-transform: uppercase;
         display: block;
+        text-align: right;
+        font-weight: bold;
+        font-size: 0.6rem;
+      }
+
+      code {
+        @import "~highlight.js/styles/dracula";
       }
     }
 
@@ -33,10 +42,10 @@
       display: inline-block;
       padding: 0 0.4rem;
       border-radius: 5px;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       font-weight: bold;
-      background: rgba($black, 0.1);
-      color: rgba($black, 0.8);
+      color: $code-text;
+      background: $code-background;
     }
 
     ul,
