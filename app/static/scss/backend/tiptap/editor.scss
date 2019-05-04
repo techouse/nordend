@@ -74,6 +74,12 @@
       }
     }
 
+    .picture {
+      &:hover {
+        outline: thin dashed dimgrey;
+      }
+    }
+
     table {
       border-collapse: collapse;
       table-layout: fixed;

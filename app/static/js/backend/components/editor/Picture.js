@@ -211,7 +211,7 @@ export default class Picture extends Image {
                 }
             },
             template: `
-                <div :style="{lineHeight: 0, fontSize: 0}">
+                <span :style="{lineHeight: 0, fontSize: 0}" class="picture">
                     <el-popover placement="top"
                                 width="600"
                                 trigger="click"
@@ -265,7 +265,7 @@ export default class Picture extends Image {
                                  :style="{outline: popoverVisible ? 'thin dashed dimgrey' : 'none'}">
                         </template>
                     </el-popover>
-                </div>
+                </span>
             `
         }
     }
