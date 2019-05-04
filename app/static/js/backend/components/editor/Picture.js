@@ -63,7 +63,7 @@ export default class Picture extends Image {
                 },
             ],
             toDOM(node) {
-                const wrapper = [
+                const span = [
                     "span",
                     {class: "picture"}
                 ]
@@ -76,25 +76,29 @@ export default class Picture extends Image {
                     }
                 ]
 
+                const img = [
+                    "img",
+                    {
+                        src:       node.attrs.src,
+                        title:     node.attrs.title,
+                        alt:       node.attrs.alt,
+                        "data-id": node.attrs["data-id"],
+                    }
+                ]
+
                 const picture = [
                     "picture",
                     {
                         "data-id": node.attrs["data-id"],
                     },
                     ...node.attrs.sources.map(source => ["source", source]),
-                    [
-                        "img",
-                        {
-                            src:       node.attrs.src,
-                            title:     node.attrs.title,
-                            alt:       node.attrs.alt,
-                            "data-id": node.attrs["data-id"],
-                        }
-                    ]
+                    img
                 ]
 
-                return node.attrs.href ? [...wrapper, [...anchor, picture]]
-                                       : [...wrapper, picture]
+                const image = node.attrs.sources.length > 1 ? picture : img
+
+                return node.attrs.href ? [...span, [...anchor, image]]
+                                       : [...span, image]
             }
         }
     }
@@ -164,6 +168,19 @@ export default class Picture extends Image {
                                          })
                     }
                 },
+                sourceObjects() {
+                    return this.sources
+                               .map(size => Number(size))
+                               .filter(size => size >= 440) // Minimum size for srcset
+                               .sort((a, b) => a - b)
+                               .map(size => {
+                                   return {
+                                       media:       Photo.getMediaBreakPoint(size),
+                                       srcset:      `${this.photo.public_path}/${size}.jpg`,
+                                       "data-size": size
+                                   }
+                               })
+                },
                 formRef() {
                     return `picture_${this.node.attrs["data-id"] || this.node.attrs["src"]}`
                 }
@@ -218,7 +235,7 @@ export default class Picture extends Image {
                                     <template slot="prepend">Alt</template>
                                 </el-input>
                             </el-form-item>
-                            <el-form-item v-if="photo.id" 
+                            <el-form-item v-if="photo.id && photo.sizes.length > 1" 
                                           :style="{marginBottom: 0}" 
                                           label="Responsive sizes">
                                 <el-checkbox-group size="small" v-model="sources">
@@ -230,16 +247,23 @@ export default class Picture extends Image {
                                 </el-checkbox-group>
                             </el-form-item>
                         </el-form>
-                        <picture slot="reference" 
+                        <template slot="reference">
+                            <picture v-if="sources.length > 1"
+                                     :data-id="dataId"
+                                     :style="{outline: popoverVisible ? 'thin dashed dimgrey' : 'none'}">
+                                <source v-for="source in sourceObjects" 
+                                        :key="source.srcset" 
+                                        :media="source.media"
+                                        :data-size="source['data-size']">
+                                <img :src="src" :title="title" :alt="alt" :data-id="dataId">
+                            </picture>
+                            <img v-else
+                                 :src="src" 
+                                 :title="title" 
+                                 :alt="alt"
                                  :data-id="dataId"
                                  :style="{outline: popoverVisible ? 'thin dashed dimgrey' : 'none'}">
-                            <source v-for="source in sources" 
-                                    :key="source.srcset" 
-                                    :media="source.media" 
-                                    :srcset="source.srcset"
-                                    :data-size="source['data-size']">
-                            <img :src="src" :title="title" :alt="alt">
-                        </picture>
+                        </template>
                     </el-popover>
                 </div>
             `
