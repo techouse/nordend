@@ -162,7 +162,7 @@ export default class Picture extends Image {
             },
             watch:    {
                 popoverVisible(visible) {
-                    if (visible && !this.photo.id) {
+                    if (visible && !this.photo.id && this.dataId) {
                         this.getImage(this.dataId)
                             .then(({data}) => this.$set(this, "photo", new Photo(data)))
                             .catch(() => this.error("Could not load image data"))
@@ -198,7 +198,7 @@ export default class Picture extends Image {
                                     <template slot="prepend">Alt</template>
                                 </el-input>
                             </el-form-item>
-                            <el-form-item :style="{marginBottom: 0}" label="Responsive sizes">
+                            <el-form-item v-if="photo.id" :style="{marginBottom: 0}" label="Responsive sizes">
                                 <el-checkbox-group size="small" v-model="sources">
                                     <el-checkbox-button v-for="size in photo.sizes" 
                                                         :label="size"
