@@ -9,6 +9,13 @@ export default class Image {
         this.created_at = null
 
         Object.assign(this, values)
+
+        if (this.sizes.length > 0) {
+            this.sizes = this.sizes
+                             .map(size => Number(size))
+                             .filter(size => size >= 440) // Minimum size for srcset
+                             .sort((a, b) => a - b)
+        }
     }
 
     static getMediaBreakPoint(size = 0) {

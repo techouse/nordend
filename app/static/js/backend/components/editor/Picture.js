@@ -1,4 +1,6 @@
-import {Image} from "tiptap-extensions"
+import {Image}      from "tiptap-extensions"
+import {mapActions} from "vuex"
+import Photo        from "../../models/Image"
 
 export default class Picture extends Image {
     get name() {
@@ -42,8 +44,9 @@ export default class Picture extends Image {
                             alt:       dom.getElementsByTagName("img")[0].getAttribute("alt"),
                             sources:   [...dom.getElementsByTagName("source")].map(source => {
                                 return {
-                                    media:  source.getAttribute("media"),
-                                    srcset: source.getAttribute("srcset")
+                                    media:       source.getAttribute("media"),
+                                    srcset:      source.getAttribute("srcset"),
+                                    "data-size": source.dataset["size"]
                                 }
                             }),
                             href:      dom.getElementsByTagName("a").length
@@ -83,11 +86,8 @@ export default class Picture extends Image {
                     ]
                 ]
 
-                if (node.attrs.href) {
-                    return [...wrapper, [...anchor, picture]]
-                }
-
-                return [...wrapper, picture]
+                return node.attrs.href ? [...wrapper, [...anchor, picture]]
+                                       : [...wrapper, picture]
             }
         }
     }
@@ -97,14 +97,15 @@ export default class Picture extends Image {
             props:    ["node", "updateAttrs", "editable"],
             data() {
                 return {
-                    popoverVisible: false
+                    popoverVisible: false,
+                    photo:          new Photo()
                 }
             },
             computed: {
                 dataId() {
                     return this.node.attrs["data-id"]
                 },
-                src:   {
+                src:     {
                     get() {
                         return this.node.attrs.src
                     },
@@ -112,7 +113,7 @@ export default class Picture extends Image {
                         this.updateAttrs({src})
                     }
                 },
-                title: {
+                title:   {
                     get() {
                         return this.node.attrs.title
                     },
@@ -120,7 +121,7 @@ export default class Picture extends Image {
                         this.updateAttrs({title})
                     }
                 },
-                alt:   {
+                alt:     {
                     get() {
                         return this.node.attrs.alt
                     },
@@ -128,7 +129,7 @@ export default class Picture extends Image {
                         this.updateAttrs({alt})
                     }
                 },
-                href:  {
+                href:    {
                     get() {
                         return this.node.attrs.href
                     },
@@ -136,12 +137,41 @@ export default class Picture extends Image {
                         this.updateAttrs({href})
                     }
                 },
-                sources() {
-                    return this.node.attrs.sources
+                sources: {
+                    get() {
+                        return this.node.attrs.sources.map(source => Number(source["data-size"]))
+                    },
+                    set(sources) {
+                        this.updateAttrs({
+                                             sources: sources.map(size => Number(size))
+                                                             .filter(size => size >= 440) // Minimum size for srcset
+                                                             .sort((a, b) => a - b)
+                                                             .map(size => {
+                                                                 return {
+                                                                     media:       Photo.getMediaBreakPoint(size),
+                                                                     srcset:      `${this.photo.public_path}/${size}.jpg`,
+                                                                     "data-size": size
+                                                                 }
+                                                             })
+                                         })
+                    }
                 },
                 formRef() {
-                    return `picture_${this.node.attrs["data-id"]}`
+                    return `picture_${this.node.attrs["data-id"] || this.node.attrs["src"]}`
                 }
+            },
+            watch:    {
+                popoverVisible(visible) {
+                    if (visible && !this.photo.id) {
+                        this.getImage(this.dataId)
+                            .then(({data}) => this.$set(this, "photo", new Photo(data)))
+                            .catch(() => this.error("Could not load image data"))
+                    }
+                }
+            },
+            methods:  {
+                ...mapActions("alert", ["error"]),
+                ...mapActions("image", ["getImage"])
             },
             template: `
                 <div :style="{lineHeight: 0, fontSize: 0}">
@@ -152,7 +182,7 @@ export default class Picture extends Image {
                                 :disabled="!editable"
                                 @show="popoverVisible = true"
                                 @hide="popoverVisible = false">
-                        <el-form :ref="formRef">
+                        <el-form :ref="formRef" label-position="right">
                             <el-form-item :style="{marginBottom: '10px'}">
                                 <el-input v-model="href" type="url" size="small" placeholder="Enter url ...">
                                     <template slot="prepend">Url</template>
@@ -163,10 +193,19 @@ export default class Picture extends Image {
                                     <template slot="prepend">Title</template>
                                 </el-input>
                             </el-form-item>
-                            <el-form-item :style="{marginBottom: 0}">
+                            <el-form-item :style="{marginBottom: '10px'}">
                                 <el-input v-model="alt" size="small" placeholder="Enter alt ...">
                                     <template slot="prepend">Alt</template>
                                 </el-input>
+                            </el-form-item>
+                            <el-form-item :style="{marginBottom: 0}" label="Responsive sizes">
+                                <el-checkbox-group size="small" v-model="sources">
+                                    <el-checkbox-button v-for="size in photo.sizes" 
+                                                        :label="size"
+                                                        :key="size">
+                                        {{ size }}px
+                                    </el-checkbox-button>
+                                </el-checkbox-group>
                             </el-form-item>
                         </el-form>
                         <picture slot="reference" 
@@ -175,7 +214,8 @@ export default class Picture extends Image {
                             <source v-for="source in sources" 
                                     :key="source.srcset" 
                                     :media="source.media" 
-                                    :srcset="source.srcset">
+                                    :srcset="source.srcset"
+                                    :data-size="source['data-size']">
                             <img :src="src" :title="title" :alt="alt">
                         </picture>
                     </el-popover>
