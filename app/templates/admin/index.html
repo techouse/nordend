@@ -10,7 +10,7 @@
     <title>{{ title + ' |' if title else '' }} {{ config['APP_NAME'] }} | ADMIN</title>
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dist/css/backend.css') }}">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/admin.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/admin/admin.png') }}">
 
     <script>window.csrfToken="{{ csrf_token() }}";</script>
     <script defer src="{{ url_for('static', filename='dist/js/backend.js') }}"></script>
