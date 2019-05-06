@@ -230,58 +230,51 @@ export default class YouTube extends Node {
                 },
             },
             template: `
-                <el-popover placement="top"
-                            width="600"
-                            trigger="click"
-                            title="YouTube video details"
-                            :disabled="!editable"
-                            @show="showPopover"
-                            @hide="hidePopover">
-                    <el-form v-if="editable" :model="form" :ref="formRef" :rules="rules" label-placement="right" label-width="120px">
-                        <el-form-item label="YouTube URL" prop="url">
-                            <el-input type="url" v-model="url" style="width: calc(100% - 120px)"/>
-                        </el-form-item>
-                        <el-form-item label="Start at" prop="start">
-                            <el-time-picker v-model="start"
-                                            :picker-options="{format: 'HH:mm:ss'}"
-                                            placeholder="Start at"
-                                            :disabled="!youTubeId"
-                                            @change="changeStart">
-                            </el-time-picker>
-                        </el-form-item>
-                        <el-form-item prop="width" label="Width">
-                            <el-input-number :value="width"
-                                             :min="426"
-                                             :max="3840"
-                                             :disabled="!youTubeId"
-                                             required
-                                             @change="changeWidth"
-                            />
-                        </el-form-item>
-                        <el-form-item prop="height" label="Height">
-                            <el-input-number :value="height"
-                                             :min="240"
-                                             :max="2160"
-                                             :disabled="!youTubeId"
-                                             required
-                                             @change="changeHeight"
-                            />
-                        </el-form-item>
-                    </el-form>
-                    <el-image slot="reference"
-                              :src="imageSrc" 
-                              :style="{width: width + 'px', height: height + 'px'}" 
-                              :alt="url" 
-                              :title="url" 
-                              fit="cover">
-                        <div slot="placeholder" class="image-slot">
-                            Loading <span class="dot">...</span>
-                        </div>
-                        <div slot="error" class="image-slot">
-                            <i class="el-icon-picture-outline"></i>
-                        </div>
-                    </el-image>
-                </el-popover>
+                <span class="youtube">
+                    <el-popover placement="top"
+                                width="600"
+                                trigger="click"
+                                title="YouTube video details"
+                                :disabled="!editable"
+                                @show="showPopover"
+                                @hide="hidePopover">
+                        <el-form v-if="editable" :model="form" :ref="formRef" :rules="rules" label-placement="right" label-width="120px">
+                            <el-form-item label="YouTube URL" prop="url">
+                                <el-input type="url" v-model="url" style="width: calc(100% - 120px)"/>
+                            </el-form-item>
+                            <el-form-item label="Start at" prop="start">
+                                <el-time-picker v-model="start"
+                                                :picker-options="{format: 'HH:mm:ss'}"
+                                                placeholder="Start at"
+                                                :disabled="!youTubeId"
+                                                @change="changeStart">
+                                </el-time-picker>
+                            </el-form-item>
+                            <el-form-item prop="width" label="Width">
+                                <el-input-number :value="width"
+                                                 :min="426"
+                                                 :max="3840"
+                                                 :disabled="!youTubeId"
+                                                 required
+                                                 @change="changeWidth"
+                                />
+                            </el-form-item>
+                            <el-form-item prop="height" label="Height">
+                                <el-input-number :value="height"
+                                                 :min="240"
+                                                 :max="2160"
+                                                 :disabled="!youTubeId"
+                                                 required
+                                                 @change="changeHeight"
+                                />
+                            </el-form-item>
+                        </el-form>
+                        <figure slot="reference" :style="{width: width + 'px', position: 'relative'}" title="Click to edit">
+                            <img :src="imageSrc" :alt="url" :title="url" :style="{width: width + 'px', height: height + 'px'}">
+                            <figcaption><i class="fab fa-youtube"/></figcaption>
+                        </figure>
+                    </el-popover>
+                </span>
             `,
         }
     }
