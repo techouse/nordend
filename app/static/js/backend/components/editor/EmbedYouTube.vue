@@ -48,8 +48,8 @@
 </template>
 
 <script>
-    import {mapActions}   from "vuex"
-    import Modal          from "../Modal"
+    import {mapActions}                   from "vuex"
+    import Modal                          from "../Modal"
     import {
         getHours,
         getMinutes,
@@ -57,8 +57,8 @@
         setHours,
         setMinutes,
         setSeconds
-    }                     from "date-fns"
-    import {getYouTubeId} from "./YouTube"
+    }                                     from "date-fns"
+    import {getYouTubeId, getYouTubeInfo} from "./YouTube"
 
     export default {
         name: "EmbedYouTube",
@@ -82,6 +82,7 @@
                 start:       setSeconds(setMinutes(setHours(new Date(), 0), 0), 0),
                 form:        {
                     url:    null,
+                    title:  null,
                     width:  640,
                     height: 360
                 },
@@ -169,25 +170,32 @@
             insertYouTubeVideo() {
                 this.$refs["youtube_form"].validate((valid) => {
                     if (valid) {
-                        const data = {
-                            command: this.command,
-                            data:    {
-                                src:    `https://www.youtube.com/embed/${getYouTubeId(this.form.url)}`,
-                                start:  this.startSeconds,
-                                width:  this.form.width,
-                                height: this.form.height
-                            }
-                        }
+                        getYouTubeInfo(getYouTubeId(this.form.url))
+                            .then(response => {
+                                const data = {
+                                    command: this.command,
+                                    data:    {
+                                        src:    `https://www.youtube.com/embed/${getYouTubeId(this.form.url)}`,
+                                        title:  response.title,
+                                        start:  this.startSeconds,
+                                        width:  this.form.width,
+                                        height: this.form.height
+                                    }
+                                }
 
-                        this.$emit("onConfirm", data)
+                                this.$emit("onConfirm", data)
 
-                        this.$set(this, "form", {
-                            url:    null,
-                            width:  640,
-                            height: 360
-                        })
+                                this.$set(this, "form", {
+                                    url:    null,
+                                    width:  640,
+                                    height: 360
+                                })
 
-                        this.closeModal()
+                                this.closeModal()
+                            })
+                            .catch(() => {
+                                this.error("The YouTube video does not exist!")
+                            })
                     } else {
                         this.error("The YouTube URL is invalid!")
                     }

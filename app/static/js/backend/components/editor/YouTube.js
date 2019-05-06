@@ -43,6 +43,9 @@ export default class YouTube extends Node {
                 src:    {
                     default: null
                 },
+                title:  {
+                    default: null,
+                },
                 start:  {
                     default: 0
                 },
@@ -61,6 +64,7 @@ export default class YouTube extends Node {
                     getAttrs(dom) {
                         return {
                             src:    dom.getAttribute("src"),
+                            title:  dom.getAttribute("title"),
                             start:  Number(dom.dataset["start"]),
                             width:  Number(dom.getAttribute("width")),
                             height: Number(dom.getAttribute("height"))
@@ -75,6 +79,7 @@ export default class YouTube extends Node {
                         class:           "youtube",
                         src:             node.attrs.start ? `${node.attrs.src}?start=${node.attrs.start}`
                                                           : node.attrs.src,
+                        title:           node.attrs.title,
                         "data-start":    node.attrs.start,
                         width:           node.attrs.width,
                         height:          node.attrs.height,
@@ -126,6 +131,9 @@ export default class YouTube extends Node {
             computed: {
                 src() {
                     return this.node.attrs.src
+                },
+                title() {
+                    return this.node.attrs.title
                 },
                 start: {
                     get() {
@@ -269,7 +277,7 @@ export default class YouTube extends Node {
                                 />
                             </el-form-item>
                         </el-form>
-                        <figure slot="reference" :style="{width: width + 'px', position: 'relative'}" title="Click to edit">
+                        <figure slot="reference" :style="{width: width + 'px', position: 'relative'}" :title="title">
                             <img :src="imageSrc" :alt="url" :title="url" :style="{width: width + 'px', height: height + 'px'}">
                             <figcaption><i class="fab fa-youtube"/></figcaption>
                         </figure>
