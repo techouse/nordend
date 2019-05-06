@@ -140,9 +140,13 @@ export default class YouTube extends Node {
             },
             template: `
                 <el-card :body-style="{ padding: 0 }" :style="{width: width + 'px'}">
-                    <el-image :src="imageSrc" :style="{width: width + 'px', height: height + 'px'}" :alt="src" fit="cover">
+                    <el-image :src="imageSrc" 
+                              :style="{width: width + 'px', height: height + 'px'}" 
+                              :alt="url" 
+                              :title="url" 
+                              fit="cover">
                         <div slot="placeholder" class="image-slot">
-                            Loading<span class="dot">...</span>
+                            Loading <span class="dot">...</span>
                         </div>
                         <div slot="error" class="image-slot">
                             <i class="el-icon-picture-outline"></i>
