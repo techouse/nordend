@@ -39,6 +39,7 @@ export default class YouTube extends Node {
 
     get schema() {
         return {
+            inline:     true,
             attrs:      {
                 src:    {
                     default: null
@@ -56,8 +57,9 @@ export default class YouTube extends Node {
                     default: 360
                 }
             },
-            group:      "block",
-            selectable: false,
+            group:      "inline",
+            selectable: true,
+            draggable:  true,
             parseDOM:   [
                 {
                     tag: "iframe.youtube",
