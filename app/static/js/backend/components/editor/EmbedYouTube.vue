@@ -48,8 +48,8 @@
 </template>
 
 <script>
-    import {mapActions} from "vuex"
-    import Modal        from "../Modal"
+    import {mapActions}   from "vuex"
+    import Modal          from "../Modal"
     import {
         getHours,
         getMinutes,
@@ -57,7 +57,8 @@
         setHours,
         setMinutes,
         setSeconds
-    }                   from "date-fns"
+    }                     from "date-fns"
+    import {getYouTubeId} from "./YouTube"
 
     export default {
         name: "EmbedYouTube",
@@ -100,7 +101,7 @@
 
         computed: {
             youTubeUrlValid() {
-                return this.form.url ? this.parseYouTubeUrl(this.form.url) : false
+                return this.form.url ? getYouTubeId(this.form.url) : false
             },
             startSeconds() {
                 const seconds = getHours(this.start) * 3600 + getMinutes(this.start) * 60 + getSeconds(this.start)
@@ -135,16 +136,10 @@
                 }
             },
 
-            parseYouTubeUrl(url) {
-                const re = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(\?\S*)?$/
-                const matches = url.match(re)
-                return matches ? matches[1] : false
-            },
-
             validateYouTubeUrl(rule, value, callback) {
                 if (!value) {
                     callback(new Error("Please input a YouTube URL"))
-                } else if (!this.parseYouTubeUrl(value)) {
+                } else if (!getYouTubeId(value)) {
                     callback(new Error("The YouTube URL is invalid."))
                 } else {
                     callback()
@@ -177,7 +172,7 @@
                         const data = {
                             command: this.command,
                             data:    {
-                                src:    `https://www.youtube.com/embed/${this.parseYouTubeUrl(this.form.url)}`,
+                                src:    `https://www.youtube.com/embed/${getYouTubeId(this.form.url)}`,
                                 start:  this.startSeconds,
                                 width:  this.form.width,
                                 height: this.form.height

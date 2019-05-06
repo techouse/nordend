@@ -1,5 +1,28 @@
 import {Node}       from "tiptap"
 import {mapActions} from "vuex"
+import axios        from "axios"
+
+export function getYouTubeId(url) {
+    const re = /^(https?:\/\/)?((www\.)?(youtube(-nocookie)?|youtube.googleapis)\.com.*(v\/|v=|vi=|vi\/|e\/|embed\/|user\/.*\/u\/\d+\/)|youtu\.be\/)([_0-9a-z-]+)/i
+    const matches = url.match(re)
+    return matches ? matches[7] : false
+}
+
+export function getYouTubeInfo(id) {
+    return new Promise((resolve, reject) => {
+        const youTubeInfo = data => data
+
+        axios.get("https://noembed.com/embed", {
+                 params: {
+                     format:   "json",
+                     url:      `http://www.youtube.com/watch?v=${id}`,
+                     callback: "youTubeInfo"
+                 }
+             })
+             .then(({data}) => resolve(eval(data)))
+             .catch(error => reject(error))
+    })
+}
 
 export default class YouTube extends Node {
     get name() {
@@ -76,7 +99,7 @@ export default class YouTube extends Node {
                 }
             },
             created() {
-                this.$set(this, "youTubeId", this.parseYouTubeUrl(this.node.attrs.src))
+                this.$set(this, "youTubeId", getYouTubeId(this.node.attrs.src))
             },
             computed: {
                 src() {
@@ -97,7 +120,7 @@ export default class YouTube extends Node {
                                                      : `https://www.youtube.com/watch?v=${this.youTubeId}`
                     },
                     set(src) {
-                        this.$set(this, "youTubeId", this.parseYouTubeUrl(src))
+                        this.$set(this, "youTubeId", getYouTubeId(src))
                         if (this.youTubeId) {
                             this.updateAttrs(
                                 {
@@ -107,29 +130,28 @@ export default class YouTube extends Node {
                             )
                         }
                     },
+                },
+                imageSrc() {
+                    return `https://img.youtube.com/vi/${this.youTubeId}/0.jpg`
                 }
             },
             methods:  {
                 ...mapActions("alert", ["error"]),
-
-                parseYouTubeUrl(url) {
-                    const re = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(\?\S*)?$/
-                    const matches = url.match(re)
-                    return matches ? matches[1] : false
-                },
             },
             template: `
-                <div class="iframe">
-                    <iframe :src="src" 
-                            :data-start="start"
-                            :width="width"
-                            :height="height"
-                            class="youtube" 
-                            frameborder="0" 
-                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen />
-                    <input class="iframe__input" @paste.stop type="url" v-model="url" v-if="editable" required />
-                </div>
+                <el-card :body-style="{ padding: 0 }" :style="{width: width + 'px'}">
+                    <el-image :src="imageSrc" :style="{width: width + 'px', height: height + 'px'}" :alt="src" fit="cover">
+                        <div slot="placeholder" class="image-slot">
+                            Loading<span class="dot">...</span>
+                        </div>
+                        <div slot="error" class="image-slot">
+                            <i class="el-icon-picture-outline"></i>
+                        </div>
+                    </el-image>
+                    <div style="padding: 14px;">
+                        <input class="iframe__input" @paste.stop type="url" v-model="url" v-if="editable" required />
+                    </div>
+                </el-card>
             `,
         }
     }
