@@ -28,10 +28,13 @@
 
         data() {
             return {
+                sourceCode:      null,
                 beautifyOptions: {
                     indent_size:      4,
                     html:             {
                         end_with_newline: true,
+                        indent_inner_html: true,
+                        preserve_newlines: true,
                         js:               {
                             indent_size: 2
                         },
@@ -46,20 +49,19 @@
                         preserve_newlines: true
                     },
                     wrap_line_length: 140,
-                }
+                },
             }
         },
 
-        computed: {
-            sourceCode: {
-                get() {
-                    return html(this.value, this.beautifyOptions)
-                },
-                set(sourceCode) {
-                    this.$emit("input", sourceCode)
-                    this.$emit("onUpdate")
-                }
+        watch: {
+            sourceCode(value) {
+                this.$emit("input", value)
+                this.$emit("onUpdate")
             }
+        },
+
+        created() {
+            this.$set(this, "sourceCode", html(this.value, this.beautifyOptions))
         },
 
         methods: {
@@ -70,7 +72,7 @@
                 require("brace/mode/css")
                 require("brace/theme/chrome")
                 require("brace/snippets/javascript") //snippet
-            }
+            },
         }
     }
 </script>
