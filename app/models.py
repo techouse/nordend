@@ -7,12 +7,11 @@ import jwt
 from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin, login_manager
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from markdown import markdown
 from slugify.slugify import slugify
-from sqlalchemy import ForeignKeyConstraint
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from .bleach_settings import allowed_tags, allowed_styles, allowed_attributes
 from . import db, login
 
 
@@ -325,7 +324,7 @@ post_images = db.Table(
     "post_images",
     db.Column("post_id", db.Integer, db.ForeignKey("posts.id"), primary_key=True),
     db.Column("image_id", db.Integer, db.ForeignKey("images.id"), primary_key=True),
-    db.Column("created_at", db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
+    db.Column("created_at", db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False),
 )
 
 
@@ -362,27 +361,15 @@ class Post(db.Model, AddUpdateDelete):
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = [
-            "a",
-            "abbr",
-            "acronym",
-            "b",
-            "blockquote",
-            "code",
-            "em",
-            "i",
-            "li",
-            "ol",
-            "pre",
-            "strong",
-            "ul",
-            "h1",
-            "h2",
-            "h3",
-            "p",
-        ]
         target.body_html = bleach.linkify(
-            bleach.clean(markdown(value, output_format="html"), tags=allowed_tags, strip=True)
+            bleach.clean(
+                value,
+                tags=allowed_tags,
+                styles=allowed_styles,
+                attributes=allowed_attributes,
+                strip=True,
+                strip_comments=True,
+            )
         )
 
     def __repr__(self):
