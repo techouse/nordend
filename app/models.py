@@ -158,7 +158,7 @@ class User(UserMixin, db.Model, AddUpdateDelete):
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship("Post", backref="author", lazy="dynamic", passive_deletes=True)
     created_at = db.Column(db.TIMESTAMP, nullable=False, default=db.func.current_timestamp())
-    updated_at = db.Column(db.TIMESTAMP, onupdate=db.func.current_timestamp())
+    updated_at = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -341,7 +341,9 @@ class Post(db.Model, AddUpdateDelete):
         "Image", secondary=post_images, backref=db.backref("images", lazy="dynamic"), lazy="dynamic"
     )
     created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
-    updated_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp())
+    updated_at = db.Column(
+        db.TIMESTAMP, index=True, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp()
+    )
 
     @classmethod
     def is_unique(cls, id, category, slug):
