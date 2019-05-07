@@ -234,13 +234,27 @@
                                                     <i class="fal fa-table" />
                                                 </el-button>
                                             </el-tooltip>
-                                            <el-tooltip class="item" effect="dark" content="Toggle HTML source code editor"
+                                            <el-tooltip class="item" effect="dark"
+                                                        content="Toggle HTML source code editor"
                                                         placement="top-start"
                                             >
-                                                <el-button size="mini" :type="sourceCodeEditorIsActive ? 'primary' : 'default'"
+                                                <el-button size="mini"
+                                                           :type="sourceCodeEditorIsActive ? 'primary' : 'default'"
                                                            @click="toggleSourceCodeEditor"
                                                 >
                                                     <i class="fas fa-hammer" />
+                                                </el-button>
+                                            </el-tooltip>
+                                        </el-button-group>
+
+                                        <el-button-group v-if="sourceCodeEditorIsActive">
+                                            <el-tooltip class="item" effect="dark" content="Prettify HTML source code"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           @click="prettifySourceCode"
+                                                >
+                                                    <i class="fas fa-ambulance" />
                                                 </el-button>
                                             </el-tooltip>
                                         </el-button-group>
@@ -405,9 +419,12 @@
                                     </div>
                                 </editor-menu-bubble>
 
-                                <editor-content v-show="!sourceCodeEditorIsActive" class="editor__content" :editor="editor" />
+                                <editor-content v-show="!sourceCodeEditorIsActive" class="editor__content"
+                                                :editor="editor"
+                                />
 
                                 <source-code v-if="sourceCodeEditorIsActive"
+                                             ref="source-code"
                                              v-model="post.body"
                                              @onUpdate="editor.setContent(post.body)"
                                 />
@@ -589,7 +606,28 @@
                     "picture",
                     "youtube",
                     "vimeo"
-                ]
+                ],
+                beautifyOptions:          {
+                    indent_size:      4,
+                    html:             {
+                        end_with_newline:  true,
+                        indent_inner_html: true,
+                        preserve_newlines: true,
+                        js:                {
+                            indent_size: 2
+                        },
+                        css:               {
+                            indent_size: 2
+                        }
+                    },
+                    css:              {
+                        indent_size: 1
+                    },
+                    js:               {
+                        preserve_newlines: true
+                    },
+                    wrap_line_length: 140,
+                }
             }
         },
 
@@ -647,6 +685,12 @@
 
             toggleSourceCodeEditor() {
                 this.$set(this, "sourceCodeEditorIsActive", !this.sourceCodeEditorIsActive)
+            },
+
+            prettifySourceCode() {
+                if (this.$refs["source-code"]) {
+                    this.$refs["source-code"].prettifySourceCode()
+                }
             },
 
             addCommand(data) {

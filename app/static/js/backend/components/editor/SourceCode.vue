@@ -73,6 +73,10 @@
                 require("brace/theme/chrome")
                 require("brace/snippets/javascript") //snippet
             },
+
+            prettifySourceCode() {
+                this.$set(this, "sourceCode", html(this.sourceCode, this.beautifyOptions))
+            }
         }
     }
 </script>
