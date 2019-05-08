@@ -2,11 +2,12 @@ alembic==1.0.10
 aniso8601==6.0.0
 Babel==2.6.0
 bleach==3.1.0
+bleach-whitelist==0.0.10
 blinker==1.4
 Click==7.0
 dominate==2.3.5
 factory-boy==2.11.1
-Faker==1.0.5
+Faker==1.0.6
 Flask==1.0.2
 Flask-Babel==0.12.2
 Flask-CacheBuster==1.0.0
