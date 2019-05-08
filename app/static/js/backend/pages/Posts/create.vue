@@ -592,8 +592,7 @@
                             new Vimeo()
                         ],
                         content:    "",
-                        onUpdate:   ({getJSON, getHTML}) => {
-                            console.log(getJSON()) // TODO use me
+                        onUpdate:   ({getHTML}) => {
                             this.$set(this.post, "body", getHTML())
                         }
                     }
