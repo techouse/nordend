@@ -6,17 +6,17 @@
                     <div class="card-header">
                         <b>{{ title }}</b> <i>{{ post.title }}</i>
                         <div v-if="post.id" class="card-header-actions">
-                            <el-button class="btn btn-sm btn-danger" @click="remove">
+                            <el-button class="btn btn-sm btn-danger" :disabled="!editable" @click="remove">
                                 Delete post
                             </el-button>
                         </div>
                     </div>
                     <div class="card-body">
                         <el-form-item label="Title" prop="title">
-                            <el-input v-model="post.title" type="string" required />
+                            <el-input v-model="post.title" :disabled="!editable" type="string" required />
                         </el-form-item>
                         <el-form-item label="Category" prop="category_id">
-                            <el-select v-model="post.category_id" placeholder="Post category" required>
+                            <el-select v-model="post.category_id" :disabled="!editable" placeholder="Post category" required>
                                 <el-option v-for="category in categories"
                                            :key="category.id"
                                            :label="category.name"
@@ -26,7 +26,7 @@
                         </el-form-item>
                         <el-form-item label="Content">
                             <div class="editor">
-                                <editor-menu-bar :editor="editor">
+                                <editor-menu-bar v-if="editable" :editor="editor">
                                     <div slot-scope="{ commands, isActive }" class="menubar">
                                         <el-button-group>
                                             <el-tooltip class="item" effect="dark" content="Undo" placement="top-start">
@@ -347,7 +347,7 @@
                                     </div>
                                 </editor-menu-bar>
 
-                                <editor-menu-bubble :editor="editor">
+                                <editor-menu-bubble v-if="editable" :editor="editor">
                                     <div slot-scope="{ commands, isActive, getMarkAttrs, menu }"
                                          class="menububble"
                                          :class="{ 'is-active': menu.isActive || linkMenuIsActive, 'bg-transparent': bubbleMenuExcludedTypes.includes(selectedType) }"
@@ -432,7 +432,7 @@
                         </el-form-item>
                     </div>
                     <div class="card-footer">
-                        <el-button type="success" @click="submit">
+                        <el-button type="success" :disabled="!editable" @click="submit">
                             Submit
                         </el-button>
                         <el-button type="danger" @click="$router.push({name: 'Posts'})">
