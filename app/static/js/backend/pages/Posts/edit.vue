@@ -93,7 +93,7 @@
                                 this.socket.emit("init", {post_id: this.postId})
                             })
                             .on("init", ({data}) => {
-                                this.$set(this, "post", data)
+                                this.$set(this, "post", new Post(data))
                                 this.onInit(data)
                             })
                             .on("update", ({data}) => this.editor.extensions.options.collaboration.update(data))
