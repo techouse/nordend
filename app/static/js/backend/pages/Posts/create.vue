@@ -2,7 +2,9 @@
     <div>
         <div class="row">
             <div class="col-sm-12">
-                <el-form :ref="formRef" :model="post" :rules="rules" :label-width="labelWidth" class="card">
+                <el-form :ref="formRef" v-loading="loading" :model="post" :rules="rules" :label-width="labelWidth"
+                         element-loading-text="Connecting to collaboration socket server..." class="card"
+                >
                     <div class="card-header">
                         <b>{{ title }}</b> <i>{{ post.title }}</i>
                         <div v-if="post.id" class="card-header-actions">
@@ -16,7 +18,9 @@
                             <el-input v-model="post.title" :disabled="!editable" type="string" required />
                         </el-form-item>
                         <el-form-item label="Category" prop="category_id">
-                            <el-select v-model="post.category_id" :disabled="!editable" placeholder="Post category" required>
+                            <el-select v-model="post.category_id" :disabled="!editable" placeholder="Post category"
+                                       required
+                            >
                                 <el-option v-for="category in categories"
                                            :key="category.id"
                                            :label="category.name"
@@ -25,7 +29,7 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item label="Content">
-                            <div class="editor">
+                            <div v-if="editor && !loading" class="editor">
                                 <editor-menu-bar v-if="editable" :editor="editor">
                                     <div slot-scope="{ commands, isActive }" class="menubar">
                                         <el-button-group>
@@ -418,7 +422,6 @@
                                         </template>
                                     </div>
                                 </editor-menu-bubble>
-
                                 <editor-content v-show="!sourceCodeEditorIsActive" class="editor__content"
                                                 :editor="editor"
                                 />
@@ -529,6 +532,7 @@
 
         data() {
             return {
+                loading:                  false,
                 formRef:                  "create-post-form",
                 title:                    "Create post",
                 post:                     new Post(),

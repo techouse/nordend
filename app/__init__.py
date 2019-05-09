@@ -2,12 +2,16 @@ import logging
 import os
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
+import eventlet
+eventlet.monkey_patch()
+
 from flask import Flask, request, current_app
 from flask_babel import Babel, lazy_gettext as _l
 from flask_cachebuster import CacheBuster
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
+from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 
@@ -22,6 +26,7 @@ login.login_message = _l("Please login to access this page.")
 mail = Mail()
 babel = Babel()
 cache_buster = CacheBuster(config={"extensions": [".js", ".css"], "hash_size": 10})
+socketio = SocketIO()
 
 
 def create_app(config_class=Config):
@@ -86,6 +91,7 @@ def create_app(config_class=Config):
         app.logger.setLevel(logging.INFO)
         app.logger.info(app.config["APP_NAME"] + " startup")
 
+    socketio.init_app(app)
     return app
 
 
