@@ -41,4 +41,4 @@ api.add_resource(PostResource, "/posts/<int:id>", endpoint="post")
 api.add_resource(ImageListResource, "/images/", endpoint="images")
 api.add_resource(ImageResource, "/images/<int:id>", endpoint="image")
 
-from .events import post as post_events
+from .ws import events
