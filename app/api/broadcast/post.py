@@ -1,4 +1,4 @@
-from flask import g
+from flask import g, current_app
 
 from ..schemas import PostSchema
 from ... import socketio
@@ -13,5 +13,6 @@ class PostBroadcast:
             "post_updated",
             {"data": post_schema.dump(post).data},
             broadcast=True,
-            namespace="/user.{}.ws".format(g.current_user.id),
+            room="authenticated.{}".format(current_app.config["BROADCAST_ROOM"]),
+            namespace="/{}".format(current_app.config["BROADCAST_ROOM"]),
         )

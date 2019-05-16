@@ -13,7 +13,7 @@ const mutations = {
 }
 
 const actions = {
-    setCurrentUser({commit, dispatch}, user) {
+    setCurrentUser: ({commit, dispatch}, user) => {
         commit("setUser", user)
 
         dispatch("socket/connect", user, {root: true})

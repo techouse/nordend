@@ -9,7 +9,7 @@ const path                    = require('path'),
       env                     = process.env.NODE_ENV,
       npm_config_argv         = JSON.parse(process.env.npm_config_argv),
       isWatch                 = npm_config_argv.remain.some(el => el.startsWith("--watch")),
-      sourceMap               = env === 'development',
+      sourceMap               = env !== 'production',
       production              = env === 'production',
       webpack                 = require('webpack')
 

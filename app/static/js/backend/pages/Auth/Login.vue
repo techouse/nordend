@@ -95,9 +95,9 @@
                             this.getUser(userId)
                                 .then(({data}) => {
                                     this.setCurrentUser(new User(data))
-                                })
 
-                            this.$router.push({name: "Dashboard"})
+                                    this.$router.push({name: "Dashboard"})
+                                })
                         })
                         .catch(error => {
                             try {

@@ -22,6 +22,8 @@ class Config(object):
     # Database settings
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or "sqlite:///" + os.path.join(basedir, "db.sqlite3")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Broadcasting / Socket.IO
+    BROADCAST_ROOM = "broadcast"  # equal to broadcastRoom in app/static/js/backend/store/modules/socket.js
     # Email server settings
     MAIL_SERVER = os.environ.get("MAIL_SERVER")
     MAIL_PORT = int(os.environ.get("MAIL_PORT") or 25)
@@ -38,7 +40,11 @@ class Config(object):
     # Images
     PUBLIC_IMAGE_PATH = "static/images/public/"
     MAX_IMAGE_CONTENT_LENGTH = int(os.environ.get("MAX_IMAGE_CONTENT_LENGTH")) or 2 * 1024 ** 2  # 2MB
-    ALLOWED_IMAGE_EXTENSIONS = set(os.environ.get("ALLOWED_IMAGE_EXTENSIONS").lower().split()) or {"png", "jpg", "jpeg",
-                                                                                                   "gif"}
+    ALLOWED_IMAGE_EXTENSIONS = set(os.environ.get("ALLOWED_IMAGE_EXTENSIONS").lower().split()) or {
+        "png",
+        "jpg",
+        "jpeg",
+        "gif",
+    }
     JPEG_COMPRESSION_QUALITY = int(os.environ.get("JPEG_COMPRESSION_QUALITY")) or 90
     IMAGE_SIZES = {220, 280, 440, 620, 920, 1920}

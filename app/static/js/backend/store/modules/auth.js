@@ -181,7 +181,8 @@ const actions = {
         })
     },
 
-    logout({commit}) {
+    logout({state, commit}) {
+        commit("socket/leave", state.token, {root: true})
         commit("clearAuthData")
         router.replace({name: "Login"})
         window.location.reload()
