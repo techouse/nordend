@@ -9,6 +9,7 @@ from ..helpers import PaginationHelper
 from ..schemas import PostSchema
 from ... import db, status
 from ...models import Post, Category, User
+from ..broadcast.post import PostBroadcast
 
 post_schema = PostSchema()
 
@@ -49,7 +50,9 @@ class PostResource(TokenRequiredResource):
             return validate_errors, status.HTTP_400_BAD_REQUEST
         try:
             post.update()
-            return self.get(id)
+            post_ = self.get(id)
+            PostBroadcast.updated(post_)
+            return post_
         except SQLAlchemyError as e:
             db.session.rollback()
             resp = {"message": str(e)}

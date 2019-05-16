@@ -36,21 +36,11 @@ const mutations = {
 }
 
 const actions = {
-    success({commit}, message) {
-        commit("success", message)
-    },
-    warning({commit}, message) {
-        commit("warning", message)
-    },
-    error({commit}, message) {
-        commit("error", message)
-    },
-    info({commit}, message) {
-        commit("info", message)
-    },
-    clear({commit}) {
-        commit("clear")
-    }
+    success: ({commit}, message) => commit("success", message),
+    warning: ({commit}, message) => commit("warning", message),
+    error:   ({commit}, message) => commit("error", message),
+    info:    ({commit}, message) => commit("info", message),
+    clear:   ({commit}) => commit("clear")
 }
 
 export default {

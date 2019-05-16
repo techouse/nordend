@@ -5,20 +5,18 @@ const state = {
 }
 
 const getters = {
-    currentUser(state) {
-        return state.user
-    }
+    currentUser: (state) => state.user
 }
 
 const mutations = {
-    setUser(state, user) {
-        state.user = user
-    }
+    setUser: (state, user) => state.user = user,
 }
 
 const actions = {
-    setCurrentUser({commit}, user) {
+    setCurrentUser({commit, dispatch}, user) {
         commit("setUser", user)
+
+        dispatch("socket/connect", user, {root: true})
     },
 
     getUser: (context, id) => get(context, `/users/${id}`),
