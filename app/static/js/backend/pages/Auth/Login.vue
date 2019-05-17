@@ -10,7 +10,7 @@
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text">
-                                <i class="icon-user"/>
+                                <i class="icon-user" />
                             </span>
                         </div>
                         <input v-model="email" class="form-control" type="email" placeholder="E-mail">
@@ -18,7 +18,7 @@
                     <div class="input-group mb-4">
                         <div class="input-group-prepend">
                             <span class="input-group-text">
-                                <i class="icon-lock"/>
+                                <i class="icon-lock" />
                             </span>
                         </div>
                         <input v-model="password" class="form-control" type="password" placeholder="Password">
@@ -30,7 +30,9 @@
                             <input class="btn btn-primary px-4" type="submit" value="Submit">
                         </div>
                         <div class="col-6 text-right">
-                            <router-link class="btn btn-link px-0" type="button" :to="{name: 'ResetPasswordRequest'}">
+                            <router-link tag="button" class="btn btn-link px-0" type="button"
+                                         :to="{name: 'ResetPasswordRequest'}"
+                            >
                                 Forgot password?
                             </router-link>
                         </div>
@@ -42,8 +44,9 @@
                     <div>
                         <h2>Sign up</h2>
                         <p>Not a user yet?</p>
-                        <router-link class="btn btn-primary active mt-3" type="button"
-                                     :to="{name: 'Register', params: {csrfToken: csrfToken}}">
+                        <router-link tag="button" class="btn btn-primary active mt-3" type="button"
+                                     :to="{name: 'Register', params: {csrfToken: csrfToken}}"
+                        >
                             Register Now!
                         </router-link>
                     </div>
