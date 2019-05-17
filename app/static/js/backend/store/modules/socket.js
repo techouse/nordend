@@ -12,58 +12,26 @@ const getters = {
 }
 
 const mutations = {
-    setPublicSocket(state, token) {
-        // TODO add public actions
+    setPublicSocket(state) {
         state.publicSocket = io.connect(`${location.protocol}//${document.domain}:${location.port}/${state.broadcastRoom}`)
-                               .on("connect", () => {
-                                   state.publicSocket.emit("authenticate", {token})
-                               })
-                               .on("authenticated", ({data}) => {
-                                   console.log(data)
-
-                                   window.addEventListener("beforeunload", () => {
-                                       state.publicSocket.emit("leave", {token})
-                                   })
-
-                                   window.onbeforeunload = function () {
-                                       state.publicSocket.emit("leave", {token})
-                                   }
-                               })
-                               .on("left", ({data}) => {
-                                   console.log(data)
-                               })
-                               .on("post_updated", ({data}) => {
-                                   console.log(data)
-                               })
     },
 
-    setPrivateSocket(state, {user, token}) {
-        // TODO add private actions
+    setPrivateSocket(state) {
         state.privateSocket = io.connect(`${location.protocol}//${document.domain}:${location.port}/private.${state.broadcastRoom}`)
-                                .on("connect", () => {
-                                    state.privateSocket.emit("authenticate", {token})
-                                })
-                                .on("authenticated", ({data}) => {
-                                    console.log(data)
-
-                                    window.addEventListener("beforeunload", () => {
-                                        state.privateSocket.emit("leave", {token})
-                                    })
-
-                                    window.onbeforeunload = function () {
-                                        state.privateSocket.emit("leave", {token})
-                                    }
-                                })
-                                .on("left", ({data}) => {
-                                    console.log(data)
-                                })
     },
 }
 
 const actions = {
-    connect: ({commit, rootGetters}, user) => {
-        commit("setPublicSocket", rootGetters["auth/token"])
-        commit("setPrivateSocket", {user, token: rootGetters["auth/token"]})
+    connect: ({commit, dispatch}, user) => {
+        commit("setPublicSocket")
+        dispatch("auth/setPublicSocketHooks", {}, {root: true}).then(() => {
+            dispatch("post/setPublicSocketHooks", {}, {root: true})
+        })
+
+        commit("setPrivateSocket")
+        dispatch("auth/setPrivateSocketHooks", {}, {root: true}).then(() => {
+            dispatch("post/setPrivateSocketHooks", user, {root: true})
+        })
     },
     leave:   ({state}, token) => {
         if (state.publicSocket) {

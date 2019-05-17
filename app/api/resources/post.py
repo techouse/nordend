@@ -50,9 +50,9 @@ class PostResource(TokenRequiredResource):
             return validate_errors, status.HTTP_400_BAD_REQUEST
         try:
             post.update()
-            post_ = self.get(id)
-            PostBroadcast.updated(post_)
-            return post_
+            updated_post = self.get(id)
+            PostBroadcast.updated(updated_post)
+            return updated_post
         except SQLAlchemyError as e:
             db.session.rollback()
             resp = {"message": str(e)}
@@ -64,6 +64,7 @@ class PostResource(TokenRequiredResource):
         try:
             post.delete(post)
             resp = {}
+            PostBroadcast.deleted(id)
             return resp, status.HTTP_204_NO_CONTENT
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -148,8 +149,9 @@ class PostListResource(TokenRequiredResource):
                 category_id=request_dict["category_id"],
             )
             post.add(post)
-            query = Post.query.get(post.id)
-            result = post_schema.dump(query).data
+            created_post = Post.query.get(post.id)
+            result = post_schema.dump(created_post).data
+            PostBroadcast.created(created_post)
             return result, status.HTTP_201_CREATED
         except SQLAlchemyError as e:
             db.session.rollback()

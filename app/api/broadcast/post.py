@@ -1,18 +1,29 @@
-from flask import current_app
-
+from .channels import PublicChannel as Channel
 from ..schemas import PostSchema
 from ... import socketio
 
-post_schema = PostSchema()
-
 
 class PostBroadcast:
-    @staticmethod
-    def updated(post):
+    post_schema = PostSchema()
+
+    @classmethod
+    def _data(cls, post):
+        return {"data": cls.post_schema.dump(post).data}
+
+    @classmethod
+    def created(cls, post):
         socketio.emit(
-            "post_updated",
-            {"data": post_schema.dump(post).data},
-            broadcast=True,
-            room="authenticated.{}".format(current_app.config["BROADCAST_ROOM"]),
-            namespace="/{}".format(current_app.config["BROADCAST_ROOM"]),
+            "post.created", cls._data(post), broadcast=True, room=Channel.get_room(), namespace=Channel.NAMESPACE
+        )
+
+    @classmethod
+    def updated(cls, post):
+        socketio.emit(
+            "post.updated", cls._data(post), broadcast=True, room=Channel.get_room(), namespace=Channel.NAMESPACE
+        )
+
+    @classmethod
+    def deleted(cls, id_):
+        socketio.emit(
+            "post.deleted", {"data": {"id": id_}}, broadcast=True, room=Channel.get_room(), namespace=Channel.NAMESPACE
         )

@@ -225,6 +225,44 @@ const actions = {
         commit("setAuthRefresher", refresher)
     },
 
+    setPublicSocketHooks({rootGetters}) {
+        const token = rootGetters["auth/token"]
+        rootGetters["socket/publicSocket"].on("connect", () => {
+                                              rootGetters["socket/publicSocket"].emit("authenticate", {token})
+                                          })
+                                          .on("authenticated", ({data}) => {
+                                              // TODO maybe do something else
+                                              console.log(data)
+
+                                              window.addEventListener("beforeunload", () => {
+                                                  rootGetters["socket/publicSocket"].emit("leave", {token})
+                                              })
+                                          })
+                                          .on("left", ({data}) => {
+                                              // TODO maybe do something else
+                                              console.log(data)
+                                          })
+    },
+
+    setPrivateSocketHooks({rootGetters}) {
+        const token = rootGetters["auth/token"]
+        rootGetters["socket/privateSocket"].on("connect", () => {
+                                               rootGetters["socket/privateSocket"].emit("authenticate", {token})
+                                           })
+                                           .on("authenticated", ({data}) => {
+                                               // TODO maybe do something else
+                                               console.log(data)
+
+                                               window.addEventListener("beforeunload", () => {
+                                                   rootGetters["socket/privateSocket"].emit("leave", {token})
+                                               })
+                                           })
+                                           .on("left", ({data}) => {
+                                               // TODO maybe do something else
+                                               console.log(data)
+                                           })
+    },
+
     checkIfPublicRegistrationEnabled({dispatch}) {
         return new Promise((resolve, reject) => {
             api.get("register", {
