@@ -41,4 +41,4 @@ api.add_resource(PostResource, "/posts/<int:id>", endpoint="post")
 api.add_resource(ImageListResource, "/images/", endpoint="images")
 api.add_resource(ImageResource, "/images/<int:id>", endpoint="image")
 
-from .broadcast import events as broadcast_events
+from . import broadcast as broadcast_events

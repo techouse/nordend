@@ -1,4 +1,4 @@
-from flask import g, current_app
+from flask import current_app
 
 from ..schemas import PostSchema
 from ... import socketio

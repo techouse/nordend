@@ -185,7 +185,7 @@ const actions = {
         commit("socket/leave", state.token, {root: true})
         commit("clearAuthData")
         router.replace({name: "Login"})
-        window.location.reload()
+        window.location.reload() // TODO figure out if this is really necessary?
     },
 
     refreshToken({state, commit, dispatch}) {
