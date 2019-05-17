@@ -16,6 +16,8 @@ const actions = {
     setCurrentUser: ({commit, dispatch}, user) => {
         commit("setUser", user)
 
+        dispatch("csrf/getCsrf", {}, {root: true})
+
         dispatch("socket/connect", user, {root: true})
     },
 

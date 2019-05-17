@@ -1,14 +1,14 @@
 from flask import Blueprint
 from flask_restful import Api
 
+from .resources.csrf import CSRFResource
 from .resources.image import ImageResource, ImageListResource
 from .resources.authentication import (
     AuthenticationResource,
     ResetPasswordRequestResource,
     ResetPasswordResource,
     RegistrationResource,
-    RegistrationConfirmationResource,
-)
+    RegistrationConfirmationResource)
 from .resources.category import CategoryListResource, CategoryResource, CategoryPostListResource
 from .resources.post import PostListResource, PostResource
 from .resources.role import RoleListResource, RoleResource, RoleUserListResource
@@ -22,6 +22,7 @@ api.add_resource(RegistrationResource, "/register", endpoint="register")
 api.add_resource(RegistrationConfirmationResource, "/confirm", endpoint="confirm")
 api.add_resource(ResetPasswordRequestResource, "/reset_password_request", endpoint="reset_password_request")
 api.add_resource(ResetPasswordResource, "/reset_password", endpoint="reset_password")
+api.add_resource(CSRFResource, "/csrf", endpoint="csrf")
 
 api.add_resource(RoleListResource, "/roles/", endpoint="roles")
 api.add_resource(RoleResource, "/roles/<int:id>", endpoint="role")

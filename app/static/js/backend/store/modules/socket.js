@@ -3,7 +3,7 @@ import io from "socket.io-client"
 const state = {
     broadcastRoom: "broadcast",
     publicSocket:  null,
-    privateSocket: null
+    privateSocket: null,
 }
 
 const getters = {
@@ -20,6 +20,11 @@ const mutations = {
                                })
                                .on("authenticated", ({data}) => {
                                    console.log(data)
+
+                                   window.addEventListener("beforeunload", () => {
+                                       state.publicSocket.emit("leave", {token})
+                                   })
+
                                    window.onbeforeunload = function () {
                                        state.publicSocket.emit("leave", {token})
                                    }
@@ -40,6 +45,11 @@ const mutations = {
                                 })
                                 .on("authenticated", ({data}) => {
                                     console.log(data)
+
+                                    window.addEventListener("beforeunload", () => {
+                                        state.privateSocket.emit("leave", {token})
+                                    })
+
                                     window.onbeforeunload = function () {
                                         state.privateSocket.emit("leave", {token})
                                     }
@@ -47,7 +57,7 @@ const mutations = {
                                 .on("left", ({data}) => {
                                     console.log(data)
                                 })
-    }
+    },
 }
 
 const actions = {

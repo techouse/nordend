@@ -181,11 +181,15 @@ const actions = {
         })
     },
 
-    logout({state, commit}) {
-        commit("socket/leave", state.token, {root: true})
-        commit("clearAuthData")
-        router.replace({name: "Login"})
-        window.location.reload() // TODO figure out if this is really necessary?
+    logout({state, commit, dispatch}) {
+        dispatch("socket/leave", state.token, {root: true})
+            .then(() => {
+                dispatch("csrf/getCsrf", {}, {root: true})  // needed in order to get a new CSRF token
+                    .then(() => {
+                        commit("clearAuthData")
+                        router.replace({name: "Login"})
+                    })
+            })
     },
 
     refreshToken({state, commit, dispatch}) {

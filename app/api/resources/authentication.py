@@ -3,6 +3,7 @@ from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from flask_restful import Resource
 from sqlalchemy.exc import SQLAlchemyError
 
+from ..email import send_password_reset_email, send_registration_confirmation_email
 from ..schemas import (
     ResetPasswordRequestSchema,
     ResetPasswordTokenSchema,
@@ -11,7 +12,6 @@ from ..schemas import (
     RegistrationConfirmationSchema,
 )
 from ... import status, csrf, db
-from ..email import send_password_reset_email, send_registration_confirmation_email
 from ...models import User
 
 basic_auth = HTTPBasicAuth()
@@ -61,8 +61,10 @@ class AuthenticationResource(Resource):
         if g.current_user.is_anonymous or g.token_used:
             return auth_error()
         elif not g.current_user.confirmed:
-            response = {"message": "Unconfirmed account! Please confirm your account before trying to log in again.",
-                        "token": g.current_user.generate_confirmation_send_again_token()}
+            response = {
+                "message": "Unconfirmed account! Please confirm your account before trying to log in again.",
+                "token": g.current_user.generate_confirmation_send_again_token(),
+            }
             return response, status.HTTP_403_FORBIDDEN
         else:
             return (
@@ -72,7 +74,7 @@ class AuthenticationResource(Resource):
                     ),
                     "expiration": current_app.config["JWT_TOKEN_EXPIRATION_TIME"],
                 },
-                status.HTTP_200_OK
+                status.HTTP_200_OK,
             )
 
 

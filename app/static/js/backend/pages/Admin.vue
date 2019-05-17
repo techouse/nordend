@@ -117,7 +117,9 @@
         name: "Admin",
 
         computed: {
-            ...mapGetters("user", ["currentUser"])
+            ...mapGetters("user", ["currentUser"]),
+
+            ...mapGetters("csrf", ["csrf"])
         },
 
         mounted() {
