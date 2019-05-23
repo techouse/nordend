@@ -22,6 +22,11 @@ class Config(object):
     # Database settings
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or "sqlite:///" + os.path.join(basedir, "db.sqlite3")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Redis
+    REDIS_HOST = os.environ.get("REDIS_HOST") or "localhost"
+    REDIS_PORT = int(os.environ.get("REDIS_PORT")) or 6379
+    REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD") or None
+    REDIS_DB = os.environ.get("REDIS_DB") or 0
     # Broadcasting / Socket.IO
     BROADCAST_ROOM = "broadcast"  # equal to broadcastRoom in app/static/js/backend/store/modules/socket.js
     # Email server settings

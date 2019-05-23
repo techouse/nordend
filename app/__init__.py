@@ -11,6 +11,7 @@ from flask_cachebuster import CacheBuster
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
+from flask_redis import Redis
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
@@ -27,6 +28,7 @@ mail = Mail()
 babel = Babel()
 cache_buster = CacheBuster(config={"extensions": [".js", ".css"], "hash_size": 10})
 socketio = SocketIO()
+redis = Redis()
 
 
 def create_app(config_class=Config):
@@ -40,6 +42,7 @@ def create_app(config_class=Config):
     mail.init_app(app)
     babel.init_app(app)
     cache_buster.init_app(app)
+    redis.init_app(app)
 
     from .errors import errors
 

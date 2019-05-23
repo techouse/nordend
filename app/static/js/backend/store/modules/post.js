@@ -44,15 +44,15 @@ const actions = {
 
     deletePost: (context, id) => destroy(context, `/posts/${id}`),
 
-    lockPost: ({dispatch}, post) => {
+    lockPost: ({dispatch, rootGetters}, post) => {
         dispatch("socket/getPublicSocket", {}, {root: true}).then(socket => {
-            socket.emit("post.lock", post)
+            socket.emit("post.lock", {post_id: post.id, user_id: rootGetters["user/currentUser"].id})
         })
     },
 
-    unlockPost: ({dispatch}, post) => {
+    unlockPost: ({dispatch, rootGetters}, post) => {
         dispatch("socket/getPublicSocket", {}, {root: true}).then(socket => {
-            socket.emit("post.unlock", post)
+            socket.emit("post.unlock", {post_id: post.id, user_id: rootGetters["user/currentUser"].id})
         })
     },
 
