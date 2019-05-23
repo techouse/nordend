@@ -9,6 +9,14 @@ class PublicChannel:
         return "authenticated.{}".format(Config.BROADCAST_ROOM)
 
 
+class AdminChannel:
+    NAMESPACE = "/admin.{}".format(Config.BROADCAST_ROOM)
+
+    @staticmethod
+    def get_room(user=None):
+        return "admin.{}".format(Config.BROADCAST_ROOM)
+
+
 class PrivateChannel:
     NAMESPACE = "/private.{}".format(Config.BROADCAST_ROOM)
 
