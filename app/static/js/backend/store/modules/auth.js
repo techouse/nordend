@@ -12,17 +12,11 @@ const state = {
 }
 
 const getters = {
-    userId(state) {
-        return state.userId
-    },
+    userId: state => state.userId,
 
-    token(state) {
-        return state.token
-    },
+    token: state => state.token,
 
-    isAuthenticated(state) {
-        return state.token !== null && state.userId !== null && +new Date() < state.expiration
-    }
+    isAuthenticated: state => state.token !== null && state.userId !== null && +new Date() < state.expiration
 }
 
 const mutations = {

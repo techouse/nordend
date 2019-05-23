@@ -10,10 +10,10 @@
         </template>
         <template v-slot:body>
             <el-table :data="posts" class="w-100" @sort-change="orderBy">
-                <el-table-column label="#" prop="id" width="60" sortable="custom"/>
-                <el-table-column label="Title" prop="title" sortable="custom"/>
-                <el-table-column label="Category" prop="category.name" sortable="custom"/>
-                <el-table-column label="Author" prop="author.name" sortable="custom"/>
+                <el-table-column label="#" prop="id" width="60" sortable="custom" />
+                <el-table-column label="Title" prop="title" sortable="custom" />
+                <el-table-column label="Category" prop="category.name" sortable="custom" />
+                <el-table-column label="Author" prop="author.name" sortable="custom" />
                 <el-table-column label="Created" align="center" width="160" prop="created_at" sortable="custom">
                     <template slot-scope="scope">
                         <time :datetime="scope.row.created_at">{{ scope.row.created_at|formatDate }}
@@ -37,7 +37,8 @@
                     </template>
                     <template slot-scope="scope">
                         <router-link :to="{name: 'EditPost', params: {postId: scope.row.id}}"
-                                     class="btn btn-sm btn-outline-secondary">
+                                     class="btn btn-sm btn-outline-secondary"
+                        >
                             Edit
                         </router-link>
                         <button class="btn btn-sm btn-outline-danger" @click="remove(scope.row)">
@@ -62,10 +63,10 @@
 </template>
 
 <script>
-    import IndexPartial from "../../components/IndexPartial"
-    import {mapActions} from "vuex"
-    import {isEmpty}    from "lodash"
-    import Post         from "../../models/Post"
+    import IndexPartial             from "../../components/IndexPartial"
+    import {mapActions, mapGetters} from "vuex"
+    import {isEmpty}                from "lodash"
+    import Post                     from "../../models/Post"
 
     export default {
         name: "Posts",
@@ -77,6 +78,31 @@
                 title: "Posts",
                 posts: []
             }
+        },
+
+        computed: {
+            ...mapGetters("post", ["created", "updated", "deleted"])
+        },
+
+        watch: {
+            created() {
+                /**
+                 * Update the posts table when a new post is created
+                 */
+                this.getData()
+            },
+            updated() {
+                /**
+                 * Update the posts table when a post gets updated
+                 */
+                this.getData()
+            },
+            deleted() {
+                /**
+                 * Update the posts table when a post gets deleted
+                 */
+                this.getData()
+            },
         },
 
         methods: {

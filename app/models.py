@@ -68,11 +68,7 @@ class Role(db.Model, AddUpdateDelete):
         existing_role = cls.query.filter_by(name=name).first()
         if existing_role is None:
             return True
-        else:
-            if existing_role.id == id:
-                return True
-            else:
-                return False
+        return existing_role.id == id
 
     @staticmethod
     def insert_roles():
@@ -245,11 +241,7 @@ class User(UserMixin, db.Model, AddUpdateDelete):
         existing_user = cls.query.filter_by(email=email).first()
         if existing_user is None:
             return True
-        else:
-            if existing_user.id == id:
-                return True
-            else:
-                return False
+        return existing_user.id == id
 
     def ping(self):
         self.last_seen = datetime.utcnow()
@@ -308,11 +300,7 @@ class Category(db.Model, AddUpdateDelete):
         existing_category = cls.query.filter_by(name=name).first()
         if existing_category is None:
             return True
-        else:
-            if existing_category.id == id:
-                return True
-            else:
-                return False
+        return existing_category.id == id
 
     def __repr__(self):
         return "<Category {}>".format(self.name)
@@ -347,14 +335,12 @@ class Post(db.Model, AddUpdateDelete):
 
     @classmethod
     def is_unique(cls, id, category, slug):
+        if not category:
+            return True
         existing_post = cls.query.filter_by(category_id=category.id, slug=slug).first()
         if existing_post is None:
             return True
-        else:
-            if existing_post.id == id:
-                return True
-            else:
-                return False
+        return existing_post.id == id
 
     @staticmethod
     def on_changed_title(target, value, oldvalue, initiator):

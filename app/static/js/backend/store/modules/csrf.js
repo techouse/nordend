@@ -5,7 +5,7 @@ const state = {
 }
 
 const getters = {
-    csrf: (state) => state.csrf
+    csrf: state => state.csrf
 }
 
 const mutations = {

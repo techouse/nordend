@@ -1,10 +1,37 @@
 import {create, destroy, get, update} from "../../services"
 
-const state = {}
+const state = {
+    created:   0,
+    createdId: null,
+    updated:   0,
+    updatedId: null,
+    deleted:   0,
+    deletedId: null
+}
 
-const getters = {}
+const getters = {
+    created:   state => state.created,
+    createdId: state => state.createdId,
+    updated:   state => state.updated,
+    updatedId: state => state.updatedId,
+    deleted:   state => state.deleted,
+    deletedId: state => state.deletedId,
+}
 
-const mutations = {}
+const mutations = {
+    setCreated: (state, id) => {
+        state.created++
+        state.createdId = id
+    },
+    setUpdated: (state, id) => {
+        state.updated++
+        state.updatedId = id
+    },
+    setDeleted: (state, id) => {
+        state.deleted++
+        state.deletedId = id
+    },
+}
 
 const actions = {
     getPost: (context, id) => get(context, `/posts/${id}`),
@@ -17,15 +44,15 @@ const actions = {
 
     deletePost: (context, id) => destroy(context, `/posts/${id}`),
 
-    setPublicSocketHooks: ({rootGetters}) => {
+    setPublicSocketHooks: ({commit, rootGetters}) => {
         rootGetters["socket/publicSocket"].on("post.created", ({data}) => {
-                                              console.log("post.created", data)
+                                              commit("setCreated", data.id)
                                           })
                                           .on("post.updated", ({data}) => {
-                                              console.log("post.updated", data)
+                                              commit("setUpdated", data.id)
                                           })
                                           .on("post.deleted", ({data}) => {
-                                              console.log("post.deleted", data)
+                                              commit("setDeleted", data.id)
                                           })
     },
 
