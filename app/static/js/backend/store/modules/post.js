@@ -44,22 +44,36 @@ const actions = {
 
     deletePost: (context, id) => destroy(context, `/posts/${id}`),
 
-    setPublicSocketHooks: ({commit, dispatch, rootGetters}) => {
-        rootGetters["socket/publicSocket"].on("post.created", ({data}) => {
-                                              commit("setCreated", data.id)
-                                              dispatch("console/log", `Post titled ${data.title} created`, {root: true})
-                                          })
-                                          .on("post.updated", ({data}) => {
-                                              commit("setUpdated", data.id)
-                                              dispatch("console/log", `Post titled ${data.title} updated`, {root: true})
-                                          })
-                                          .on("post.deleted", ({data}) => {
-                                              commit("setDeleted", data.id)
-                                              dispatch("console/log", `Post with ID ${data.id} deleted`, {root: true})
-                                          })
+    lockPost: ({dispatch}, post) => {
+        dispatch("socket/getPublicSocket", {}, {root: true}).then(socket => {
+            socket.emit("post.lock", post)
+        })
     },
 
-    setPrivateSocketHooks: ({commit, rootGetters}, user) => {
+    unlockPost: ({dispatch}, post) => {
+        dispatch("socket/getPublicSocket", {}, {root: true}).then(socket => {
+            socket.emit("post.unlock", post)
+        })
+    },
+
+    setPublicSocketHooks: ({commit, dispatch}) => {
+        dispatch("socket/getPublicSocket", {}, {root: true}).then(socket => {
+            socket.on("post.created", ({data}) => {
+                      commit("setCreated", data.id)
+                      dispatch("console/log", `Post titled ${data.title} created`, {root: true})
+                  })
+                  .on("post.updated", ({data}) => {
+                      commit("setUpdated", data.id)
+                      dispatch("console/log", `Post titled ${data.title} updated`, {root: true})
+                  })
+                  .on("post.deleted", ({data}) => {
+                      commit("setDeleted", data.id)
+                      dispatch("console/log", `Post with ID ${data.id} deleted`, {root: true})
+                  })
+        })
+    },
+
+    setPrivateSocketHooks: ({commit, dispatch}, user) => {
         // TODO add some private stuff maybe
     }
 }

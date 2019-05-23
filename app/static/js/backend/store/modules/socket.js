@@ -28,7 +28,7 @@ const mutations = {
 }
 
 const actions = {
-    connect: ({commit, dispatch}, user) => {
+    connect:   ({commit, dispatch}, user) => {
         commit("setPublicSocket")
         dispatch("auth/setPublicSocketHooks", {}, {root: true}).then(() => {
             dispatch("post/setPublicSocketHooks", {}, {root: true})
@@ -44,14 +44,43 @@ const actions = {
             // TODO dispatch other admin socket stuff
         })
     },
-    leave:   ({state}, token) => {
+
+    leave:     ({state}, token) => {
         if (state.publicSocket) {
             state.publicSocket.emit("leave", {token})
         }
         if (state.privateSocket) {
             state.privateSocket.emit("leave", {token})
         }
-    }
+    },
+
+    getSocket: ({state}, socketName = "publicSocket") => new Promise((resolve, reject) => {
+        if (!["publicSocket", "privateSocket", "adminSocket"].includes(socketName)) {
+            return reject("Invalid socket name")
+        }
+
+        let socket = state[socketName]
+        if (socket) return resolve(socket)
+
+        const socketInterval = setInterval(() => {
+            if (!socket) {
+                socket = state[socketName]
+                if (socket) {
+                    clearInterval(socketInterval)
+                    return resolve(socket)
+                }
+            } else {
+                clearInterval(socketInterval)
+                return resolve(socket)
+            }
+        }, 1)
+    }),
+
+    getPublicSocket: ({dispatch}) => dispatch("getSocket", "publicSocket"),
+
+    getPrivateSocket: ({dispatch}) => dispatch("getSocket", "privateSocket"),
+
+    getAdminSocket: ({dispatch}) => dispatch("getSocket", "adminSocket"),
 }
 
 export default {

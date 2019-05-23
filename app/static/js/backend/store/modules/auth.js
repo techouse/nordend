@@ -221,59 +221,65 @@ const actions = {
 
     setPublicSocketHooks({dispatch, rootGetters}) {
         const token = rootGetters["auth/token"]
-        rootGetters["socket/publicSocket"].on("connect", () => {
-                                              rootGetters["socket/publicSocket"].emit("authenticate", {token})
-                                          })
-                                          .on("authenticated", ({data}) => {
-                                              // TODO maybe do something else
-                                              dispatch("console/log", data, {root: true})
+        dispatch("socket/getPublicSocket", {}, {root: true}).then(socket => {
+            socket.on("connect", () => {
+                      socket.emit("authenticate", {token})
+                  })
+                  .on("authenticated", ({data}) => {
+                      // TODO maybe do something else
+                      dispatch("console/log", data, {root: true})
 
-                                              window.addEventListener("beforeunload", () => {
-                                                  rootGetters["socket/publicSocket"].emit("leave", {token})
-                                              })
-                                          })
-                                          .on("left", ({data}) => {
-                                              // TODO maybe do something else
-                                              dispatch("console/log", data, {root: true})
-                                          })
+                      window.addEventListener("beforeunload", () => {
+                          socket.emit("leave", {token})
+                      })
+                  })
+                  .on("left", ({data}) => {
+                      // TODO maybe do something else
+                      dispatch("console/log", data, {root: true})
+                  })
+        })
     },
 
     setPrivateSocketHooks({dispatch, rootGetters}) {
         const token = rootGetters["auth/token"]
-        rootGetters["socket/privateSocket"].on("connect", () => {
-                                               rootGetters["socket/privateSocket"].emit("authenticate", {token})
-                                           })
-                                           .on("authenticated", ({data}) => {
-                                               // TODO maybe do something else
-                                               dispatch("console/log", data, {root: true})
+        dispatch("socket/getPrivateSocket", {}, {root: true}).then(socket => {
+            socket.on("connect", () => {
+                      socket.emit("authenticate", {token})
+                  })
+                  .on("authenticated", ({data}) => {
+                      // TODO maybe do something else
+                      dispatch("console/log", data, {root: true})
 
-                                               window.addEventListener("beforeunload", () => {
-                                                   rootGetters["socket/privateSocket"].emit("leave", {token})
-                                               })
-                                           })
-                                           .on("left", ({data}) => {
-                                               // TODO maybe do something else
-                                               dispatch("console/log", data, {root: true})
-                                           })
+                      window.addEventListener("beforeunload", () => {
+                          socket.emit("leave", {token})
+                      })
+                  })
+                  .on("left", ({data}) => {
+                      // TODO maybe do something else
+                      dispatch("console/log", data, {root: true})
+                  })
+        })
     },
 
     setAdminSocketHooks({dispatch, rootGetters}) {
         const token = rootGetters["auth/token"]
-        rootGetters["socket/adminSocket"].on("connect", () => {
-                                               rootGetters["socket/adminSocket"].emit("authenticate", {token})
-                                           })
-                                           .on("authenticated", ({data}) => {
-                                               // TODO maybe do something else
-                                               dispatch("console/log", data, {root: true})
+        dispatch("socket/getAdminSocket", {}, {root: true}).then(socket => {
+            socket.on("connect", () => {
+                      socket.emit("authenticate", {token})
+                  })
+                  .on("authenticated", ({data}) => {
+                      // TODO maybe do something else
+                      dispatch("console/log", data, {root: true})
 
-                                               window.addEventListener("beforeunload", () => {
-                                                   rootGetters["socket/adminSocket"].emit("leave", {token})
-                                               })
-                                           })
-                                           .on("left", ({data}) => {
-                                               // TODO maybe do something else
-                                               dispatch("console/log", data, {root: true})
-                                           })
+                      window.addEventListener("beforeunload", () => {
+                          socket.emit("leave", {token})
+                      })
+                  })
+                  .on("left", ({data}) => {
+                      // TODO maybe do something else
+                      dispatch("console/log", data, {root: true})
+                  })
+        })
     },
 
     checkIfPublicRegistrationEnabled({dispatch}) {

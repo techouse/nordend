@@ -1,7 +1,7 @@
 <script>
-    import CreatePost   from "./create"
-    import Post         from "../../models/Post"
-    import {mapActions} from "vuex"
+    import CreatePost               from "./create"
+    import Post                     from "../../models/Post"
+    import {mapActions, mapGetters} from "vuex"
 
     export default {
         name: "EditPost",
@@ -27,12 +27,18 @@
             this.getPost(this.postId)
                 .then(({data}) => {
                     this.$set(this, "post", new Post(data))
+                    this.lockPost(this.post)
                     this.editor.setContent(this.post.body)
                 })
         },
 
+        beforeDestroy() {
+            this.editor.destroy()
+            this.unlockPost(this.post)
+        },
+
         methods: {
-            ...mapActions("post", ["getPost", "updatePost", "deletePost"]),
+            ...mapActions("post", ["getPost", "updatePost", "deletePost", "lockPost", "unlockPost"]),
 
             submit() {
                 this.$refs[this.formRef].validate((valid) => {

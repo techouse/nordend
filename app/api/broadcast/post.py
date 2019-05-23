@@ -27,3 +27,13 @@ class PostBroadcast:
         socketio.emit(
             "post.deleted", {"data": {"id": id_}}, broadcast=True, room=Channel.get_room(), namespace=Channel.NAMESPACE
         )
+
+
+@socketio.on("post.lock", namespace=Channel.NAMESPACE)
+def locked(post):
+    print(f"locked post {post['id']}")
+
+
+@socketio.on("post.unlock", namespace=Channel.NAMESPACE)
+def unlocked(post):
+    print(f"unlocked post {post['id']}")
