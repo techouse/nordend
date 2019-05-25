@@ -64,13 +64,6 @@
                         confirmButtonText: "OK",
                         callback:          action => {
                             this.clearForcedUnlockNotification()
-
-                            this.$message(
-                                {
-                                    type:    "info",
-                                    message: "Thank you!"
-                                }
-                            )
                         }
                     })
                 }
