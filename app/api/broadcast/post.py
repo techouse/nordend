@@ -52,10 +52,15 @@ class PostBroadcast:
         )
 
     @staticmethod
-    def unlocked(id_):
+    def unlocked(id_, forced=False, notify_user_id=None):
         socketio.emit(
             "post.unlocked",
-            {"data": {"id": id_}, "timestamp": datetime.now(pytz.utc).isoformat()},
+            {
+                "data": {"id": id_},
+                "forced": forced,
+                "notify_user_id": notify_user_id,
+                "timestamp": datetime.now(pytz.utc).isoformat(),
+            },
             broadcast=True,
             room=Channel.get_room(),
             namespace=Channel.NAMESPACE,
@@ -109,7 +114,7 @@ def lock(data):
 
 @socketio.on("post.unlock", namespace=Channel.NAMESPACE)
 def unlock(data):
-    if {"post_id", "token"} == data.keys():
+    if {"post_id", "forced", "token"} == data.keys():
         current_user = User.verify_auth_token(data["token"])
         if data["post_id"] is not None and current_user is not None:
             lock_data = redis.hget(locked_posts_redis_key, data["post_id"])
@@ -117,10 +122,12 @@ def unlock(data):
                 try:
                     lock_data = json.loads(lock_data)
                     if {"post_id", "user_id", "timestamp", "expires"} == lock_data.keys() and (
-                        lock_data["user_id"] == current_user.id or current_user.can(Permission.ADMIN)
+                        lock_data["user_id"] == current_user.id or current_user.can(Permission.MODERATE)
                     ):
                         redis.hdel(locked_posts_redis_key, data["post_id"])
-                        return PostBroadcast.unlocked(data["post_id"])
+                        return PostBroadcast.unlocked(
+                            data["post_id"], forced=bool(data["forced"]), notify_user_id=lock_data["user_id"]
+                        )
                 except:
                     pass
     return False

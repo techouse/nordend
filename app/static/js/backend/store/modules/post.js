@@ -1,25 +1,27 @@
 import {create, destroy, get, update} from "../../services"
 
 const state = {
-    created:        0,
-    createdId:      null,
-    updated:        0,
-    updatedId:      null,
-    deleted:        0,
-    deletedId:      null,
-    lockedPosts:    [],
-    gotLockedPosts: false
+    created:                 0,
+    createdId:               null,
+    updated:                 0,
+    updatedId:               null,
+    deleted:                 0,
+    deletedId:               null,
+    lockedPosts:             [],
+    gotLockedPosts:          false,
+    notifyAboutForcedUnlock: false
 }
 
 const getters = {
-    created:        state => state.created,
-    createdId:      state => state.createdId,
-    updated:        state => state.updated,
-    updatedId:      state => state.updatedId,
-    deleted:        state => state.deleted,
-    deletedId:      state => state.deletedId,
-    lockedPosts:    state => state.lockedPosts,
-    gotLockedPosts: state => state.gotLockedPosts,
+    created:                 state => state.created,
+    createdId:               state => state.createdId,
+    updated:                 state => state.updated,
+    updatedId:               state => state.updatedId,
+    deleted:                 state => state.deleted,
+    deletedId:               state => state.deletedId,
+    lockedPosts:             state => state.lockedPosts,
+    gotLockedPosts:          state => state.gotLockedPosts,
+    notifyAboutForcedUnlock: state => state.notifyAboutForcedUnlock,
 }
 
 const mutations = {
@@ -52,6 +54,9 @@ const mutations = {
         if (state.lockedPosts.includes(id)) {
             state.lockedPosts.splice(state.lockedPosts.indexOf(id), 1)
         }
+    },
+    setNotifyAboutForcedUnlock: (state, id) => {
+        state.notifyAboutForcedUnlock = id
     }
 }
 
@@ -85,13 +90,24 @@ const actions = {
         })
     },
 
-    unlockPost: ({dispatch, rootGetters}, post) => {
+    unlockPost: ({dispatch, rootGetters}, {post, forced = false}) => {
         dispatch("socket/getPublicSocket", {}, {root: true}).then(socket => {
             socket.emit("post.unlock", {
                 post_id: post.id,
+                forced:  forced,
                 token:   rootGetters["auth/token"]
             })
         })
+    },
+
+    notifyAboutForcedUnlock: ({commit, rootGetters}, {post, notify_user_id}) => {
+        if (rootGetters["user/currentUser"].id === notify_user_id) {
+            commit("setNotifyAboutForcedUnlock", post.id)
+        }
+    },
+
+    clearForcedUnlockNotification: ({commit}) => {
+        commit("setNotifyAboutForcedUnlock", false)
     },
 
     setPublicSocketHooks: ({commit, dispatch}) => {
@@ -112,8 +128,11 @@ const actions = {
                       commit("lockPost", data.id)
                       dispatch("console/log", `Post with ID ${data.id} locked`, {root: true})
                   })
-                  .on("post.unlocked", ({data, timestamp}) => {
+                  .on("post.unlocked", ({data, forced, notify_user_id, timestamp}) => {
                       commit("unlockPost", data.id)
+                      if (forced) {
+                          dispatch("notifyAboutForcedUnlock", {post: data, notify_user_id: notify_user_id})
+                      }
                       dispatch("console/log", `Post with ID ${data.id} unlocked`, {root: true})
                   })
                   .on("post.list.locked", ({data, timestamp}) => {

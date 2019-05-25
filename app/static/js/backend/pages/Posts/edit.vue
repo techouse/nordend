@@ -27,6 +27,8 @@
 
             ...mapGetters("user", ["currentUser"]),
 
+            ...mapGetters("post", ["notifyAboutForcedUnlock"]),
+
             editable() {
                 return !this.readonly &&
                        (
@@ -43,6 +45,38 @@
             }
         },
 
+        watch: {
+            notifyAboutForcedUnlock(postId) {
+                if (postId) {
+                    let message
+                    if (this.post.id === postId) {
+                        message = "A moderator or administrator has forcefully unlocked " +
+                                  "the article you are currently editing. Please be advised " +
+                                  "that now also other people can edit this article."
+                    } else {
+                        message = "A moderator or administrator has forcefully unlocked " +
+                                  "an article you were recently editing. Please be advised " +
+                                  "that now other people can edit that article."
+                    }
+
+                    this.$alert(message, {
+                        type:              this.post.id === postId ? "warning" : "info",
+                        confirmButtonText: "OK",
+                        callback:          action => {
+                            this.clearForcedUnlockNotification()
+
+                            this.$message(
+                                {
+                                    type:    "info",
+                                    message: "Thank you!"
+                                }
+                            )
+                        }
+                    })
+                }
+            }
+        },
+
         mounted() {
             this.getPost(this.postId)
                 .then(({data}) => {
@@ -51,7 +85,7 @@
                         this.lockPost(this.post)
                             .then(() => {
                                 window.addEventListener("beforeunload", () => {
-                                    this.unlockPost(this.post)
+                                    this.unlockPost({post: this.post})
                                 })
                             })
                     }
@@ -62,12 +96,12 @@
         beforeDestroy() {
             this.editor.destroy()
             if (this.editable) {
-                this.unlockPost(this.post)
+                this.unlockPost({post: this.post})
             }
         },
 
         methods: {
-            ...mapActions("post", ["getPost", "updatePost", "deletePost", "lockPost", "unlockPost"]),
+            ...mapActions("post", ["getPost", "updatePost", "deletePost", "lockPost", "unlockPost", "clearForcedUnlockNotification"]),
 
             submit() {
                 this.$refs[this.formRef].validate((valid) => {

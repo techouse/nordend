@@ -37,24 +37,42 @@
                     </template>
                     <template slot-scope="scope">
                         <template v-if="!lockedPosts.includes(scope.row.id)">
-                            <router-link :to="{name: 'EditPost', params: {postId: scope.row.id}}"
-                                         class="btn btn-sm btn-outline-secondary"
-                            >
-                                <i class="fas fa-edit"></i>
-                            </router-link>
-                            <button class="btn btn-sm btn-outline-danger" @click.prevent="remove(scope.row)">
-                                <i class="far fa-trash-alt"></i>
-                            </button>
+                            <el-tooltip class="item" effect="dark" content="Edit" placement="top-start">
+                                <router-link :to="{name: 'EditPost', params: {postId: scope.row.id}}"
+                                             class="btn btn-sm btn-outline-secondary"
+                                >
+                                    <i class="fas fa-edit"/>
+                                </router-link>
+                            </el-tooltip>
+                            <el-tooltip class="item" effect="dark" content="Delete" placement="top-start">
+                                <button class="btn btn-sm btn-outline-danger" @click.prevent="remove(scope.row)">
+                                    <i class="far fa-trash-alt"/>
+                                </button>
+                            </el-tooltip>
                         </template>
                         <template v-else>
-                            <router-link :to="{name: 'EditPost', params: {postId: scope.row.id, readonly: false}}"
-                                         class="btn btn-sm btn-outline-secondary"
-                            >
-                                <i class="fas fa-eye"></i>
-                            </router-link>
-                            <button class="btn btn-sm btn-danger" :disabled="true">
-                                <i class="fas fa-lock-alt"></i>
-                            </button>
+                            <el-tooltip class="item" effect="dark" content="View" placement="top-start">
+                                <router-link :to="{name: 'EditPost', params: {postId: scope.row.id, readonly: false}}"
+                                             class="btn btn-sm btn-outline-secondary"
+                                >
+                                    <i class="fas fa-eye"/>
+                                </router-link>
+                            </el-tooltip>
+                            <el-tooltip v-if="currentUser.role.moderate || currentUser.role.admin"
+                                        class="item" effect="dark" content="Forcefully unlock"
+                                        placement="top-start">
+                                <button class="btn btn-sm btn-outline-primary"
+                                        @click.prevent="unlock(scope.row)"
+                                >
+                                    <i class="fas fa-unlock-alt"/>
+                                </button>
+                            </el-tooltip>
+                            <el-tooltip v-else class="item" effect="dark" content="Locked"
+                                        placement="top-start">
+                                <button class="btn btn-sm btn-ghost-danger" :disabled="true">
+                                    <i class="fas fa-lock-alt"/>
+                                </button>
+                            </el-tooltip>
                         </template>
                     </template>
                 </el-table-column>
@@ -93,7 +111,9 @@
         },
 
         computed: {
-            ...mapGetters("post", ["created", "updated", "deleted", "gotLockedPosts", "lockedPosts"])
+            ...mapGetters("post", ["created", "updated", "deleted", "gotLockedPosts", "lockedPosts", "notifyAboutForcedUnlock"]),
+
+            ...mapGetters("user", ["currentUser"]),
         },
 
         watch: {
@@ -115,11 +135,26 @@
                  */
                 this.getData()
             },
-            lockedPosts: {
-                handler(ids) {
-                    console.log('locked posts changed')
-                },
-                deep: true
+            notifyAboutForcedUnlock(postId) {
+                if (postId) {
+                    this.$alert("A moderator or administrator has forcefully unlocked " +
+                                "an article you were recently editing. Please be advised " +
+                                "that now other people can edit that article.",
+                                "Article unlocked", {
+                                    type:              "info",
+                                    confirmButtonText: "OK",
+                                    callback:          action => {
+                                        this.clearForcedUnlockNotification()
+
+                                        this.$message(
+                                            {
+                                                type:    "info",
+                                                message: "Thank you!"
+                                            }
+                                        )
+                                    }
+                                })
+                }
             }
         },
 
@@ -130,7 +165,7 @@
         },
 
         methods: {
-            ...mapActions("post", ["getPosts", "deletePost", "listLockedPosts"]),
+            ...mapActions("post", ["getPosts", "deletePost", "unlockPost", "listLockedPosts", "clearForcedUnlockNotification"]),
 
             getData() {
                 this.$router.replace({name: "Posts", query: this.params})
@@ -144,6 +179,20 @@
 
             edit(post) {
                 this.$router.push({name: "EditPost", params: {postId: post.id}})
+            },
+
+            unlock(post) {
+                this.$confirm(`Are you sure you want to forcefully unlock ${post.title}?`, "Warning", {
+                        confirmButtonText: "Yes",
+                        cancelButtonText:  "No",
+                        type:              "warning"
+                    })
+                    .then(() => {
+                        this.unlockPost({post, forced: true})
+                    })
+                    .catch(() => {
+                        this.info("Post not forcefully unlocked.")
+                    })
             },
 
             remove(post) {
