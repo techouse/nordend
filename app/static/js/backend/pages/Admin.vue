@@ -139,10 +139,7 @@
         methods: {
             ...mapActions("user", ["getUser", "setCurrentUser"]),
 
-            ...mapActions("auth", [
-                "autoLogin",
-                "logout"
-            ]),
+            ...mapActions("auth", ["autoLogin", "logout"]),
 
             toggleNano() {
                 // body

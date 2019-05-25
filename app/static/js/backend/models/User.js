@@ -16,6 +16,14 @@ export default class User {
         this.role_id = null
 
         Object.assign(this, values)
+
+        if (this.created_at) {
+            this.created_at = new Date(this.created_at)
+        }
+
+        if (this.updated_at) {
+            this.updated_at = new Date(this.updated_at)
+        }
     }
 
     mappedForSubmission() {

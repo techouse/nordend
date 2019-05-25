@@ -1,10 +1,13 @@
 from urllib.parse import quote_plus
 
+import simplejson as json
 from flask import current_app
 from flask_marshmallow import Marshmallow
 from marshmallow import fields, pre_load, validates_schema, ValidationError
 from marshmallow import validate
 
+from app import redis
+from ..redis_keys import locked_posts_redis_key
 from .validators import valid_permission, valid_password_reset_token
 from ..models import Post, User, Role, Category, Image
 
@@ -124,6 +127,9 @@ class PostSchema(ma.Schema):
     author = fields.Nested("UserSchema", dump_only=True, exclude=("posts",))
     category_id = fields.Integer(required=True, validate=lambda x: x >= 0 and Category.query.get(x) is not None)
     category = fields.Nested("CategorySchema", dump_only=True, exclude=("posts",))
+    locked = fields.Method("is_locked", dump_only=True)
+    locked_since = fields.Method("get_locked_since", dump_only=True)
+    locked_by = fields.Method("get_locked_by", dump_only=True)
     links = ma.Hyperlinks(
         {
             "self": ma.URLFor("api.post", id="<id>", _external=True),
@@ -139,11 +145,27 @@ class PostSchema(ma.Schema):
                 category_name = category.get("name")
             else:
                 category_name = category
-            category_dict = dict(name=category_name)
+            category_dict = {"name": category_name}
         else:
             category_dict = {}
         data["category"] = category_dict
         return data
+
+    def is_locked(self, obj):
+        return redis.hget(locked_posts_redis_key, obj.id) is not None
+
+    def get_locked_since(self, obj):
+        if self.is_locked(obj):
+            lock_data = json.loads(redis.hget(locked_posts_redis_key, obj.id))
+            return lock_data["timestamp"]
+        return None
+
+    def get_locked_by(self, obj):
+        if self.is_locked(obj):
+            lock_data = json.loads(redis.hget(locked_posts_redis_key, obj.id))
+            user_schema = UserSchema(only=("id", "name", "email"))
+            return user_schema.dump(User.query.get(lock_data["user_id"])).data
+        return None
 
 
 class ImageSchema(ma.Schema):

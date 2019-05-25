@@ -3,6 +3,7 @@ import pytz
 
 from dotenv import load_dotenv
 from str2bool import str2bool
+from slugify import slugify
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, ".env"))
@@ -27,6 +28,8 @@ class Config(object):
     REDIS_PORT = int(os.environ.get("REDIS_PORT")) or 6379
     REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD") or None
     REDIS_DB = os.environ.get("REDIS_DB") or 0
+    REDIS_DECODE_RESPONSES = True
+    REDIS_PREFIX = os.environ.get("REDIS_PREFIX") or slugify(APP_NAME, separator="_")
     # Broadcasting / Socket.IO
     BROADCAST_ROOM = "broadcast"  # equal to broadcastRoom in app/static/js/backend/store/modules/socket.js
     # Email server settings

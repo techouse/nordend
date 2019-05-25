@@ -43,7 +43,6 @@
         data() {
             return {
                 formRef:    "create-category-form",
-                title:      "Create category",
                 category:   new Category(),
                 rules:      {
                     name: [
@@ -51,6 +50,12 @@
                         {min: 1, max: 255, message: "Length should be between 1 and 255 characters", trigger: "blur"}
                     ],
                 },
+            }
+        },
+
+        computed: {
+            title() {
+                return "Create category"
             }
         },
 

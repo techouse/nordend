@@ -8,13 +8,16 @@
             return {
                 labelWidth: "140px",
                 formRef:    "create-form",
-                title:      "Create",
                 rules:      {}
             }
         },
 
         computed: {
             ...mapGetters("alert", ["alert"]),
+
+            title() {
+                return "Create"
+            }
         },
 
         methods: {

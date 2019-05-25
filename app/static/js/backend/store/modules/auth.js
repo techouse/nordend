@@ -180,6 +180,7 @@ const actions = {
             .then(() => {
                 dispatch("csrf/getCsrf", {}, {root: true})  // needed in order to get a new CSRF token
                     .then(() => {
+                        commit("post/clearLockedPosts", {}, {root: true})
                         commit("clearAuthData")
                         router.replace({name: "Login"})
                     })

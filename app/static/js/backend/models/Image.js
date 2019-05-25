@@ -10,6 +10,10 @@ export default class Image {
 
         Object.assign(this, values)
 
+        if (this.created_at) {
+            this.created_at = new Date(this.created_at)
+        }
+
         if (this.sizes.length > 0) {
             this.sizes = this.sizes
                              .map(size => Number(size))

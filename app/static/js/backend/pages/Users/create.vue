@@ -14,13 +14,13 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <el-form-item label="E-mail" prop="email">
-                                <el-input v-model="user.email" type="email" required/>
+                                <el-input v-model="user.email" type="email" required />
                             </el-form-item>
                             <el-form-item label="Password" prop="password">
-                                <el-input v-model="user.password" type="password" :required="!user.id"/>
+                                <el-input v-model="user.password" type="password" :required="!user.id" />
                             </el-form-item>
                             <el-form-item label="Repeat password" prop="password_repeat">
-                                <el-input v-model="user.password_repeat" type="password" :required="!user.id"/>
+                                <el-input v-model="user.password_repeat" type="password" :required="!user.id" />
                             </el-form-item>
                             <el-form-item label="Role" prop="role_id">
                                 <el-select v-model="user.role_id" placeholder="User role" required>
@@ -43,10 +43,10 @@
                         </div>
                         <div class="col-sm-6">
                             <el-form-item label="Name" prop="name">
-                                <el-input v-model="user.name" type="text" required/>
+                                <el-input v-model="user.name" type="text" required />
                             </el-form-item>
                             <el-form-item label="Location" prop="location">
-                                <el-input v-model="user.location" type="text"/>
+                                <el-input v-model="user.location" type="text" />
                             </el-form-item>
                             <el-form-item label="About" prop="about_me">
                                 <el-input v-model="user.about_me"
@@ -84,7 +84,6 @@
         data() {
             return {
                 formRef: "create-user-form",
-                title:   "Create user",
                 user:    new User(),
                 roles:   [],
                 rules:   {
@@ -139,6 +138,12 @@
                     ],
                     about_me:        [],
                 }
+            }
+        },
+
+        computed: {
+            title() {
+                return "Create user"
             }
         },
 

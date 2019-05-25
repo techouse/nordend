@@ -10,10 +10,10 @@
         </template>
         <template v-slot:body>
             <el-table :data="posts" class="w-100" @sort-change="orderBy">
-                <el-table-column label="#" prop="id" width="60" sortable="custom" />
-                <el-table-column label="Title" prop="title" sortable="custom" />
-                <el-table-column label="Category" prop="category.name" sortable="custom" />
-                <el-table-column label="Author" prop="author.name" sortable="custom" />
+                <el-table-column label="#" prop="id" width="60" sortable="custom"/>
+                <el-table-column label="Title" prop="title" sortable="custom"/>
+                <el-table-column label="Category" prop="category.name" sortable="custom"/>
+                <el-table-column label="Author" prop="author.name" sortable="custom"/>
                 <el-table-column label="Created" align="center" width="160" prop="created_at" sortable="custom">
                     <template slot-scope="scope">
                         <time :datetime="scope.row.created_at">{{ scope.row.created_at|formatDate }}
@@ -36,14 +36,26 @@
                         />
                     </template>
                     <template slot-scope="scope">
-                        <router-link :to="{name: 'EditPost', params: {postId: scope.row.id}}"
-                                     class="btn btn-sm btn-outline-secondary"
-                        >
-                            Edit
-                        </router-link>
-                        <button class="btn btn-sm btn-outline-danger" @click="remove(scope.row)">
-                            Delete
-                        </button>
+                        <template v-if="!lockedPosts.includes(scope.row.id)">
+                            <router-link :to="{name: 'EditPost', params: {postId: scope.row.id}}"
+                                         class="btn btn-sm btn-outline-secondary"
+                            >
+                                <i class="fas fa-edit"></i>
+                            </router-link>
+                            <button class="btn btn-sm btn-outline-danger" @click.prevent="remove(scope.row)">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </template>
+                        <template v-else>
+                            <router-link :to="{name: 'EditPost', params: {postId: scope.row.id, readonly: false}}"
+                                         class="btn btn-sm btn-outline-secondary"
+                            >
+                                <i class="fas fa-eye"></i>
+                            </router-link>
+                            <button class="btn btn-sm btn-danger" :disabled="true">
+                                <i class="fas fa-lock-alt"></i>
+                            </button>
+                        </template>
                     </template>
                 </el-table-column>
             </el-table>
@@ -81,7 +93,7 @@
         },
 
         computed: {
-            ...mapGetters("post", ["created", "updated", "deleted"])
+            ...mapGetters("post", ["created", "updated", "deleted", "gotLockedPosts", "lockedPosts"])
         },
 
         watch: {
@@ -103,10 +115,22 @@
                  */
                 this.getData()
             },
+            lockedPosts: {
+                handler(ids) {
+                    console.log('locked posts changed')
+                },
+                deep: true
+            }
+        },
+
+        created() {
+            if (!this.gotLockedPosts) {
+                this.listLockedPosts()
+            }
         },
 
         methods: {
-            ...mapActions("post", ["getPosts", "deletePost"]),
+            ...mapActions("post", ["getPosts", "deletePost", "listLockedPosts"]),
 
             getData() {
                 this.$router.replace({name: "Posts", query: this.params})

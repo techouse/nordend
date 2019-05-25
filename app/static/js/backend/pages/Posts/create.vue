@@ -521,16 +521,15 @@
         extends: CreatePartial,
 
         props: {
-            editable: {
+            readonly: {
                 type:    Boolean,
-                default: true
+                default: false
             }
         },
 
         data() {
             return {
                 formRef:                  "create-post-form",
-                title:                    "Create post",
                 post:                     new Post(),
                 categories:               [],
                 rules:                    {
@@ -634,6 +633,14 @@
             selectedType() {
                 const selection = this.editor.state.selection
                 return selection.node ? selection.node.type.name : selection.toJSON().type
+            },
+
+            editable() {
+                return !this.readonly
+            },
+
+            title() {
+                return this.editable ? "Create post" : "View post"
             }
         },
 

@@ -11,8 +11,8 @@ from slugify.slugify import slugify
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from .bleach_settings import allowed_tags, allowed_styles, allowed_attributes
 from . import db, login
+from .bleach_settings import allowed_tags, allowed_styles, allowed_attributes
 
 
 class AddUpdateDelete:

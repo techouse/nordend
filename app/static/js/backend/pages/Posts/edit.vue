@@ -18,8 +18,21 @@
         data() {
             return {
                 formRef: "edit-post-form",
-                title:   "Edit post",
                 post:    new Post(),
+            }
+        },
+
+        computed: {
+            ...mapGetters("auth", ["token"]),
+
+            ...mapGetters("user", ["currentUser"]),
+
+            editable() {
+                return !this.readonly && (!this.post.locked || this.post.locked && this.post.locked_by.id === this.currentUser.id)
+            },
+
+            title() {
+                return this.editable ? "Edit post" : "View post"
             }
         },
 
@@ -27,14 +40,23 @@
             this.getPost(this.postId)
                 .then(({data}) => {
                     this.$set(this, "post", new Post(data))
-                    this.lockPost(this.post)
+                    if (this.editable) {
+                        this.lockPost(this.post)
+                            .then(() => {
+                                window.addEventListener("beforeunload", () => {
+                                    this.unlockPost(this.post)
+                                })
+                            })
+                    }
                     this.editor.setContent(this.post.body)
                 })
         },
 
         beforeDestroy() {
             this.editor.destroy()
-            this.unlockPost(this.post)
+            if (this.editable) {
+                this.unlockPost(this.post)
+            }
         },
 
         methods: {
