@@ -152,19 +152,29 @@ class PostSchema(ma.Schema):
         return data
 
     def is_locked(self, obj):
-        return redis.hget(locked_posts_redis_key, obj.id) is not None
+        return redis.hexists(locked_posts_redis_key, obj.id) is not None
 
     def get_locked_since(self, obj):
         if self.is_locked(obj):
-            lock_data = json.loads(redis.hget(locked_posts_redis_key, obj.id))
-            return lock_data["timestamp"]
+            lock_data = redis.hget(locked_posts_redis_key, obj.id)
+            if lock_data:
+                try:
+                    lock_data = json.loads(lock_data)
+                    return lock_data["timestamp"]
+                except:
+                    pass
         return None
 
     def get_locked_by(self, obj):
         if self.is_locked(obj):
-            lock_data = json.loads(redis.hget(locked_posts_redis_key, obj.id))
-            user_schema = UserSchema(only=("id", "name", "email"))
-            return user_schema.dump(User.query.get(lock_data["user_id"])).data
+            lock_data = redis.hget(locked_posts_redis_key, obj.id)
+            if lock_data:
+                try:
+                    lock_data = json.loads(lock_data)
+                    user_schema = UserSchema(only=("id", "name", "email"))
+                    return user_schema.dump(User.query.get(lock_data["user_id"])).data
+                except:
+                    pass
         return None
 
 

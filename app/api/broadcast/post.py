@@ -99,6 +99,7 @@ def lock(data):
                     }
                 ),
             )
+            ## TODO expire this thing
             return PostBroadcast.locked(data["post_id"])
     return False
 
