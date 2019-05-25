@@ -152,7 +152,7 @@ class PostSchema(ma.Schema):
         return data
 
     def is_locked(self, obj):
-        return redis.hexists(locked_posts_redis_key, obj.id) is not None
+        return redis.hexists(locked_posts_redis_key, obj.id)
 
     def get_locked_since(self, obj):
         if self.is_locked(obj):
