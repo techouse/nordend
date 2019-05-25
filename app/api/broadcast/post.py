@@ -2,13 +2,12 @@ from datetime import datetime
 
 import pytz
 import simplejson as json
-from simplejson import JSONDecodeError
 
-from ...redis_keys import locked_posts_redis_key
-from ...models import User, Permission
 from .channels import PublicChannel as Channel
 from ..schemas import PostSchema
 from ... import socketio, redis
+from ...models import User, Permission
+from ...redis_keys import locked_posts_redis_key
 
 
 class PostBroadcast:
@@ -118,6 +117,6 @@ def unlock(data):
                     ):
                         redis.hdel(locked_posts_redis_key, data["post_id"])
                         return PostBroadcast.unlocked(data["post_id"])
-                except JSONDecodeError:
+                except:
                     pass
     return False
