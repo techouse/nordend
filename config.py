@@ -45,6 +45,8 @@ class Config(object):
     POSTS_PER_PAGE = int(os.environ.get("POSTS_PER_PAGE")) or 20
     PAGINATION_PAGE_ARGUMENT_NAME = os.environ.get("PAGINATION_PAGE_ARGUMENT_NAME") or "page"
     PAGINATION_PER_PAGE_ARGUMENT_NAME = os.environ.get("PAGINATION_PER_PAGE_ARGUMENT_NAME") or "per_page"
+    # Posts
+    POST_EDIT_LOCK_TIMEOUT = int(os.environ.get("POST_EDIT_LOCK_TIMEOUT")) or 3600  # in seconds
     # Images
     PUBLIC_IMAGE_PATH = "static/images/public/"
     MAX_IMAGE_CONTENT_LENGTH = int(os.environ.get("MAX_IMAGE_CONTENT_LENGTH")) or 2 * 1024 ** 2  # 2MB

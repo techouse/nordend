@@ -16,6 +16,7 @@ export default class Post {
         this.updated_at = null
         this.locked = false
         this.locked_since = null
+        this.lock_expires = null
         this.locked_by = null
 
         Object.assign(this, values)
@@ -38,6 +39,10 @@ export default class Post {
 
         if (this.locked_since) {
             this.locked_since = new Date(this.locked_since)
+        }
+
+        if (this.lock_expires) {
+            this.lock_expires = new Date(this.lock_expires)
         }
 
         if (this.locked_by) {

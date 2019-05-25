@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytz
 import simplejson as json
 
+from ... import Config
 from .channels import PublicChannel as Channel
 from ..schemas import PostSchema
 from ... import socketio, redis
@@ -87,6 +88,8 @@ def lock(data):
     if {"post_id", "token"} == data.keys():
         current_user = User.verify_auth_token(data["token"])
         if current_user is not None:
+            timestamp = datetime.now(pytz.utc)
+            expires = timestamp + timedelta(seconds=Config.POST_EDIT_LOCK_TIMEOUT)
             redis.hset(
                 locked_posts_redis_key,
                 data["post_id"],
@@ -94,11 +97,11 @@ def lock(data):
                     {
                         "post_id": int(data["post_id"]),
                         "user_id": int(current_user.id),
-                        "timestamp": datetime.now(pytz.utc).isoformat(),
+                        "timestamp": timestamp.isoformat(),
+                        "expires": expires.isoformat()
                     }
                 ),
             )
-            ## TODO expire this thing
             return PostBroadcast.locked(data["post_id"])
     return False
 
@@ -112,7 +115,7 @@ def unlock(data):
             if lock_data:
                 try:
                     lock_data = json.loads(lock_data)
-                    if {"post_id", "user_id", "timestamp"} == lock_data.keys() and (
+                    if {"post_id", "user_id", "timestamp", "expires"} == lock_data.keys() and (
                         lock_data["user_id"] == current_user.id or current_user.can(Permission.ADMIN)
                     ):
                         redis.hdel(locked_posts_redis_key, data["post_id"])

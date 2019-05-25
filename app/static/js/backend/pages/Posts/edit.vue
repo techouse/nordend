@@ -28,7 +28,14 @@
             ...mapGetters("user", ["currentUser"]),
 
             editable() {
-                return !this.readonly && (!this.post.locked || this.post.locked && this.post.locked_by && this.post.locked_by.id === this.currentUser.id)
+                return !this.readonly &&
+                       (
+                           !this.post.locked ||
+                           this.post.locked &&
+                           this.post.lock_expires >= new Date() &&
+                           this.post.locked_by &&
+                           this.post.locked_by.id === this.currentUser.id
+                       )
             },
 
             title() {

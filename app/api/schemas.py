@@ -1,5 +1,7 @@
+from datetime import datetime
 from urllib.parse import quote_plus
 
+import pytz
 import simplejson as json
 from flask import current_app
 from flask_marshmallow import Marshmallow
@@ -129,6 +131,7 @@ class PostSchema(ma.Schema):
     category = fields.Nested("CategorySchema", dump_only=True, exclude=("posts",))
     locked = fields.Method("is_locked", dump_only=True)
     locked_since = fields.Method("get_locked_since", dump_only=True)
+    lock_expires = fields.Method("get_lock_expires", dump_only=True)
     locked_by = fields.Method("get_locked_by", dump_only=True)
     links = ma.Hyperlinks(
         {
@@ -152,29 +155,41 @@ class PostSchema(ma.Schema):
         return data
 
     def is_locked(self, obj):
-        return redis.hexists(locked_posts_redis_key, obj.id)
+        if redis.hexists(locked_posts_redis_key, obj.id):
+            lock_data = json.loads(redis.hget(locked_posts_redis_key, obj.id))
+            expires = datetime.fromisoformat(lock_data["expires"])
+            if expires >= datetime.now(pytz.utc):
+                return True
+            else:
+                redis.hdel(locked_posts_redis_key, obj.id)  # clean up expired locks
+        return False
 
     def get_locked_since(self, obj):
         if self.is_locked(obj):
-            lock_data = redis.hget(locked_posts_redis_key, obj.id)
-            if lock_data:
-                try:
-                    lock_data = json.loads(lock_data)
-                    return lock_data["timestamp"]
-                except:
-                    pass
+            try:
+                lock_data = json.loads(redis.hget(locked_posts_redis_key, obj.id))
+                return lock_data["timestamp"]
+            except:
+                pass
+        return None
+
+    def get_lock_expires(self, obj):
+        if self.is_locked(obj):
+            try:
+                lock_data = json.loads(redis.hget(locked_posts_redis_key, obj.id))
+                return lock_data["expires"]
+            except:
+                pass
         return None
 
     def get_locked_by(self, obj):
         if self.is_locked(obj):
-            lock_data = redis.hget(locked_posts_redis_key, obj.id)
-            if lock_data:
-                try:
-                    lock_data = json.loads(lock_data)
-                    user_schema = UserSchema(only=("id", "name", "email"))
-                    return user_schema.dump(User.query.get(lock_data["user_id"])).data
-                except:
-                    pass
+            try:
+                lock_data = json.loads(redis.hget(locked_posts_redis_key, obj.id))
+                user_schema = UserSchema(only=("id", "name", "email"))
+                return user_schema.dump(User.query.get(lock_data["user_id"])).data
+            except:
+                pass
         return None
 
 
