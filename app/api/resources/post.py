@@ -51,7 +51,7 @@ class PostResource(TokenRequiredResource):
         try:
             post.update()
             updated_post = self.get(id)
-            PostBroadcast.updated(updated_post)
+            PostBroadcast.updated(post_schema.dump(updated_post).data)
             return updated_post
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -151,7 +151,7 @@ class PostListResource(TokenRequiredResource):
             post.add(post)
             created_post = Post.query.get(post.id)
             result = post_schema.dump(created_post).data
-            PostBroadcast.created(created_post)
+            PostBroadcast.created(result)
             return result, status.HTTP_201_CREATED
         except SQLAlchemyError as e:
             db.session.rollback()

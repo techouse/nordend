@@ -9,6 +9,7 @@ from marshmallow import fields, pre_load, validates_schema, ValidationError
 from marshmallow import validate
 
 from app import redis
+from .broadcast.post import PostBroadcast
 from ..redis_keys import locked_posts_redis_key
 from .validators import valid_permission, valid_password_reset_token
 from ..models import Post, User, Role, Category, Image
@@ -162,6 +163,7 @@ class PostSchema(ma.Schema):
                 return True
             else:
                 redis.hdel(locked_posts_redis_key, obj.id)  # clean up expired locks
+                PostBroadcast.unlocked(obj.id)
         return False
 
     def get_locked_since(self, obj):

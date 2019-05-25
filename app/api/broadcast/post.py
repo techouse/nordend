@@ -3,35 +3,36 @@ from datetime import datetime, timedelta
 import pytz
 import simplejson as json
 
-from ... import Config
 from .channels import PublicChannel as Channel
-from ..schemas import PostSchema
+from ... import Config
 from ... import socketio, redis
 from ...models import User, Permission
 from ...redis_keys import locked_posts_redis_key
 
 
 class PostBroadcast:
-    post_schema = PostSchema()
-
-    @classmethod
-    def _data(cls, post):
-        return {"data": cls.post_schema.dump(post).data, "timestamp": datetime.now(pytz.utc).isoformat()}
-
-    @classmethod
-    def created(cls, post):
+    @staticmethod
+    def created(post):
         socketio.emit(
-            "post.created", cls._data(post), broadcast=True, room=Channel.get_room(), namespace=Channel.NAMESPACE
+            "post.created",
+            {"data": post, "timestamp": datetime.now(pytz.utc).isoformat()},
+            broadcast=True,
+            room=Channel.get_room(),
+            namespace=Channel.NAMESPACE,
         )
 
-    @classmethod
-    def updated(cls, post):
+    @staticmethod
+    def updated(post):
         socketio.emit(
-            "post.updated", cls._data(post), broadcast=True, room=Channel.get_room(), namespace=Channel.NAMESPACE
+            "post.updated",
+            {"data": post, "timestamp": datetime.now(pytz.utc).isoformat()},
+            broadcast=True,
+            room=Channel.get_room(),
+            namespace=Channel.NAMESPACE,
         )
 
-    @classmethod
-    def deleted(cls, id_):
+    @staticmethod
+    def deleted(id_):
         socketio.emit(
             "post.deleted",
             {"data": {"id": id_}, "timestamp": datetime.now(pytz.utc).isoformat()},
@@ -40,8 +41,8 @@ class PostBroadcast:
             namespace=Channel.NAMESPACE,
         )
 
-    @classmethod
-    def locked(cls, id_):
+    @staticmethod
+    def locked(id_):
         socketio.emit(
             "post.locked",
             {"data": {"id": id_}, "timestamp": datetime.now(pytz.utc).isoformat()},
@@ -50,8 +51,8 @@ class PostBroadcast:
             namespace=Channel.NAMESPACE,
         )
 
-    @classmethod
-    def unlocked(cls, id_):
+    @staticmethod
+    def unlocked(id_):
         socketio.emit(
             "post.unlocked",
             {"data": {"id": id_}, "timestamp": datetime.now(pytz.utc).isoformat()},
@@ -60,8 +61,8 @@ class PostBroadcast:
             namespace=Channel.NAMESPACE,
         )
 
-    @classmethod
-    def list_locked(cls):
+    @staticmethod
+    def list_locked():
         socketio.emit(
             "post.list.locked",
             {
@@ -98,7 +99,7 @@ def lock(data):
                         "post_id": int(data["post_id"]),
                         "user_id": int(current_user.id),
                         "timestamp": timestamp.isoformat(),
-                        "expires": expires.isoformat()
+                        "expires": expires.isoformat(),
                     }
                 ),
             )
