@@ -3,7 +3,7 @@
   "author": "Klemen Tušar",
   "license": "MIT",
   "name": "flask-cms",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "",
   "scripts": {
     "dev": "npm run development",
