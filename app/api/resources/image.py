@@ -4,7 +4,7 @@ from hashlib import sha256
 from io import BytesIO
 from math import ceil
 from os import makedirs
-from os.path import join, dirname
+from os.path import join, dirname, isdir
 from shutil import copy2
 
 from flask import request, g, current_app
@@ -133,10 +133,28 @@ class ImageListResource(TokenRequiredResource):
             response = {"message": "No selected file"}
             return response, status.HTTP_400_BAD_REQUEST
         if file and allowed_image_file(file.filename):
+            digest = sha256(file.read()).hexdigest()
+            root_path = join(dirname(current_app.instance_path), "app")
             try:
+                if Image.query.filter_by(hash=digest).count() > 0:
+                    for image in Image.query.filter_by(hash=digest).all():
+                        image_path = join(
+                            root_path,
+                            current_app.config["PUBLIC_IMAGE_PATH"],
+                            str(image.created_at.year),
+                            str(image.created_at.month),
+                            str(image.created_at.day),
+                            digest,
+                        )
+                        if isdir(image_path):
+                            # Return first existing image
+                            result = image_schema.dump(image).data
+                            return result, status.HTTP_200_OK
+                        else:
+                            # Image does not exist so we delete it from the database
+                            image.delete(image)
+
                 local_datetime = datetime.now(pytz.utc).astimezone(current_app.config["TIMEZONE"])
-                root_path = join(dirname(current_app.instance_path), "app")
-                digest = sha256(file.read()).hexdigest()
                 path = join(
                     current_app.config["PUBLIC_IMAGE_PATH"],
                     str(local_datetime.year),
