@@ -106,7 +106,7 @@ export default class YouTube extends Node {
 
     get view() {
         return {
-            props:    ["node", "updateAttrs", "editable"],
+            props:    ["node", "updateAttrs", "view"],
             data() {
                 return {
                     popoverVisible: false,
@@ -242,10 +242,10 @@ export default class YouTube extends Node {
                                 width="600"
                                 trigger="click"
                                 title="YouTube video details"
-                                :disabled="!editable"
+                                :disabled="!view.editable"
                                 @show="showPopover"
                                 @hide="hidePopover">
-                        <el-form v-if="editable" :model="form" :ref="formRef" :rules="rules" label-placement="right" label-width="120px">
+                        <el-form v-if="view.editable" :model="form" :ref="formRef" :rules="rules" label-placement="right" label-width="120px">
                             <el-form-item label="YouTube URL" prop="url">
                                 <el-input type="url" v-model="url" style="width: calc(100% - 120px)"/>
                             </el-form-item>

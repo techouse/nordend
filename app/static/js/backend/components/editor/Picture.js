@@ -105,7 +105,7 @@ export default class Picture extends Image {
 
     get view() {
         return {
-            props:    ["node", "updateAttrs", "editable"],
+            props:    ["node", "updateAttrs", "view"],
             data() {
                 return {
                     loading:        false,
@@ -216,7 +216,7 @@ export default class Picture extends Image {
                                 width="600"
                                 trigger="click"
                                 title="Picture details"
-                                :disabled="!editable"
+                                :disabled="!view.editable"
                                 @show="showPopover"
                                 @hide="hidePopover">
                         <el-form v-loading="loading" :ref="formRef" label-position="right">
