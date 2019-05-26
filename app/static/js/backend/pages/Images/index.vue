@@ -4,11 +4,11 @@
             <b>{{ title }}</b>
         </template>
         <template v-slot:body>
-            <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, 4)" :key="rowIndex" :gutter="20">
-                <el-col v-for="(image, imageIndex) in imageRow" :key="imageIndex" :span="6">
-                    <el-card :body-style="{ padding: '0px', textAlign: 'center' }">
+            <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex" :gutter="20">
+                <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
+                    <el-card :body-style="{ padding: '0', textAlign: 'center' }">
                         <el-image :style="{width: '100%', height: '100%'}"
-                                  :src="`${image.public_path}/280.jpg`"
+                                  :src="`${image.public_path}/${thumbnailSize}.jpg`"
                                   fit="cover">
                             <div slot="error" class="image-slot">
                                 <i class="el-icon-picture-outline"></i>
@@ -37,9 +37,10 @@
 
         data() {
             return {
-                title:        "Images",
-                images:       [],
-                imagesPerRow: 4
+                title:         "Images",
+                images:        [],
+                imagesPerRow:  4,
+                thumbnailSize: 280
             }
         },
 
