@@ -38,7 +38,7 @@
                     per_page: this.per_page,
                     sort:     null
                 },
-                pageSizes:  [12, 24, 50, 100],
+                pageSizes:  [12, 24, 48, 96],
                 totalCount: 0
             }
         },

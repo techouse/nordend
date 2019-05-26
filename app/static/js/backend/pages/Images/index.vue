@@ -20,6 +20,17 @@
                     </el-card>
                 </el-col>
             </el-row>
+            <div class="d-flex justify-content-center mt-2">
+                <el-pagination :current-page.sync="params.page"
+                               :page-sizes="pageSizes"
+                               :page-size.sync="params.per_page"
+                               :total="totalCount"
+                               layout="prev, pager, next, sizes"
+                               background
+                               @size-change="getData"
+                               @current-change="getData"
+                />
+            </div>
         </template>
     </card>
 </template>
@@ -39,7 +50,7 @@
             return {
                 title:         "Images",
                 images:        [],
-                imagesPerRow:  4,
+                imagesPerRow:  6,
                 thumbnailSize: 280
             }
         },
