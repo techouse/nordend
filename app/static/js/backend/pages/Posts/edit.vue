@@ -35,6 +35,7 @@
                            !this.post.locked ||
                            this.post.locked &&
                            this.post.lock_expires >= new Date() &&
+                           this.currentUser &&
                            this.post.locked_by &&
                            this.post.locked_by.id === this.currentUser.id
                        )
