@@ -26,6 +26,8 @@ import EditCategory         from "../pages/Categories/edit"
 import Roles                from "../pages/Roles"
 import CreateRole           from "../pages/Roles/create"
 import EditRole             from "../pages/Roles/edit"
+// Images
+import Images               from "../pages/Images"
 // Errors
 import Error404             from "../pages/Errors/404"
 
@@ -59,7 +61,7 @@ const routerOptions = [
         name:      "Unconfirmed",
         props:     true,
         meta:      {
-            auth:        true
+            auth: true
         }
     },
     {
@@ -232,6 +234,20 @@ const routerOptions = [
         meta:      {
             requiresAuth:  true,
             requiresAdmin: true
+        }
+    },
+    {
+        path:      "/images/",
+        component: Images,
+        name:      "Images",
+        props:     route => ({
+            search:  route.query.search,
+            page:    Number(route.query.page) || 1,
+            perPage: Number(route.query.per_page) || 12,
+            sort:    route.query.sort
+        }),
+        meta:      {
+            requiresAuth: true,
         }
     },
     {

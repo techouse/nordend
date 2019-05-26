@@ -20,6 +20,7 @@
     "@babel/preset-env": "^7.4.5",
     "@coreui/coreui": "^2.1.9",
     "@fortawesome/fontawesome-pro": "^5.8.2",
+    "@toast-ui/vue-image-editor": "^1.0.2",
     "autoprefixer": "^9.5.1",
     "axios": "^0.18.0",
     "babel-eslint": "^10.0.1",

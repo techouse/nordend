@@ -60,6 +60,11 @@
                             </router-link>
                         </li>
                         <li class="nav-item">
+                            <router-link :to="{name: 'Images'}" class="nav-link">
+                                <i class="nav-icon icon-camera"/> Images
+                            </router-link>
+                        </li>
+                        <li class="nav-item">
                             <router-link :to="{name: 'Categories'}" class="nav-link">
                                 <i class="nav-icon icon-tag"/> Categories
                             </router-link>
