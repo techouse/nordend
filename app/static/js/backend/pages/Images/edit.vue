@@ -2,28 +2,30 @@
     <div>
         <div class="row">
             <div class="col-sm-12">
-                <div class="card-header">
-                    <b>Edit image</b> <i>{{ title }}</i>
-                    <div v-if="image.id" class="card-header-actions">
-                        <button class="btn btn-sm btn-danger" @click.prevent="remove">
-                            Delete image
-                        </button>
+                <div class="card">
+                    <div class="card-header">
+                        <b>Edit image</b> <i>{{ title }}</i>
+                        <div v-if="image.id" class="card-header-actions">
+                            <button class="btn btn-sm btn-danger" @click.prevent="remove">
+                                Delete image
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <tui-image-editor v-if="image.id"
-                                      ref="editor"
-                                      :include-ui="useDefaultUI"
-                                      :options="options"
-                    />
-                </div>
-                <div class="card-footer">
-                    <el-button type="success" @click="submit">
-                        Submit
-                    </el-button>
-                    <el-button type="danger" @click="$router.push({name: 'Images'})">
-                        Cancel
-                    </el-button>
+                    <div class="card-body">
+                        <tui-image-editor v-if="image.id"
+                                          ref="editor"
+                                          :include-ui="useDefaultUI"
+                                          :options="options"
+                        />
+                    </div>
+                    <div class="card-footer">
+                        <el-button type="success" @click="submit">
+                            Submit
+                        </el-button>
+                        <el-button type="danger" @click="$router.push({name: 'Images'})">
+                            Cancel
+                        </el-button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -31,14 +33,11 @@
 </template>
 
 <script>
-    import {ImageEditor} from "@toast-ui/vue-image-editor"
-    import {mapActions}  from "vuex"
-    import Photo         from "../../models/Image"
-    import CreatePartial from "../../components/CreatePartial"
-    import icona         from "tui-image-editor/dist/svg/icon-a.svg"
-    import iconb         from "tui-image-editor/dist/svg/icon-b.svg"
-    import iconc         from "tui-image-editor/dist/svg/icon-c.svg"
-    import icond         from "tui-image-editor/dist/svg/icon-d.svg"
+    import {ImageEditor}         from "@toast-ui/vue-image-editor"
+    import {mapActions}          from "vuex"
+    import Photo                 from "../../models/Image"
+    import CreatePartial         from "../../components/CreatePartial"
+    import {white as whiteTheme} from "../../components/image_editor/theme"
 
     export default {
         name: "EditImage",
@@ -62,15 +61,7 @@
                 useDefaultUI: true,
                 options:      {
                     includeUI:       {
-                        theme:     {
-                            // main icons
-                            "menu.normalIcon.path":    icond,
-                            "menu.activeIcon.path":    iconb,
-                            "menu.disabledIcon.path":  icona,
-                            "menu.hoverIcon.path":     iconc,
-                            "submenu.normalIcon.path": icond,
-                            "submenu.activeIcon.path": iconb
-                        },
+                        theme:     whiteTheme,
                         loadImage: {
                             path: null,
                             name: null
@@ -79,7 +70,7 @@
                     },
                     cssMaxWidth:     700,
                     cssMaxHeight:    500,
-                    usageStatistics: false
+                    usageStatistics: false,
                 }
             }
         },
