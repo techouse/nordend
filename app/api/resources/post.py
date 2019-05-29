@@ -5,11 +5,11 @@ from webargs import fields
 from webargs.flaskparser import use_args
 
 from .authentication import TokenRequiredResource
+from ..broadcast.post import PostBroadcast
 from ..helpers import PaginationHelper
 from ..schemas import PostSchema
 from ... import db, status
 from ...models import Post, Category, User
-from ..broadcast.post import PostBroadcast
 
 post_schema = PostSchema()
 

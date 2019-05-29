@@ -4,14 +4,26 @@
             <b>{{ title }}</b>
         </template>
         <template v-slot:body>
+            <el-row :gutter="20">
+                <el-col :span="6" :offset="18">
+                    <el-input v-model="params.search"
+                              placeholder="Type to search images"
+                              clearable
+                              @change="searchData"
+                    >
+                        <el-button slot="append" icon="el-icon-search"/>
+                    </el-input>
+                </el-col>
+            </el-row>
             <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex" :gutter="20">
                 <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
                     <el-card :body-style="{ padding: '0', textAlign: 'center' }">
                         <el-image :style="{width: '100%', height: '100%'}"
                                   :src="`${image.public_path}/${thumbnailSize}.jpg`"
-                                  fit="cover">
+                                  fit="cover"
+                        >
                             <div slot="error" class="image-slot">
-                                <i class="el-icon-picture-outline"></i>
+                                <i class="el-icon-picture-outline"/>
                             </div>
                         </el-image>
                         <div style="padding: 14px;">

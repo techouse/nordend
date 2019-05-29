@@ -4,8 +4,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields
 from webargs.flaskparser import use_args
 
-from .post import post_schema
 from .authentication import TokenRequiredResource
+from .post import post_schema
 from ..helpers import PaginationHelper
 from ..schemas import CategorySchema
 from ... import db, status

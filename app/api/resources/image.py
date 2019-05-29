@@ -1,4 +1,3 @@
-import pytz
 from datetime import datetime
 from hashlib import sha256
 from io import BytesIO
@@ -7,12 +6,13 @@ from os import makedirs
 from os.path import join, dirname, isdir
 from shutil import copy2
 
+import pytz
+from PIL import Image as PImage
 from flask import request, g, current_app
-from sqlalchemy import desc
+from sqlalchemy import desc, or_
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields
 from webargs.flaskparser import use_args
-from PIL import Image as PImage
 
 from .authentication import TokenRequiredResource
 from ..helpers import PaginationHelper
@@ -83,7 +83,12 @@ class ImageListResource(TokenRequiredResource):
         # Apply filters
         filters = []
         if "search" in query_args and query_args["search"]:
-            filters.append(Image.name.like("%{filter}%".format(filter=query_args["search"])))
+            filters.append(
+                or_(
+                    Image.title.like("%{filter}%".format(filter=query_args["search"])),
+                    Image.original_filename.like("%{filter}%".format(filter=query_args["search"])),
+                )
+            )
         if "title" in query_args:
             filters.append(Image.title.like("%{filter}%".format(filter=query_args["title"])))
         if "original_filename" in query_args:
