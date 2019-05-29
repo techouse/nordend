@@ -17,19 +17,21 @@
             </el-row>
             <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex" :gutter="20">
                 <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
-                    <el-card :body-style="{ padding: '0', textAlign: 'center' }">
-                        <el-image :style="{width: '100%', height: '100%'}"
-                                  :src="`${image.public_path}/${thumbnailSize}.jpg`"
-                                  fit="cover"
-                        >
-                            <div slot="error" class="image-slot">
-                                <i class="el-icon-picture-outline"/>
+                    <div @click="edit(image.id)">
+                        <el-card :body-style="{ padding: '0', textAlign: 'center' }">
+                            <el-image :style="{width: '100%', height: '100%'}"
+                                      :src="`${image.public_path}/${thumbnailSize}.jpg`"
+                                      fit="cover"
+                            >
+                                <div slot="error" class="image-slot">
+                                    <i class="el-icon-picture-outline"/>
+                                </div>
+                            </el-image>
+                            <div style="padding: 14px;">
+                                <span>{{ image.title || image.original_filename }}</span>
                             </div>
-                        </el-image>
-                        <div style="padding: 14px;">
-                            <span>{{ image.title || image.original_filename }}</span>
-                        </div>
-                    </el-card>
+                        </el-card>
+                    </div>
                 </el-col>
             </el-row>
             <div class="d-flex justify-content-center mt-2">
@@ -88,6 +90,10 @@
                         : segments,
                     []
                 )
+            },
+
+            edit(imageId) {
+                this.$router.push({name: "EditImage", params: {imageId}})
             }
         }
     }

@@ -28,6 +28,7 @@ import CreateRole           from "../pages/Roles/create"
 import EditRole             from "../pages/Roles/edit"
 // Images
 import Images               from "../pages/Images"
+import EditImage            from "../pages/Images/edit"
 // Errors
 import Error404             from "../pages/Errors/404"
 
@@ -246,6 +247,15 @@ const routerOptions = [
             perPage: Number(route.query.per_page) || 12,
             sort:    route.query.sort
         }),
+        meta:      {
+            requiresAuth: true,
+        }
+    },
+    {
+        path:      "/images/:imageId/",
+        component: EditImage,
+        props:     true,
+        name:      "EditImage",
         meta:      {
             requiresAuth: true,
         }
