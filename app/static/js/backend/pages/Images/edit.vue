@@ -61,12 +61,13 @@
                 useDefaultUI: true,
                 options:      {
                     includeUI:       {
-                        theme:     whiteTheme,
-                        loadImage: {
+                        theme:           whiteTheme,
+                        loadImage:       {
                             path: null,
                             name: null
                         },
-                        initMenu:  "filter"
+                        initMenu:        "filter",
+                        menuBarPosition: "right"
                     },
                     cssMaxWidth:     700,
                     cssMaxHeight:    500,
