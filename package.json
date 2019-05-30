@@ -12,7 +12,8 @@
     "watch-poll": "npm run watch -- --watch-poll",
     "prod": "npm run production",
     "production": "cross-env NODE_ENV=production webpack --no-progress --hide-modules --config=webpack.config.js",
-    "postinstall": "npm install --no-save --no-optional fabric@^1.6.7"
+    "postinstall": "npm install --no-save --no-optional fabric@^1.6.7",
+    "postuninstall": "npm install --no-save --no-optional fabric@^1.6.7"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
@@ -32,7 +33,7 @@
     "cross-env": "^5.2.0",
     "css-loader": "^2.1.1",
     "date-fns": "^1.30.1",
-    "element-ui": "^2.8.2",
+    "element-ui": "^2.9.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.2.2",
     "fibers": "^4.0.1",
