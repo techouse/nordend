@@ -79,8 +79,21 @@
 
         computed: {
             title() {
+                /**
+                 * Since not all images have a title
+                 */
                 return this.image.title || this.image.original_filename
             },
+            path() {
+                /**
+                 * In order to prevent the browser from crashing and the Universe unraveling before our very eyes try
+                 * and pick a sensible maximum image size. If the image is larger than 1920px pick the 1920px version
+                 * otherwise pick the original.
+                 */
+                return this.image.sizes.includes(1920)
+                       ? `${this.image.public_path}/1920.jpg`
+                       : `${this.image.public_path}/original.jpg`
+            }
         },
 
         mounted() {
@@ -89,7 +102,7 @@
                     this.$set(this, "image", new Photo(data))
 
                     this.$set(this.options.includeUI, "loadImage", {
-                        path: `${this.image.public_path}/original.jpg`,
+                        path: this.path,
                         name: this.title
                     })
                 })

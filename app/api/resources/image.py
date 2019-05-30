@@ -126,8 +126,8 @@ class ImageListResource(TokenRequiredResource):
             elif column == "author.name":
                 query = query.join(User, Image.author)
                 order_by = User.name
-            elif column in set(Post.__table__.columns.keys()):
-                order_by = getattr(Post, column)
+            elif column in set(Image.__table__.columns.keys()):
+                order_by = getattr(Image, column)
             if direction == PaginationHelper.SORT_DESCENDING:
                 order_by = desc(order_by)
             query = query.order_by(order_by)
@@ -174,13 +174,13 @@ class ImageListResource(TokenRequiredResource):
                             image.delete(image)
                 processed_image = ImageProcessor.process(file)
                 image = Image(
-                    original_filename=processed_image["filename"],
-                    hash=processed_image["digest"],
+                    original_filename=processed_image["original_filename"],
+                    hash=processed_image["hash"],
                     author_id=g.current_user.id,
                     width=processed_image["width"],
                     height=processed_image["height"],
                     sizes=processed_image["sizes"],
-                    created_at=processed_image["local_datetime"],
+                    created_at=processed_image["created_at"],
                 )
                 image.add(image)
                 query = Image.query.get(image.id)
