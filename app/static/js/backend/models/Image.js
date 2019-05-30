@@ -7,6 +7,7 @@ export default class Image {
         this.original_filename = null
         this.sizes = []
         this.created_at = null
+        this.data_url = null
 
         Object.assign(this, values)
 
@@ -19,6 +20,15 @@ export default class Image {
                              .map(size => Number(size))
                              .filter(size => size >= 440) // Minimum size for srcset
                              .sort((a, b) => a - b)
+        }
+    }
+
+    mappedForSubmission() {
+        return {
+            title:             this.title,
+            author_id:         this.author_id,
+            original_filename: this.original_filename,
+            data_url:          this.data_url
         }
     }
 

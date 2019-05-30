@@ -206,8 +206,10 @@ class ImageSchema(ma.Schema):
     height = fields.Integer(dump_only=True)
     sizes = fields.List(fields.String(), dump_only=True)
     original_filename = fields.String(nullable=True)
+    data_url = fields.String(allow_none=True, load_only=True)
     author_id = fields.Integer(dump_only=True)
     created_at = fields.DateTime(format="iso8601")
+    updated_at = fields.DateTime(format="iso8601")
     links = ma.Hyperlinks(
         {
             "self": ma.URLFor("api.image", id="<id>", _external=True),
@@ -216,13 +218,14 @@ class ImageSchema(ma.Schema):
     )
 
     def get_public_path(self, obj):
+        date = obj.updated_at if obj.updated_at is not None else obj.created_at
         return "/" + "/".join(
             quote_plus(part.strip("/"), safe="/")
             for part in (
                 current_app.config["PUBLIC_IMAGE_PATH"],
-                str(obj.created_at.year),
-                str(obj.created_at.month),
-                str(obj.created_at.day),
+                str(date.year),
+                str(date.month),
+                str(date.day),
                 obj.hash,
             )
         )

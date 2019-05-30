@@ -379,3 +379,6 @@ class Image(db.Model, AddUpdateDelete):
     height = db.Column(db.BigInteger, default=0)
     sizes = db.Column(db.JSON, nullable=True)
     created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
+    updated_at = db.Column(
+        db.TIMESTAMP, index=True, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp()
+    )

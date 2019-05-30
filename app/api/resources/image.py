@@ -1,13 +1,10 @@
-from datetime import datetime
-from hashlib import sha256
+import re
+from base64 import b64decode
+from binascii import Error as BinasciiError
+from hashlib import sha256, md5
 from io import BytesIO
-from math import ceil
-from os import makedirs
 from os.path import join, dirname, isdir
-from shutil import copy2
 
-import pytz
-from PIL import Image as PImage
 from flask import request, g, current_app
 from sqlalchemy import desc, or_
 from sqlalchemy.exc import SQLAlchemyError
@@ -16,6 +13,7 @@ from webargs.flaskparser import use_args
 
 from .authentication import TokenRequiredResource
 from ..helpers import PaginationHelper
+from ..image_processor import ImageProcessor
 from ..schemas import ImageSchema
 from ..validators import allowed_image_file
 from ... import db, status
@@ -44,6 +42,22 @@ class ImageResource(TokenRequiredResource):
             return errors, status.HTTP_400_BAD_REQUEST
         if "title" in request_dict and request_dict["title"]:
             image.title = request_dict["title"]
+        if "data_url" in request_dict and request_dict["data_url"]:
+            image_data = re.sub("^data:image/.+;base64,", "", request_dict["data_url"])
+            if image_data:
+                file = BytesIO(b64decode(image_data))
+                filename = request_dict["original_filename"]
+                if not filename:
+                    filename = "{}.jpg".format(md5(file.read()).hexdigest())
+                try:
+                    processed_image = ImageProcessor.process(file, filename=filename)
+                    image.hash = processed_image["hash"]
+                    image.width = processed_image["width"]
+                    image.height = processed_image["height"]
+                    image.sizes = processed_image["sizes"]
+                except BinasciiError as e:
+                    resp = {"message": str(e)}
+                    return resp, status.HTTP_400_BAD_REQUEST
         try:
             image.update()
             return self.get(id)
@@ -138,9 +152,9 @@ class ImageListResource(TokenRequiredResource):
             response = {"message": "No selected file"}
             return response, status.HTTP_400_BAD_REQUEST
         if file and allowed_image_file(file.filename):
-            digest = sha256(file.read()).hexdigest()
-            root_path = join(dirname(current_app.instance_path), "app")
             try:
+                digest = sha256(file.read()).hexdigest()
+                root_path = join(dirname(current_app.instance_path), "app")
                 if Image.query.filter_by(hash=digest).count() > 0:
                     for image in Image.query.filter_by(hash=digest).all():
                         image_path = join(
@@ -158,57 +172,15 @@ class ImageListResource(TokenRequiredResource):
                         else:
                             # Image does not exist so we delete it from the database
                             image.delete(image)
-
-                local_datetime = datetime.now(pytz.utc).astimezone(current_app.config["TIMEZONE"])
-                path = join(
-                    current_app.config["PUBLIC_IMAGE_PATH"],
-                    str(local_datetime.year),
-                    str(local_datetime.month),
-                    str(local_datetime.day),
-                    digest,
-                )
-                makedirs(join(root_path, path), exist_ok=True)
-                original_image_path = join(root_path, path, "original.jpg")
-                width, height = 0, 0
-                sizes = []
-                file.seek(0)
-                with PImage.open(BytesIO(file.read())) as img:
-                    width, height = img.size
-                    if img.format == "JPEG":
-                        if img.mode != "RGB":
-                            img = img.convert("RGB")
-                    else:
-                        fill_color = (255, 255, 255)  # make all transparent blocks white
-                        img = img.convert("RGBA")
-                        if img.mode in ("RGBA", "LA"):
-                            background = PImage.new(img.mode[:-1], img.size, fill_color)
-                            background.paste(img, img.split()[-1])
-                            img = background
-                        img = img.convert("RGB")
-                    img.save(original_image_path, quality=current_app.config["JPEG_COMPRESSION_QUALITY"])
-                    # create thumbs
-                    for thumb_width in current_app.config["IMAGE_SIZES"]:
-                        if width >= thumb_width:
-                            if width == thumb_width:
-                                copy2(original_image_path, join(root_path, path, "{}.jpg".format(thumb_width)))
-                            else:
-                                thumb = img.copy()
-                                thumb_height = int(ceil((thumb_width / width) * height))
-                                thumb_size = thumb_width, thumb_height
-                                thumb.thumbnail(thumb_size, PImage.LANCZOS)
-                                thumb.save(
-                                    join(root_path, path, "{}.jpg".format(thumb_width)),
-                                    quality=current_app.config["JPEG_COMPRESSION_QUALITY"],
-                                )
-                            sizes.append(thumb_width)
+                processed_image = ImageProcessor.process(file)
                 image = Image(
-                    original_filename=file.filename,
-                    hash=digest,
+                    original_filename=processed_image["filename"],
+                    hash=processed_image["digest"],
                     author_id=g.current_user.id,
-                    width=width,
-                    height=height,
-                    sizes=sizes,
-                    created_at=local_datetime,
+                    width=processed_image["width"],
+                    height=processed_image["height"],
+                    sizes=processed_image["sizes"],
+                    created_at=processed_image["local_datetime"],
                 )
                 image.add(image)
                 query = Image.query.get(image.id)

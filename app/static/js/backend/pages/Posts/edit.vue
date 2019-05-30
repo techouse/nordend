@@ -138,7 +138,7 @@
         },
 
         beforeRouteUpdate(to, from, next) {
-            this.getUser(to.params.postId)
+            this.getPost(to.params.postId)
                 .then(({data}) => {
                     this.$set(this, "post", new Post(data))
                 })

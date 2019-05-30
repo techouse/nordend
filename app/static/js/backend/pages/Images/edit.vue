@@ -13,14 +13,14 @@
                     </div>
                     <div class="card-body">
                         <tui-image-editor v-if="image.id"
-                                          ref="editor"
+                                          :ref="refName"
                                           :include-ui="useDefaultUI"
                                           :options="options"
                         />
                     </div>
                     <div class="card-footer">
                         <el-button type="success" @click="submit">
-                            Submit
+                            Save
                         </el-button>
                         <el-button type="danger" @click="$router.push({name: 'Images'})">
                             Cancel
@@ -57,6 +57,7 @@
 
         data() {
             return {
+                refName:      "editor",
                 image:        new Photo(),
                 useDefaultUI: true,
                 options:      {
@@ -95,14 +96,44 @@
         },
 
         methods: {
-            ...mapActions("image", ["getImage"]),
+            ...mapActions("image", ["getImage", "updateImage", "deleteImage"]),
 
             remove() {
-
+                this.$confirm(`Are you sure you want to delete ${this.title}?`, "Warning", {
+                        confirmButtonText: "Yes",
+                        cancelButtonText:  "No",
+                        type:              "warning"
+                    })
+                    .then(() => {
+                              this.deleteImage(this.image.id)
+                                  .then(() => {
+                                      this.$router.push({name: "Images"})
+                                      this.success(`Image ${this.title} successfully deleted`)
+                                  })
+                                  .catch(() => {
+                                      this.error(`There was an error deleting the image: ${this.alert.message}`)
+                                  })
+                          }
+                    )
+                    .catch(() => {
+                        this.info("Image not deleted")
+                    })
             },
 
             submit() {
+                this.$set(this.image, "data_url", this.$refs[this.refName].invoke("toDataURL", {format: "png"}))
 
+                if (this.image.data_url) {
+                    this.updateImage(this.image)
+                        .then(() => {
+                            this.success("Image successfully updated")
+                        })
+                        .catch(() => {
+                            this.error(`There was an error updating the image: ${this.alert.message}`)
+                        })
+                } else {
+                    this.error("The image data is invalid!")
+                }
             }
         }
     }
