@@ -2,6 +2,7 @@ require("../bootstrap")
 
 import Vue       from "vue"
 import ElementUI from "element-ui"
+import Viewer    from "v-viewer"
 import router    from "./router"
 import store     from "./store"
 import api       from "./services/api"
@@ -12,6 +13,9 @@ Vue.prototype.$http = api
 
 // ElementUI
 Vue.use(ElementUI)
+
+// V-Viewer
+Vue.use(Viewer)
 
 // Set all the custom filters
 import "./filters"

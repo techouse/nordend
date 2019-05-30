@@ -20,27 +20,29 @@
                     </el-input>
                 </el-col>
             </el-row>
-            <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex" :gutter="20">
-                <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
-                    <el-card :body-style="{ padding: '0', textAlign: 'center' }" class="image-card" shadow="hover">
-                        <el-image :style="{width: '100%', height: '100%'}"
-                                  :src="`${image.public_path}/${thumbnailSize}.jpg`"
-                                  fit="cover"
-                        >
-                            <div slot="error" class="image-slot">
-                                <i class="el-icon-picture-outline"/>
-                            </div>
-                        </el-image>
-                        <div style="padding: 14px;">
-                            <span>{{ (image.title || image.original_filename) | truncate(20) }}</span>
-                            <div class="bottom clearfix">
-                                <el-button size="mini" @click="show(image)">View</el-button>
-                                <el-button size="mini" @click="edit(image.id)">Edit</el-button>
-                            </div>
-                        </div>
-                    </el-card>
-                </el-col>
-            </el-row>
+            <viewer :images="viewerImages" :options="viewerOptions">
+                <template slot-scope="scope">
+                    <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex"
+                            :gutter="20">
+                        <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
+                            <el-card :body-style="{ padding: '0', textAlign: 'center' }" class="image-card"
+                                     shadow="hover">
+                                <img :style="{width: '100%', height: '100%'}"
+                                     :src="`${image.public_path}/${thumbnailSize}.jpg`"
+                                     :data-source="getLargestImageSrc(image)"
+                                     :alt="image.original_filename"
+                                />
+                                <div style="padding: 14px;">
+                                    <span>{{ (image.title || image.original_filename) | truncate(20) }}</span>
+                                    <div class="bottom clearfix">
+                                        <el-button size="mini" @click="edit(image.id)">Edit</el-button>
+                                    </div>
+                                </div>
+                            </el-card>
+                        </el-col>
+                    </el-row>
+                </template>
+            </viewer>
             <div class="d-flex justify-content-center mt-2">
                 <el-pagination :current-page.sync="params.page"
                                :page-sizes="pageSizes"
@@ -53,7 +55,6 @@
                 />
             </div>
             <create-image :ref="uploadRefName" @success="getData"/>
-            <show-image :ref="showRefName" :image="showImage" @closed="showModalClosed"/>
         </template>
     </card>
 </template>
@@ -63,14 +64,12 @@
     import {mapActions} from "vuex"
     import Photo        from "../../models/Image"
     import CreateImage  from "./create"
-    import ShowImage    from "./show"
 
     export default {
         name: "Images",
 
         components: {
-            CreateImage,
-            ShowImage
+            CreateImage
         },
 
         extends: IndexPartial,
@@ -83,7 +82,32 @@
                 images:        [],
                 imagesPerRow:  6,
                 thumbnailSize: 280,
-                showImage:     null
+                viewerOptions: {
+                    "button":     true,
+                    "navbar":     false,
+                    "title":      true,
+                    "toolbar":    true,
+                    "tooltip":    true,
+                    "movable":    true,
+                    "zoomable":   true,
+                    "rotatable":  false,
+                    "scalable":   false,
+                    "transition": true,
+                    "fullscreen": true,
+                    "keyboard":   true,
+                    "url":        "data-source"
+                }
+            }
+        },
+
+        computed: {
+            viewerImages() {
+                return this.images.map(image => {
+                    return {
+                        thumbnail: `${image.public_path}/${this.thumbnailSize}.jpg`,
+                        source:    this.getLargestImageSrc(image)
+                    }
+                })
             }
         },
 
@@ -110,22 +134,19 @@
                 )
             },
 
-            show(image) {
-                this.$set(this, "showImage", image)
-                this.$refs[this.showRefName].showModal()
-            },
-
-            showModalClosed() {
-                this.$set(this, "showImage", null)
-            },
-
             edit(imageId) {
                 this.$router.push({name: "EditImage", params: {imageId}})
             },
 
             upload() {
                 this.$refs[this.uploadRefName].showModal()
-            }
+            },
+
+            getLargestImageSrc(image) {
+                return image.sizes.includes(1920)
+                       ? `${image.public_path}/1920.jpg`
+                       : `${image.public_path}/original.jpg`
+            },
         }
     }
 </script>
