@@ -37,30 +37,24 @@
                     </template>
                     <template slot-scope="scope">
                         <template v-if="!lockedPosts.includes(scope.row.id)">
-                            <el-tooltip class="item" effect="dark" content="Edit" placement="top-start">
-                                <router-link :to="{name: 'EditPost', params: {postId: scope.row.id}}"
-                                             class="btn btn-sm btn-outline-secondary"
-                                >
-                                    <i class="fas fa-edit"/>
-                                </router-link>
-                            </el-tooltip>
-                            <el-tooltip class="item" effect="dark" content="Delete" placement="top-start">
-                                <button class="btn btn-sm btn-outline-danger" @click.prevent="remove(scope.row)">
-                                    <i class="far fa-trash-alt"/>
-                                </button>
-                            </el-tooltip>
+                            <router-link :to="{name: 'EditPost', params: {postId: scope.row.id}}"
+                                         class="btn btn-sm btn-outline-secondary"
+                            >
+                                <i class="far fa-edit"/>
+                            </router-link>
+                            <button class="btn btn-sm btn-outline-danger" @click.prevent="remove(scope.row)">
+                                <i class="far fa-trash-alt"/>
+                            </button>
                         </template>
                         <template v-else>
-                            <el-tooltip class="item" effect="dark" content="View" placement="top-start">
-                                <router-link :to="{name: 'EditPost', params: {postId: scope.row.id, readonly: false}}"
-                                             class="btn btn-sm btn-outline-secondary"
-                                >
-                                    <i class="fas fa-eye"/>
-                                </router-link>
-                            </el-tooltip>
+                            <router-link :to="{name: 'EditPost', params: {postId: scope.row.id, readonly: false}}"
+                                         class="btn btn-sm btn-outline-secondary"
+                            >
+                                <i class="fas fa-eye"/>
+                            </router-link>
                             <el-tooltip v-if="currentUser.role.moderate || currentUser.role.admin"
                                         class="item" effect="dark" content="Forcefully unlock"
-                                        placement="top-start">
+                                        placement="right-start">
                                 <button class="btn btn-sm btn-outline-primary"
                                         @click.prevent="unlock(scope.row)"
                                 >
@@ -68,7 +62,7 @@
                                 </button>
                             </el-tooltip>
                             <el-tooltip v-else class="item" effect="dark" content="Locked"
-                                        placement="top-start">
+                                        placement="right-start">
                                 <button class="btn btn-sm btn-ghost-danger" :disabled="true">
                                     <i class="fas fa-lock-alt"/>
                                 </button>

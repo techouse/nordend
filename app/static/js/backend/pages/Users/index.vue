@@ -39,10 +39,10 @@
                         <router-link :to="{name: 'EditUser', params: {userId: scope.row.id}}"
                                      class="btn btn-sm btn-outline-secondary"
                         >
-                            Edit
+                            <i class="far fa-user-edit"/>
                         </router-link>
                         <button class="btn btn-sm btn-outline-danger" @click="remove(scope.row)">
-                            Delete
+                            <i class="far fa-trash-alt"/>
                         </button>
                     </template>
                 </el-table-column>
