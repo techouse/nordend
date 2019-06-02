@@ -10,32 +10,52 @@
         </template>
         <template v-slot:body>
             <el-row :gutter="20">
-                <el-col :span="6" :offset="18">
+                <el-col span="9" :style="{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}">
+                    <b>Sort by: </b>
+                    <el-select v-model="params.sort" clearable placeholder="Sort by">
+                        <el-option v-for="item in sortByOptions"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value"
+                        />
+                    </el-select>
+                    <span>
+                        <el-switch v-model="sortDirection"
+                                   @change="handleSortDirectionChange"
+                        />
+                        <span>{{ sortDirection ? "Ascending" : "Descending" }}</span>
+                    </span>
+                </el-col>
+                <el-col :span="6" :offset="9">
                     <el-input v-model="params.search"
                               placeholder="Type to search images"
                               clearable
                               @change="searchData"
                     >
-                        <el-button slot="append" icon="el-icon-search"/>
+                        <el-button slot="append" icon="el-icon-search" />
                     </el-input>
                 </el-col>
             </el-row>
             <viewer :images="viewerImages" :options="viewerOptions">
                 <template slot-scope="scope">
                     <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex"
-                            :gutter="20">
+                            :gutter="20"
+                    >
                         <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
                             <el-card :body-style="{ padding: '0', textAlign: 'center' }" class="image-card"
-                                     shadow="hover">
+                                     shadow="hover"
+                            >
                                 <img :style="{width: '100%', height: '100%'}"
                                      :src="`${image.public_path}/${thumbnailSize}.jpg`"
                                      :data-source="getLargestImageSrc(image)"
                                      :alt="image.original_filename"
-                                />
+                                >
                                 <div style="padding: 14px;">
                                     <span>{{ (image.title || image.original_filename) | truncate(20) }}</span>
                                     <div class="bottom clearfix">
-                                        <el-button size="mini" @click="edit(image.id)">Edit</el-button>
+                                        <el-button size="mini" @click="edit(image.id)">
+                                            Edit
+                                        </el-button>
                                     </div>
                                 </div>
                             </el-card>
@@ -54,7 +74,7 @@
                                @current-change="getData"
                 />
             </div>
-            <create-image :ref="uploadRefName" @success="getData"/>
+            <create-image :ref="uploadRefName" @success="getData" />
         </template>
     </card>
 </template>
@@ -96,7 +116,8 @@
                     "fullscreen": true,
                     "keyboard":   true,
                     "url":        "data-source"
-                }
+                },
+                sortDirection: true
             }
         },
 
@@ -108,6 +129,28 @@
                         source:    this.getLargestImageSrc(image)
                     }
                 })
+            },
+            sortByOptions() {
+                return this.sortDirection
+                       ? [{value: "title", label: "Title"},
+                          {value: "created_at", label: "Date uploaded"},]
+                       : [{value: "-title", label: "Title"},
+                          {value: "-created_at", label: "Date uploaded"},]
+            }
+        },
+
+        watch: {
+            params: {
+                handler() {
+                    this.getData()
+                },
+                deep: true
+            }
+        },
+
+        mounted() {
+            if (this.params.sort && this.params.sort[0] === "-") {
+                this.$set(this, "sortDirection", false)
             }
         },
 
@@ -147,6 +190,12 @@
                        ? `${image.public_path}/1920.jpg`
                        : `${image.public_path}/original.jpg`
             },
+
+            handleSortDirectionChange(order) {
+                const direction = order === false ? "-" : ""
+                const prop = this.params.sort ? this.params.sort.replace(/^-|\+/, "") : null
+                this.$set(this.params, "sort", prop ? `${direction}${prop}` : null)
+            }
         }
     }
 </script>
