@@ -1,10 +1,47 @@
 <template>
-    <modal v-if="show" :class="{show: show}" @close="closeModal">
+    <modal v-if="show" :class="{show: show}" :modal-class="modalClass" @close="closeModal">
         <template v-slot:title>
             Upload image
         </template>
         <template v-slot:body>
             <el-tabs v-model="activeTab" @tab-click="handleTabChange">
+                <el-tab-pane label="Gallery" name="gallery">
+                    <el-row v-loading="loading" v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)"
+                            :key="rowIndex" :gutter="20"
+                    >
+                        <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
+                            <div @click.prevent="handleImageGallerySelect(image)">
+                                <el-card :body-style="{ padding: '0', textAlign: 'center' }"
+                                         :class="{selected: photo.id === image.id}" class="image-card" shadow="hover"
+                                >
+                                    <el-image :style="{width: '100%', height: '100%'}"
+                                              :src="`${image.public_path}/${thumbnailSize}.jpg`"
+                                              fit="cover"
+                                              lazy
+                                    >
+                                        <div slot="error" class="image-slot">
+                                            <i class="el-icon-picture-outline"></i>
+                                        </div>
+                                    </el-image>
+                                    <div style="padding: 14px;">
+                                        <span>{{ (image.title || image.original_filename) | truncate(20) }}</span>
+                                    </div>
+                                </el-card>
+                            </div>
+                        </el-col>
+                    </el-row>
+                    <div class="d-flex justify-content-center mt-2">
+                        <el-pagination :current-page.sync="params.page"
+                                       :page-sizes="pageSizes"
+                                       :page-size.sync="params.per_page"
+                                       :total="totalCount"
+                                       layout="prev, pager, next, sizes"
+                                       background
+                                       @size-change="getData"
+                                       @current-change="getData"
+                        />
+                    </div>
+                </el-tab-pane>
                 <el-tab-pane label="File" name="file">
                     <el-upload v-loading="loading"
                                element-loading-text="Uploading image..."
@@ -74,17 +111,65 @@
                 previewImageUrl: "",
                 command:         null,
                 show:            false,
-                activeTab:       "file",
-                uploadHeaders:   {}
+                activeTab:       "gallery",
+                uploadHeaders:   {},
+
+                imagesPerRow:  6,
+                thumbnailSize: 280,
+                images:        [],
+                params:        {
+                    search:   this.search,
+                    page:     this.page,
+                    per_page: this.per_page,
+                    sort:     null
+                },
+                pageSizes:     [12, 24, 48, 96],
+                totalCount:    0
             }
         },
 
         computed: {
             ...mapGetters("auth", ["token"]),
+
+            modalClass() {
+                return this.activeTab === "gallery" ? "modal-xl" : ""
+            }
+        },
+
+        mounted() {
+            this.$set(this.params, "search", null)
+            this.$set(this.params, "page", 1)
+            this.$set(this.params, "per_page", 12)
+            this.$set(this.params, "sort", null)
+
+            this.getData()
         },
 
         methods: {
             ...mapActions("alert", ["error"]),
+
+            ...mapActions("image", ["getImages"]),
+
+            arrayChunk(array, chunk_size) {
+                return array.reduce(
+                    (segments, _, index) =>
+                        index % chunk_size === 0
+                        ? [...segments, array.slice(index, index + chunk_size)]
+                        : segments,
+                    []
+                )
+            },
+
+            getData() {
+                this.$set(this, "loading", true)
+
+                this.getImages({params: this.params})
+                    .then(({data}) => {
+                        this.$set(this, "images", data.results.map(image => new Photo(image)))
+                        this.$set(this, "totalCount", data.count)
+                        this.$set(this, "loading", false)
+                    })
+            },
 
             findClosest(x, arr) {
                 const indexArr = arr.map(k => Math.abs(k - x))
@@ -105,6 +190,11 @@
 
             handleTabChange(tab, event) {
                 // console.log(tab, event)
+            },
+
+            handleImageGallerySelect(image) {
+                this.$set(this, "photo", image)
+                this.$set(this, "imageUrl", `${this.photo.public_path}/original.jpg`)
             },
 
             handleImageSuccess(response, file) {
@@ -185,6 +275,18 @@
     .modal {
         .preview-img {
             width: 100%;
+        }
+
+        .image-card {
+            &:hover {
+                cursor: pointer;
+            }
+
+            &.selected {
+                outline: none;
+                border-color: #409eff;
+                box-shadow: 0 0 10px #409eff;
+            }
         }
     }
 </style>
