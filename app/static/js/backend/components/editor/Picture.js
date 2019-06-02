@@ -1,6 +1,6 @@
-import {Image}      from "tiptap-extensions"
-import {mapActions} from "vuex"
-import Photo        from "../../models/Image"
+import {Image}                  from "tiptap-extensions"
+import {mapActions, mapGetters} from "vuex"
+import Photo                    from "../../models/Image"
 
 export default class Picture extends Image {
     get name() {
@@ -105,7 +105,8 @@ export default class Picture extends Image {
 
     get view() {
         return {
-            props:    ["node", "updateAttrs", "view"],
+            props: ["node", "updateAttrs", "view"],
+
             data() {
                 return {
                     loading:        false,
@@ -113,11 +114,15 @@ export default class Picture extends Image {
                     photo:          new Photo()
                 }
             },
+
             computed: {
+                ...mapGetters("postImage", ["editedImage"]),
+
                 dataId() {
-                    return this.node.attrs["data-id"]
+                    return Number(this.node.attrs["data-id"])
                 },
-                src:     {
+
+                src: {
                     get() {
                         return this.node.attrs.src
                     },
@@ -125,7 +130,8 @@ export default class Picture extends Image {
                         this.updateAttrs({src})
                     }
                 },
-                title:   {
+
+                title: {
                     get() {
                         return this.node.attrs.title
                     },
@@ -133,7 +139,8 @@ export default class Picture extends Image {
                         this.updateAttrs({title})
                     }
                 },
-                alt:     {
+
+                alt: {
                     get() {
                         return this.node.attrs.alt
                     },
@@ -141,7 +148,8 @@ export default class Picture extends Image {
                         this.updateAttrs({alt})
                     }
                 },
-                href:    {
+
+                href: {
                     get() {
                         return this.node.attrs.href
                     },
@@ -149,6 +157,7 @@ export default class Picture extends Image {
                         this.updateAttrs({href})
                     }
                 },
+
                 sources: {
                     get() {
                         return this.node.attrs.sources.map(source => Number(source["data-size"]))
@@ -185,7 +194,8 @@ export default class Picture extends Image {
                     return `picture_${this.node.attrs["data-id"] || this.node.attrs["src"]}`
                 }
             },
-            watch:    {
+
+            watch: {
                 popoverVisible(visible) {
                     if (visible && !this.photo.id && this.dataId) {
                         this.$set(this, "loading", true)
@@ -197,12 +207,29 @@ export default class Picture extends Image {
                             })
                             .catch(() => this.error("Could not load image data"))
                     }
+                },
+
+                editedImage: {
+                    handler(image) {
+                        if (image && image.id === this.dataId) {
+                            this.src = `${image.public_path}/original.jpg`
+                            this.$set(this, "photo", image)
+                            this.clearEditedImage()
+                        }
+                    },
+                    deep: true
                 }
             },
-            methods:  {
+
+            methods: {
                 ...mapActions("alert", ["error"]),
 
                 ...mapActions("image", ["getImage"]),
+
+                ...mapActions("postImage", {
+                    showImageEditor:  "showEditor",
+                    clearEditedImage: "clearEditedImage"
+                }),
 
                 togglePopover() {
                     this.$set(this, "popoverVisible", !this.popoverVisible)
@@ -211,93 +238,91 @@ export default class Picture extends Image {
                 closePopover() {
                     this.$set(this, "popoverVisible", false)
                 },
-
-                toggleImageEditor() {
-                    // TODO
-                    console.log("not yet implemented")
-                }
             },
+
             template: `
-                <span :style="{lineHeight: 0, fontSize: 0, display: 'inline-block', position: 'relative'}" class="picture">
-                    <el-popover placement="top"
-                                width="600"
-                                trigger="manual"
-                                title="Picture details"
-                                v-model="popoverVisible"
-                                :disabled="!view.editable">
-                        <el-tooltip class="item" effect="dark" content="Close image details" placement="top-start">
-                            <el-button type="danger" icon="el-icon-close" circle class="close-popover" size="mini"
-                                       @click="closePopover" />
-                        </el-tooltip>
-                        <el-form v-loading="loading" :ref="formRef" label-position="right">
-                            <el-form-item :style="{marginBottom: '10px'}">
-                                <el-input v-model="href" type="url" size="small" placeholder="Enter url ...">
-                                    <template slot="prepend">Url</template>
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item :style="{marginBottom: '10px'}">
-                                <el-input v-model="title" size="small" placeholder="Enter title ...">
-                                    <template slot="prepend">Title</template>
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item :style="{marginBottom: '10px'}">
-                                <el-input v-model="alt" size="small" placeholder="Enter alt ...">
-                                    <template slot="prepend">Alt</template>
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item v-if="photo.id && photo.sizes.length > 1" 
-                                          :style="{marginBottom: 0}" 
-                                          label="Responsive sizes">
-                                <el-checkbox-group size="small" v-model="sources">
-                                    <el-checkbox-button v-for="size in photo.sizes" 
-                                                        :label="size"
-                                                        :key="size">
-                                        {{ size }}px
-                                    </el-checkbox-button>
-                                </el-checkbox-group>
-                            </el-form-item>
-                        </el-form>
-                        <template slot="reference">
-                            <picture v-if="sources.length > 1"
+                <span>
+                    <span :style="{lineHeight: 0, fontSize: 0, display: 'inline-block', position: 'relative'}" class="picture">
+                        <el-popover placement="top"
+                                    width="600"
+                                    trigger="manual"
+                                    title="Picture details"
+                                    v-model="popoverVisible"
+                                    :disabled="!view.editable">
+                            <el-tooltip class="item" effect="dark" content="Close image details" placement="top-start">
+                                <el-button type="danger" icon="el-icon-close" circle class="close-popover" size="mini"
+                                           @click="closePopover" />
+                            </el-tooltip>
+                            <el-form v-loading="loading" :ref="formRef" label-position="right">
+                                <el-form-item :style="{marginBottom: '10px'}">
+                                    <el-input v-model="href" type="url" size="small" placeholder="Enter url ...">
+                                        <template slot="prepend">Url</template>
+                                    </el-input>
+                                </el-form-item>
+                                <el-form-item :style="{marginBottom: '10px'}">
+                                    <el-input v-model="title" size="small" placeholder="Enter title ...">
+                                        <template slot="prepend">Title</template>
+                                    </el-input>
+                                </el-form-item>
+                                <el-form-item :style="{marginBottom: '10px'}">
+                                    <el-input v-model="alt" size="small" placeholder="Enter alt ...">
+                                        <template slot="prepend">Alt</template>
+                                    </el-input>
+                                </el-form-item>
+                                <el-form-item v-if="photo.id && photo.sizes.length > 1" 
+                                              :style="{marginBottom: 0}" 
+                                              label="Responsive sizes">
+                                    <el-checkbox-group size="small" v-model="sources">
+                                        <el-checkbox-button v-for="size in photo.sizes" 
+                                                            :label="size"
+                                                            :key="size">
+                                            {{ size }}px
+                                        </el-checkbox-button>
+                                    </el-checkbox-group>
+                                </el-form-item>
+                            </el-form>
+                            <template slot="reference">
+                                <picture v-if="sources.length > 1"
+                                         :data-id="dataId"
+                                         :style="{outline: popoverVisible ? 'thin dashed dimgrey' : 'none', 
+                                                  position: 'relative', 
+                                                  zIndex: '1 !important'}">
+                                    <source v-for="source in sourceObjects" 
+                                            :key="source.srcset" 
+                                            :media="source.media"
+                                            :data-size="source['data-size']">
+                                    <img :src="src" :title="title" :alt="alt" :data-id="dataId">
+                                </picture>
+                                <img v-else
+                                     :src="src" 
+                                     :title="title" 
+                                     :alt="alt"
                                      :data-id="dataId"
                                      :style="{outline: popoverVisible ? 'thin dashed dimgrey' : 'none', 
                                               position: 'relative', 
-                                              zIndex: '1 !important'}">
-                                <source v-for="source in sourceObjects" 
-                                        :key="source.srcset" 
-                                        :media="source.media"
-                                        :data-size="source['data-size']">
-                                <img :src="src" :title="title" :alt="alt" :data-id="dataId">
-                            </picture>
-                            <img v-else
-                                 :src="src" 
-                                 :title="title" 
-                                 :alt="alt"
-                                 :data-id="dataId"
-                                 :style="{outline: popoverVisible ? 'thin dashed dimgrey' : 'none', 
-                                          position: 'relative', 
-                                          zIndex: 1}">
-                            <el-button-group class="image-edit-buttons" 
-                                             :style="{display: 'none',
-                                                      position: 'absolute !important', 
-                                                      top: '5px !important', 
-                                                      left: '5px !important', 
-                                                      zIndex: '3 !important'}">
-                                <el-tooltip class="item" effect="dark" content="Edit in image editor" placement="top-start">
-                                    <el-button type="default" size="mini" @click="toggleImageEditor">
-                                        <i class="fas fa-paint-brush"/>
-                                    </el-button>
-                                </el-tooltip>
-                                <el-tooltip class="item" effect="dark" 
-                                            :content="popoverVisible ? 'Close image details' : 'Edit image details'" 
-                                            placement="top-start">
-                                    <el-button :type="popoverVisible ? 'danger' : 'default'" size="mini" @click="togglePopover">
-                                        <i class="fas fa-edit"/>
-                                    </el-button>
-                                </el-tooltip>
-                            </el-button-group>
-                        </template>
-                    </el-popover>
+                                              zIndex: 1}">
+                                <el-button-group class="image-edit-buttons" 
+                                                 :style="{display: 'none',
+                                                          position: 'absolute !important', 
+                                                          top: '5px !important', 
+                                                          left: '5px !important', 
+                                                          zIndex: '3 !important'}">
+                                    <el-tooltip v-if="dataId" class="item" effect="dark" content="Edit in image editor" placement="top-start">
+                                        <el-button type="default" size="mini" @click="showImageEditor(dataId)">
+                                            <i class="fas fa-paint-brush"/>
+                                        </el-button>
+                                    </el-tooltip>
+                                    <el-tooltip class="item" effect="dark" 
+                                                :content="popoverVisible ? 'Close image details' : 'Edit image details'" 
+                                                placement="top-start">
+                                        <el-button :type="popoverVisible ? 'danger' : 'default'" size="mini" @click="togglePopover">
+                                            <i class="fas fa-edit"/>
+                                        </el-button>
+                                    </el-tooltip>
+                                </el-button-group>
+                            </template>
+                        </el-popover>
+                    </span>
                 </span>
             `
         }

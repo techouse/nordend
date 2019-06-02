@@ -70,8 +70,8 @@
                         initMenu:        "filter",
                         menuBarPosition: "right"
                     },
-                    cssMaxWidth:     700,
-                    cssMaxHeight:    500,
+                    cssMaxWidth:     1024,
+                    cssMaxHeight:    1024,
                     usageStatistics: false,
                 }
             }

@@ -24,7 +24,7 @@
 // Toast UI Image Editor
 @import url("~tui-image-editor/dist/tui-image-editor.min.css");
 
-.card-body {
+.card-body, .edit-image-within-editor {
   &.edit-image {
     .tui-image-editor-header-buttons {
       display: none !important;
@@ -34,3 +34,8 @@
 
 // Image Viewer
 @import url("~viewerjs/dist/viewer.min.css");
+
+
+.modal-xxl {
+  max-width: 85% !important;
+}
