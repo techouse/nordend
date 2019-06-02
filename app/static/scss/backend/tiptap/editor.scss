@@ -86,8 +86,11 @@
     .picture {
       &:hover {
         cursor: pointer;
-
         outline: thin dashed dimgrey;
+
+        .image-edit-buttons {
+          display: inline-block !important;
+        }
       }
     }
 
@@ -217,5 +220,13 @@
         padding: 0.3rem 0.5rem;
       }
     }
+  }
+}
+
+.el-popover {
+  .close-popover {
+    position: absolute;
+    right: 5px;
+    top: 5px;
   }
 }
