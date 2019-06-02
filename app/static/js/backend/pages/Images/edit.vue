@@ -11,7 +11,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body edit-image">
                         <tui-image-editor v-if="image.id"
                                           :ref="refName"
                                           :include-ui="useDefaultUI"
