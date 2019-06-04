@@ -32,7 +32,7 @@
                               clearable
                               @change="searchData"
                     >
-                        <el-button slot="append" icon="el-icon-search" />
+                        <el-button slot="append" icon="el-icon-search"/>
                     </el-input>
                 </el-col>
             </el-row>
@@ -54,7 +54,10 @@
                                     <span>{{ (image.title || image.original_filename) | truncate(20) }}</span>
                                     <div class="bottom clearfix">
                                         <el-button size="mini" @click="edit(image.id)">
-                                            Edit
+                                            <i class="fas fa-paint-brush"></i>
+                                        </el-button>
+                                        <el-button size="mini" @click="remove(image.id)">
+                                            <i class="far fa-trash-alt"></i>
                                         </el-button>
                                     </div>
                                 </div>
@@ -74,7 +77,7 @@
                                @current-change="getData"
                 />
             </div>
-            <create-image :ref="uploadRefName" @success="getData" />
+            <create-image :ref="uploadRefName" @success="getData"/>
         </template>
     </card>
 </template>
@@ -155,7 +158,7 @@
         },
 
         methods: {
-            ...mapActions("image", ["getImages"]),
+            ...mapActions("image", ["getImages", "deleteImage"]),
 
             getData() {
                 this.$router.replace({name: "Images", query: this.params})
@@ -183,6 +186,28 @@
 
             upload() {
                 this.$refs[this.uploadRefName].showModal()
+            },
+
+            remove(imageId) {
+                this.$confirm("Are you sure you want to delete this image?", "Warning", {
+                        confirmButtonText: "Yes",
+                        cancelButtonText:  "No",
+                        type:              "warning"
+                    })
+                    .then(() => {
+                              this.deleteImage(imageId)
+                                  .then(() => {
+                                      this.getData()
+                                      this.success("Image successfully deleted")
+                                  })
+                                  .catch(() => {
+                                      this.error(`There was an error deleting the image: ${this.alert.message}`)
+                                  })
+                          }
+                    )
+                    .catch(() => {
+                        this.info("Image not deleted")
+                    })
             },
 
             getLargestImageSrc(image) {
