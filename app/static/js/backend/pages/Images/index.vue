@@ -49,16 +49,22 @@
                                      :src="`${image.public_path}/${thumbnailSize}.jpg`"
                                      :data-source="getLargestImageSrc(image)"
                                      :alt="image.original_filename"
+                                     class="image-viewer-thumbnail"
                                 >
                                 <div style="padding: 14px;">
                                     <span>{{ (image.title || image.original_filename) | truncate(20) }}</span>
                                     <div class="bottom clearfix">
-                                        <el-button size="mini" @click="edit(image.id)">
-                                            <i class="fas fa-paint-brush"></i>
-                                        </el-button>
-                                        <el-button size="mini" @click="remove(image.id)">
-                                            <i class="far fa-trash-alt"></i>
-                                        </el-button>
+                                        <el-tooltip class="item" effect="dark" content="Edit in image editor"
+                                                    placement="left">
+                                            <el-button size="mini" circle @click="edit(image.id)">
+                                                <i class="fas fa-paint-brush"/>
+                                            </el-button>
+                                        </el-tooltip>
+                                        <el-tooltip class="item" effect="dark" content="Delete"
+                                                    placement="right">
+                                            <el-button type="danger" size="mini" icon="el-icon-delete-solid" circle
+                                                       @click="remove(image.id)"/>
+                                        </el-tooltip>
                                     </div>
                                 </div>
                             </el-card>

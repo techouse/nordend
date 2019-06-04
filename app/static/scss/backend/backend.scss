@@ -35,6 +35,11 @@
 // Image Viewer
 @import url("~viewerjs/dist/viewer.min.css");
 
+.image-viewer-thumbnail {
+  &:hover {
+    cursor: zoom-in;
+  }
+}
 
 .modal-xxl {
   max-width: 85% !important;
