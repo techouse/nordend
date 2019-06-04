@@ -35,7 +35,7 @@
                 params:     {
                     search:   this.search,
                     page:     this.page,
-                    per_page: this.per_page,
+                    per_page: this.perPage,
                     sort:     null
                 },
                 pageSizes:  [12, 24, 48, 96],
@@ -54,7 +54,7 @@
         mounted() {
             this.$set(this.params, "search", this.search)
             this.$set(this.params, "page", this.page)
-            this.$set(this.params, "per_page", this.per_page)
+            this.$set(this.params, "per_page", this.perPage)
             this.$set(this.params, "sort", this.sort)
         },
 
