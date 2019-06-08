@@ -5,6 +5,7 @@ import store                from "../store"
 // Dashboard
 import Dashboard            from "../pages/Dashboard"
 // Auth
+import Auth                 from "../pages/Auth"
 import Login                from "../pages/Auth/login"
 import Register             from "../pages/Auth/register"
 import ResetPassword        from "../pages/Auth/reset_password"
@@ -43,61 +44,67 @@ const routerOptions = [
         redirect: {name: "Dashboard"}
     },
     {
-        path:      "/auth/login/",
-        component: Login,
-        name:      "Login",
-        meta:      {
-            auth:  true,
-            guest: true
-        }
-    },
-    {
-        path:      "/auth/register/:csrfToken",
-        component: Register,
-        name:      "Register",
-        props:     true,
-        meta:      {
-            auth:         true,
-            registration: true
-        }
-    },
-    {
-        path:      "/auth/unconfirmed/:token",
-        component: Unconfirmed,
-        name:      "Unconfirmed",
-        props:     true,
-        meta:      {
-            auth: true
-        }
-    },
-    {
-        path:      "/auth/confirm/:token",
-        component: Login,
-        name:      "ConfirmRegistration",
-        props:     true,
-        meta:      {
-            auth:    true,
-            confirm: true
-        }
-    },
-    {
-        path:      "/auth/reset_password/:token",
-        component: ResetPassword,
-        name:      "ResetPassword",
-        props:     true,
-        meta:      {
-            auth:          true,
-            passwordReset: true
-        }
-    },
-    {
-        path:      "/auth/reset_password_request/",
-        component: ResetPasswordRequest,
-        name:      "ResetPasswordRequest",
-        meta:      {
-            auth:  true,
-            guest: true
-        }
+        path:      "/auth/",
+        component: Auth,
+        children:  [
+            {
+                path:      "login/",
+                component: Login,
+                name:      "Login",
+                meta:      {
+                    auth:  true,
+                    guest: true
+                }
+            },
+            {
+                path:      "register/:csrfToken",
+                component: Register,
+                name:      "Register",
+                props:     true,
+                meta:      {
+                    auth:         true,
+                    registration: true
+                }
+            },
+            {
+                path:      "unconfirmed/:token",
+                component: Unconfirmed,
+                name:      "Unconfirmed",
+                props:     true,
+                meta:      {
+                    auth: true
+                }
+            },
+            {
+                path:      "confirm/:token",
+                component: Login,
+                name:      "ConfirmRegistration",
+                props:     true,
+                meta:      {
+                    auth:    true,
+                    confirm: true
+                }
+            },
+            {
+                path:      "reset_password/:token",
+                component: ResetPassword,
+                name:      "ResetPassword",
+                props:     true,
+                meta:      {
+                    auth:          true,
+                    passwordReset: true
+                }
+            },
+            {
+                path:      "reset_password_request/",
+                component: ResetPasswordRequest,
+                name:      "ResetPasswordRequest",
+                meta:      {
+                    auth:  true,
+                    guest: true
+                }
+            },
+        ]
     },
     {
         path:      "/dashboard/",

@@ -1,38 +1,47 @@
 <template>
-    <div class="col-md-6">
-        <div class="card mx-4">
-            <el-form :ref="formRef" :model="form" :rules="rules" class="card-body p-4">
-                <h1>Reset Your Password</h1>
-                <el-form-item class="input-group mb-3" prop="password">
-                    <el-input v-model="form.password" type="password" placeholder="Password">
-                        <template slot="prepend">
-                            <i class="icon-lock"/>
-                        </template>
-                    </el-input>
-                </el-form-item>
-                <el-form-item class="input-group mb-3" prop="password_repeat">
-                    <el-input v-model="form.password_repeat" type="password" placeholder="Repeat password">
-                        <template slot="prepend">
-                            <i class="icon-lock"/>
-                        </template>
-                    </el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" class="btn btn-block btn-primary" @click.prevent="submit">
-                        Submit
-                    </el-button>
-                </el-form-item>
-            </el-form>
-        </div>
-    </div>
+    <centered>
+        <template v-slot:body>
+            <div class="col-md-6">
+                <div class="card mx-4">
+                    <el-form :ref="formRef" :model="form" :rules="rules" class="card-body p-4">
+                        <h1>Reset Your Password</h1>
+                        <el-form-item class="input-group mb-3" prop="password">
+                            <el-input v-model="form.password" type="password" placeholder="Password">
+                                <template slot="prepend">
+                                    <i class="icon-lock"/>
+                                </template>
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item class="input-group mb-3" prop="password_repeat">
+                            <el-input v-model="form.password_repeat" type="password" placeholder="Repeat password">
+                                <template slot="prepend">
+                                    <i class="icon-lock"/>
+                                </template>
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" class="btn btn-block btn-primary" @click.prevent="submit">
+                                Submit
+                            </el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+            </div>
+        </template>
+    </centered>
 </template>
 
 <script>
     import {mapActions} from "vuex"
+    import Centered     from "../../components/Centered"
     import api          from "../../services/api"
 
     export default {
         name: "ResetPassword",
+
+        components: {
+            Centered
+        },
 
         props: {
             token: {
