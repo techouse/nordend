@@ -126,7 +126,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/create/post/",
+        path:      "/posts/new/",
         component: CreatePost,
         props:     true,
         name:      "CreatePost",
@@ -160,7 +160,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/create/user/",
+        path:      "/users/new/",
         component: CreateUser,
         props:     true,
         name:      "CreateUser",
@@ -193,7 +193,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/create/category/",
+        path:      "/categories/new/",
         component: CreateCategory,
         props:     true,
         name:      "CreateCategory",
@@ -228,7 +228,7 @@ const routerOptions = [
         }
     },
     {
-        path:      "/create/role/",
+        path:      "/roles/new/",
         component: CreateRole,
         props:     true,
         name:      "CreateRole",
