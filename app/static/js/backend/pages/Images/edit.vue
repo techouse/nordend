@@ -155,6 +155,6 @@
 <style lang="scss" scoped>
     .card-body {
         width: 100%;
-        height: 800px;
+        height: (1024px + 128px);
     }
 </style>

@@ -10,7 +10,7 @@
         </template>
         <template v-slot:body>
             <el-row :gutter="20">
-                <el-col span="9" :style="{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}">
+                <el-col :span="9" :style="{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}">
                     <b>Sort by: </b>
                     <el-select v-model="params.sort" clearable placeholder="Sort by">
                         <el-option v-for="item in sortByOptions"
@@ -36,42 +36,45 @@
                     </el-input>
                 </el-col>
             </el-row>
-            <viewer :images="viewerImages" :options="viewerOptions">
-                <template slot-scope="scope">
-                    <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex"
-                            :gutter="20"
-                    >
-                        <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
-                            <el-card :body-style="{ padding: '0', textAlign: 'center' }" class="image-card"
-                                     shadow="hover"
-                            >
-                                <img :style="{width: '100%', height: '100%'}"
-                                     :src="`${image.public_path}/${thumbnailSize}.jpg`"
-                                     :data-source="getLargestImageSrc(image)"
-                                     :alt="image.original_filename"
-                                     class="image-viewer-thumbnail"
+            <el-container v-loading="loading">
+                <viewer :images="viewerImages" :options="viewerOptions">
+                    <template slot-scope="scope">
+                        <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex" :gutter="20">
+                            <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
+                                <el-card :body-style="{ padding: '0', textAlign: 'center' }" class="image-card"
+                                         shadow="hover"
                                 >
-                                <div style="padding: 14px;">
-                                    <span>{{ (image.title || image.original_filename) | truncate(20) }}</span>
-                                    <div class="bottom clearfix">
-                                        <el-tooltip class="item" effect="dark" content="Edit in image editor"
-                                                    placement="left">
-                                            <el-button size="mini" circle @click="edit(image.id)">
-                                                <i class="fas fa-paint-brush"/>
-                                            </el-button>
-                                        </el-tooltip>
-                                        <el-tooltip class="item" effect="dark" content="Delete"
-                                                    placement="right">
-                                            <el-button type="danger" size="mini" icon="el-icon-delete-solid" circle
-                                                       @click="remove(image.id)"/>
-                                        </el-tooltip>
+                                    <img :style="{width: '100%', height: '100%'}"
+                                         :src="`${image.public_path}/${thumbnailSize}.jpg`"
+                                         :data-source="getLargestImageSrc(image)"
+                                         :alt="image.original_filename"
+                                         class="image-viewer-thumbnail"
+                                    >
+                                    <div style="padding: 14px;">
+                                        <span>{{ (image.title || image.original_filename) | truncate(20) }}</span>
+                                        <div class="bottom clearfix">
+                                            <el-tooltip class="item" effect="dark" content="Edit in image editor"
+                                                        placement="left"
+                                            >
+                                                <el-button size="mini" circle @click="edit(image.id)">
+                                                    <i class="fas fa-paint-brush"/>
+                                                </el-button>
+                                            </el-tooltip>
+                                            <el-tooltip class="item" effect="dark" content="Delete"
+                                                        placement="right"
+                                            >
+                                                <el-button type="danger" size="mini" icon="el-icon-delete-solid" circle
+                                                           @click="remove(image.id)"
+                                                />
+                                            </el-tooltip>
+                                        </div>
                                     </div>
-                                </div>
-                            </el-card>
-                        </el-col>
-                    </el-row>
-                </template>
-            </viewer>
+                                </el-card>
+                            </el-col>
+                        </el-row>
+                    </template>
+                </viewer>
+            </el-container>
             <div class="d-flex justify-content-center mt-2">
                 <el-pagination :current-page.sync="params.page"
                                :page-sizes="pageSizes"
@@ -79,11 +82,11 @@
                                :total="totalCount"
                                layout="prev, pager, next, sizes"
                                background
-                               @size-change="getData"
-                               @current-change="getData"
+                               @size-change="getDataWithLoading"
+                               @current-change="getDataWithLoading"
                 />
             </div>
-            <create-image :ref="uploadRefName" @success="getData"/>
+            <create-image :ref="uploadRefName" @success="getDataWithLoading"/>
         </template>
     </card>
 </template>
@@ -169,10 +172,27 @@
             getData() {
                 this.$router.replace({name: "Images", query: this.params})
 
-                this.getImages({params: this.params})
-                    .then(({data}) => {
-                        this.$set(this, "images", data.results.map(image => new Photo(image)))
-                        this.$set(this, "totalCount", data.count)
+                return new Promise((resolve, reject) => {
+                    this.getImages({params: this.params})
+                        .then(({data}) => {
+                            this.$set(this, "images", data.results.map(image => new Photo(image)))
+                            this.$set(this, "totalCount", data.count)
+                            resolve()
+                        })
+                        .catch(() => {
+                            reject()
+                        })
+                })
+            },
+
+            getDataWithLoading() {
+                this.$set(this, "loading", true)
+                this.getData()
+                    .then(() => {
+                        this.$set(this, "loading", false)
+                    })
+                    .catch(() => {
+                        this.$set(this, "loading", false)
                     })
             },
 

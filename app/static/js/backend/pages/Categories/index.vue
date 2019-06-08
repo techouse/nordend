@@ -9,7 +9,7 @@
             </div>
         </template>
         <template v-slot:body>
-            <el-table :data="categories" class="w-100" @sort-change="orderBy">
+            <el-table v-loading="loading" :data="categories" class="w-100" @sort-change="orderBy">
                 <el-table-column label="#" prop="id" width="60" sortable="custom"/>
                 <el-table-column label="Name" prop="name" sortable="custom"/>
                 <el-table-column label="Slug" prop="slug" sortable="custom"/>
@@ -72,11 +72,17 @@
             getData() {
                 this.$router.replace({name: "Categories", query: this.params})
 
-                this.getCategories({params: this.params})
-                    .then(({data}) => {
-                        this.$set(this, "categories", data.results.map(category => new Category(category)))
-                        this.$set(this, "totalCount", data.count)
-                    })
+                return new Promise((resolve, reject) => {
+                    this.getCategories({params: this.params})
+                        .then(({data}) => {
+                            this.$set(this, "categories", data.results.map(category => new Category(category)))
+                            this.$set(this, "totalCount", data.count)
+                            resolve()
+                        })
+                        .catch(() => {
+                            reject()
+                        })
+                })
             },
 
             edit(category) {

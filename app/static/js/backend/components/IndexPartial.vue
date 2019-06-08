@@ -32,6 +32,7 @@
 
         data() {
             return {
+                loading:    false,
                 params:     {
                     search:   this.search,
                     page:     this.page,
@@ -48,7 +49,14 @@
         },
 
         created() {
-            this.getData()
+            this.$set(this, "loading", true)
+                this.getData()
+                    .then(() => {
+                        this.$set(this, "loading", false)
+                    })
+                    .catch(() => {
+                        this.$set(this, "loading", false)
+                    })
         },
 
         mounted() {
