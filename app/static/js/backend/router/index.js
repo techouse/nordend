@@ -111,12 +111,17 @@ const routerOptions = [
         component: Dashboard,
         name:      "Dashboard",
         meta:      {
-            requiresAuth: true
+            requiresAuth: true,
+            breadcrumb:   "Dashboard"
         }
     },
     {
         path:      "/posts/",
         component: Posts,
+        meta:      {
+            requiresAuth: true,
+            breadcrumb:   "Posts"
+        },
         children:  [
             {
                 path:      "",
@@ -129,7 +134,7 @@ const routerOptions = [
                     sort:    route.query.sort
                 }),
                 meta:      {
-                    requiresAuth: true
+                    requiresAuth: true,
                 }
             },
             {
@@ -138,7 +143,8 @@ const routerOptions = [
                 props:     true,
                 name:      "EditPost",
                 meta:      {
-                    requiresAuth: true
+                    requiresAuth: true,
+                    breadcrumb:   "Edit"
                 }
             },
             {
@@ -148,7 +154,8 @@ const routerOptions = [
                 name:      "CreatePost",
                 meta:      {
                     requiresAuth:  true,
-                    requiresAdmin: true
+                    requiresAdmin: true,
+                    breadcrumb:    "Create"
                 }
             },
         ]
@@ -156,6 +163,10 @@ const routerOptions = [
     {
         path:      "/users/",
         component: Users,
+        meta:      {
+            requiresAuth: true,
+            breadcrumb:   "Users"
+        },
         children:  [
             {
                 path:      "",
@@ -169,7 +180,7 @@ const routerOptions = [
                 }),
                 meta:      {
                     requiresAuth:  true,
-                    requiresAdmin: true
+                    requiresAdmin: true,
                 }
             },
             {
@@ -178,7 +189,8 @@ const routerOptions = [
                 props:     true,
                 name:      "EditUser",
                 meta:      {
-                    requiresAuth: true
+                    requiresAuth: true,
+                    breadcrumb:   "Edit"
                 }
             },
             {
@@ -188,7 +200,8 @@ const routerOptions = [
                 name:      "CreateUser",
                 meta:      {
                     requiresAuth:  true,
-                    requiresAdmin: true
+                    requiresAdmin: true,
+                    breadcrumb:    "Create"
                 }
             },
         ]
@@ -196,6 +209,10 @@ const routerOptions = [
     {
         path:      "/categories/",
         component: Categories,
+        meta:      {
+            requiresAuth: true,
+            breadcrumb:   "Categories"
+        },
         children:  [
             {
                 path:      "",
@@ -208,7 +225,7 @@ const routerOptions = [
                     sort:    route.query.sort
                 }),
                 meta:      {
-                    requiresAuth: true
+                    requiresAuth: true,
                 }
             },
             {
@@ -217,7 +234,8 @@ const routerOptions = [
                 props:     true,
                 name:      "EditCategory",
                 meta:      {
-                    requiresAuth: true
+                    requiresAuth: true,
+                    breadcrumb:   "Edit"
                 }
             },
             {
@@ -227,7 +245,8 @@ const routerOptions = [
                 name:      "CreateCategory",
                 meta:      {
                     requiresAuth:  true,
-                    requiresAdmin: true
+                    requiresAdmin: true,
+                    breadcrumb:    "Create"
                 }
             },
         ]
@@ -235,6 +254,10 @@ const routerOptions = [
     {
         path:      "/roles/",
         component: Roles,
+        meta:      {
+            requiresAuth: true,
+            breadcrumb:   "Roles"
+        },
         children:  [
             {
                 path:      "",
@@ -248,7 +271,7 @@ const routerOptions = [
                 }),
                 meta:      {
                     requiresAuth:  true,
-                    requiresAdmin: true
+                    requiresAdmin: true,
                 }
             },
             {
@@ -258,7 +281,8 @@ const routerOptions = [
                 name:      "EditRole",
                 meta:      {
                     requiresAuth:  true,
-                    requiresAdmin: true
+                    requiresAdmin: true,
+                    breadcrumb:    "Edit"
                 }
             },
             {
@@ -268,7 +292,8 @@ const routerOptions = [
                 name:      "CreateRole",
                 meta:      {
                     requiresAuth:  true,
-                    requiresAdmin: true
+                    requiresAdmin: true,
+                    breadcrumb:    "Create"
                 }
             },
         ]
@@ -276,6 +301,10 @@ const routerOptions = [
     {
         path:      "/images/",
         component: Images,
+        meta:      {
+            requiresAuth: true,
+            breadcrumb:   "Images"
+        },
         children:  [
             {
                 path:      "",
@@ -298,6 +327,7 @@ const routerOptions = [
                 name:      "EditImage",
                 meta:      {
                     requiresAuth: true,
+                    breadcrumb:   "Edit"
                 }
             },
         ]

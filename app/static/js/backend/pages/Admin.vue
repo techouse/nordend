@@ -5,7 +5,7 @@
                     data-toggle="sidebar-show"
                     @click.prevent="toggleNano"
             >
-                <span class="navbar-toggler-icon"/>
+                <span class="navbar-toggler-icon" />
             </button>
             <a class="navbar-brand" href="#">
                 <img class="navbar-brand-full" src="/static/images/admin/admin.png" width="48"
@@ -21,14 +21,14 @@
                     data-toggle="sidebar-lg-show"
                     @click.prevent="toggleNano"
             >
-                <span class="navbar-toggler-icon"/>
+                <span class="navbar-toggler-icon" />
             </button>
             <ul class="nav navbar-nav ml-auto mr-4">
                 <li v-if="currentUser" class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
                        aria-expanded="false"
                     >
-                        <i class="fas fa-user-tie"/>
+                        <i class="fas fa-user-tie" />
                         <span>{{ currentUser.name || currentUser.email }}</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
@@ -36,10 +36,10 @@
                             <strong>Settings</strong>
                         </div>
                         <router-link :to="{name: 'EditUser', params: {userId: currentUser.id}}" class="dropdown-item">
-                            <i class="fa fa-user"/> Profile
+                            <i class="fa fa-user" /> Profile
                         </router-link>
                         <a class="dropdown-item" href="#" @click.prevent="logout">
-                            <i class="fa fa-lock"/> Logout
+                            <i class="fa fa-lock" /> Logout
                         </a>
                     </div>
                 </li>
@@ -51,49 +51,43 @@
                     <ul class="nav">
                         <li class="nav-item">
                             <router-link :to="{name: 'Dashboard'}" class="nav-link">
-                                <i class="nav-icon icon-speedometer"/> Dashboard
+                                <i class="nav-icon icon-speedometer" /> Dashboard
                             </router-link>
                         </li>
                         <li class="nav-item">
                             <router-link :to="{name: 'Posts'}" class="nav-link">
-                                <i class="nav-icon icon-notebook"/> Posts
+                                <i class="nav-icon icon-notebook" /> Posts
                             </router-link>
                         </li>
                         <li class="nav-item">
                             <router-link :to="{name: 'Images'}" class="nav-link">
-                                <i class="nav-icon icon-camera"/> Images
+                                <i class="nav-icon icon-camera" /> Images
                             </router-link>
                         </li>
                         <li class="nav-item">
                             <router-link :to="{name: 'Categories'}" class="nav-link">
-                                <i class="nav-icon icon-tag"/> Categories
+                                <i class="nav-icon icon-tag" /> Categories
                             </router-link>
                         </li>
                         <li class="nav-item">
                             <router-link :to="{name: 'Users'}" class="nav-link">
-                                <i class="nav-icon icon-people"/> Users
+                                <i class="nav-icon icon-people" /> Users
                             </router-link>
                         </li>
                         <li class="nav-item">
                             <router-link :to="{name: 'Roles'}" class="nav-link">
-                                <i class="nav-icon icon-graduation"/> Roles
+                                <i class="nav-icon icon-graduation" /> Roles
                             </router-link>
                         </li>
                     </ul>
                 </nav>
-                <button class="sidebar-minimizer brand-minimizer" type="button" @click.prevent="toggleMini"/>
+                <button class="sidebar-minimizer brand-minimizer" type="button" @click.prevent="toggleMini" />
             </div>
             <main class="main">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <router-link :to="{path: $route.currentRoute}">
-                            {{ $route.name }}
-                        </router-link>
-                    </li>
-                </ol>
+                <breadcrumbs />
                 <div class="container-fluid">
                     <div id="content" class="animated fadeIn">
-                        <router-view/>
+                        <router-view />
                     </div>
                 </div>
             </main>
@@ -116,6 +110,7 @@
 <script>
     import {mapActions, mapGetters} from "vuex"
     import User                     from "../models/User"
+    import {linkProp}               from "vue-breadcrumbs"
 
     export default {
         name: "Admin",
