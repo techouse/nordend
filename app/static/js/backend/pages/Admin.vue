@@ -85,7 +85,7 @@
             </div>
             <main class="main">
                 <el-breadcrumb class="breadcrumb" separator-class="el-icon-arrow-right">
-                    <el-breadcrumb-item v-for="(crumb, index) in $breadcrumbs" :key="index" :to="linkProp(crumb)">
+                    <el-breadcrumb-item v-for="(crumb, index) in $breadcrumbs" :key="index" :to="crumb">
                         {{ crumb.meta.breadcrumb }}
                     </el-breadcrumb-item>
                 </el-breadcrumb>
@@ -143,24 +143,6 @@
             ...mapActions("user", ["getUser", "setCurrentUser"]),
 
             ...mapActions("auth", ["autoLogin", "logout"]),
-
-            linkProp(crumb) {
-                // If it's a named route, we'll base the route
-                // off of that instead
-                if (crumb.name || (crumb.handler && crumb.handler.name)) {
-                    return {
-                        name:   crumb.name || crumb.handler.name,
-                        params: this.$route.params
-                    }
-                }
-
-                return {
-                    path:   (crumb.handler && crumb.handler.fullPath)
-                            ? crumb.handler.fullPath
-                            : crumb.path,
-                    params: this.$route.params
-                }
-            },
 
             toggleNano() {
                 // body
