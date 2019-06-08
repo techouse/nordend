@@ -13,14 +13,7 @@ import App            from "./App"
 Vue.prototype.$http = api
 
 // Breadcrumbs
-Vue.use(VueBreadcrumbs, {
-    template:
-        `<ol class="breadcrumb" v-if="$breadcrumbs.length">
-            <li v-for="(crumb, key) in $breadcrumbs" :key="key" class="breadcrumb-item">
-                <router-link :to="linkProp(crumb)">{{ crumb | crumbText }}</router-link>
-            </li>
-        </ol>`
-})
+Vue.use(VueBreadcrumbs, {registerComponent: false})
 
 // ElementUI
 Vue.use(ElementUI)
