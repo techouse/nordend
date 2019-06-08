@@ -85,7 +85,7 @@
             </div>
             <main class="main">
                 <el-breadcrumb class="breadcrumb" separator-class="el-icon-arrow-right">
-                    <el-breadcrumb-item v-for="(crumb, index) in $breadcrumbs" :key="index" :to="crumb">
+                    <el-breadcrumb-item v-for="(crumb, index) in breadcrumbs" :key="index" :to="crumb">
                         {{ crumb.meta.breadcrumb }}
                     </el-breadcrumb-item>
                 </el-breadcrumb>
@@ -121,7 +121,11 @@
         computed: {
             ...mapGetters("user", ["currentUser"]),
 
-            ...mapGetters("csrf", ["csrf"])
+            ...mapGetters("csrf", ["csrf"]),
+
+            breadcrumbs() {
+                return this.$route.matched.filter(route => route.meta && route.meta.breadcrumb)
+            }
         },
 
         mounted() {

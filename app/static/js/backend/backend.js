@@ -1,7 +1,6 @@
 require("../bootstrap")
 
 import Vue            from "vue"
-import VueBreadcrumbs from "vue-breadcrumbs"
 import ElementUI      from "element-ui"
 import Viewer         from "v-viewer"
 import router         from "./router"
@@ -11,9 +10,6 @@ import App            from "./App"
 
 // Set Axios as default resource handler
 Vue.prototype.$http = api
-
-// Breadcrumbs
-Vue.use(VueBreadcrumbs, {registerComponent: false})
 
 // ElementUI
 Vue.use(ElementUI)
