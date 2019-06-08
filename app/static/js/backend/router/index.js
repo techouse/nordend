@@ -12,22 +12,27 @@ import ResetPasswordRequest from "../pages/Auth/reset_password_request"
 import Unconfirmed          from "../pages/Auth/unconfirmed"
 // Posts
 import Posts                from "../pages/Posts"
+import ListPosts            from "../pages/Posts/list"
 import CreatePost           from "../pages/Posts/create"
 import EditPost             from "../pages/Posts/edit"
 // Users
 import Users                from "../pages/Users"
+import ListUsers            from "../pages/Users/list"
 import CreateUser           from "../pages/Users/create"
 import EditUser             from "../pages/Users/edit"
 // Categories
 import Categories           from "../pages/Categories"
+import ListCategories       from "../pages/Categories/list"
 import CreateCategory       from "../pages/Categories/create"
 import EditCategory         from "../pages/Categories/edit"
 // Roles
 import Roles                from "../pages/Roles"
+import ListRoles            from "../pages/Roles/list"
 import CreateRole           from "../pages/Roles/create"
 import EditRole             from "../pages/Roles/edit"
 // Images
 import Images               from "../pages/Images"
+import ListImages           from "../pages/Images/list"
 import EditImage            from "../pages/Images/edit"
 // Errors
 import Error404             from "../pages/Errors/404"
@@ -105,160 +110,190 @@ const routerOptions = [
     {
         path:      "/posts/",
         component: Posts,
-        name:      "Posts",
-        props:     route => ({
-            search:  route.query.search,
-            page:    Number(route.query.page) || 1,
-            perPage: Number(route.query.per_page) || 12,
-            sort:    route.query.sort
-        }),
-        meta:      {
-            requiresAuth: true
-        }
-    },
-    {
-        path:      "/posts/:postId/",
-        component: EditPost,
-        props:     true,
-        name:      "EditPost",
-        meta:      {
-            requiresAuth: true
-        }
-    },
-    {
-        path:      "/posts/new/",
-        component: CreatePost,
-        props:     true,
-        name:      "CreatePost",
-        meta:      {
-            requiresAuth:  true,
-            requiresAdmin: true
-        }
+        children:  [
+            {
+                path:      "",
+                component: ListPosts,
+                name:      "Posts",
+                props:     route => ({
+                    search:  route.query.search,
+                    page:    Number(route.query.page) || 1,
+                    perPage: Number(route.query.per_page) || 12,
+                    sort:    route.query.sort
+                }),
+                meta:      {
+                    requiresAuth: true
+                }
+            },
+            {
+                path:      ":postId/",
+                component: EditPost,
+                props:     true,
+                name:      "EditPost",
+                meta:      {
+                    requiresAuth: true
+                }
+            },
+            {
+                path:      "new/",
+                component: CreatePost,
+                props:     true,
+                name:      "CreatePost",
+                meta:      {
+                    requiresAuth:  true,
+                    requiresAdmin: true
+                }
+            },
+        ]
     },
     {
         path:      "/users/",
         component: Users,
-        name:      "Users",
-        props:     route => ({
-            search:  route.query.search,
-            page:    Number(route.query.page) || 1,
-            perPage: Number(route.query.per_page) || 12,
-            sort:    route.query.sort
-        }),
-        meta:      {
-            requiresAuth:  true,
-            requiresAdmin: true
-        }
-    },
-    {
-        path:      "/users/:userId/",
-        component: EditUser,
-        props:     true,
-        name:      "EditUser",
-        meta:      {
-            requiresAuth: true
-        }
-    },
-    {
-        path:      "/users/new/",
-        component: CreateUser,
-        props:     true,
-        name:      "CreateUser",
-        meta:      {
-            requiresAuth:  true,
-            requiresAdmin: true
-        }
+        children:  [
+            {
+                path:      "",
+                component: ListUsers,
+                name:      "Users",
+                props:     route => ({
+                    search:  route.query.search,
+                    page:    Number(route.query.page) || 1,
+                    perPage: Number(route.query.per_page) || 12,
+                    sort:    route.query.sort
+                }),
+                meta:      {
+                    requiresAuth:  true,
+                    requiresAdmin: true
+                }
+            },
+            {
+                path:      ":userId/",
+                component: EditUser,
+                props:     true,
+                name:      "EditUser",
+                meta:      {
+                    requiresAuth: true
+                }
+            },
+            {
+                path:      "new/",
+                component: CreateUser,
+                props:     true,
+                name:      "CreateUser",
+                meta:      {
+                    requiresAuth:  true,
+                    requiresAdmin: true
+                }
+            },
+        ]
     },
     {
         path:      "/categories/",
         component: Categories,
-        name:      "Categories",
-        props:     route => ({
-            search:  route.query.search,
-            page:    Number(route.query.page) || 1,
-            perPage: Number(route.query.per_page) || 12,
-            sort:    route.query.sort
-        }),
-        meta:      {
-            requiresAuth: true
-        }
-    },
-    {
-        path:      "/categories/:categoryId/",
-        component: EditCategory,
-        props:     true,
-        name:      "EditCategory",
-        meta:      {
-            requiresAuth: true
-        }
-    },
-    {
-        path:      "/categories/new/",
-        component: CreateCategory,
-        props:     true,
-        name:      "CreateCategory",
-        meta:      {
-            requiresAuth:  true,
-            requiresAdmin: true
-        }
+        children:  [
+            {
+                path:      "",
+                component: ListCategories,
+                name:      "Categories",
+                props:     route => ({
+                    search:  route.query.search,
+                    page:    Number(route.query.page) || 1,
+                    perPage: Number(route.query.per_page) || 12,
+                    sort:    route.query.sort
+                }),
+                meta:      {
+                    requiresAuth: true
+                }
+            },
+            {
+                path:      ":categoryId/",
+                component: EditCategory,
+                props:     true,
+                name:      "EditCategory",
+                meta:      {
+                    requiresAuth: true
+                }
+            },
+            {
+                path:      "new/",
+                component: CreateCategory,
+                props:     true,
+                name:      "CreateCategory",
+                meta:      {
+                    requiresAuth:  true,
+                    requiresAdmin: true
+                }
+            },
+        ]
     },
     {
         path:      "/roles/",
         component: Roles,
-        name:      "Roles",
-        props:     route => ({
-            search:  route.query.search,
-            page:    Number(route.query.page) || 1,
-            perPage: Number(route.query.per_page) || 12,
-            sort:    route.query.sort
-        }),
-        meta:      {
-            requiresAuth:  true,
-            requiresAdmin: true
-        }
-    },
-    {
-        path:      "/roles/:roleId/",
-        component: EditRole,
-        props:     true,
-        name:      "EditRole",
-        meta:      {
-            requiresAuth:  true,
-            requiresAdmin: true
-        }
-    },
-    {
-        path:      "/roles/new/",
-        component: CreateRole,
-        props:     true,
-        name:      "CreateRole",
-        meta:      {
-            requiresAuth:  true,
-            requiresAdmin: true
-        }
+        children:  [
+            {
+                path:      "",
+                component: ListRoles,
+                name:      "Roles",
+                props:     route => ({
+                    search:  route.query.search,
+                    page:    Number(route.query.page) || 1,
+                    perPage: Number(route.query.per_page) || 12,
+                    sort:    route.query.sort
+                }),
+                meta:      {
+                    requiresAuth:  true,
+                    requiresAdmin: true
+                }
+            },
+            {
+                path:      ":roleId/",
+                component: EditRole,
+                props:     true,
+                name:      "EditRole",
+                meta:      {
+                    requiresAuth:  true,
+                    requiresAdmin: true
+                }
+            },
+            {
+                path:      "new/",
+                component: CreateRole,
+                props:     true,
+                name:      "CreateRole",
+                meta:      {
+                    requiresAuth:  true,
+                    requiresAdmin: true
+                }
+            },
+        ]
     },
     {
         path:      "/images/",
         component: Images,
-        name:      "Images",
-        props:     route => ({
-            search:  route.query.search,
-            page:    Number(route.query.page) || 1,
-            perPage: Number(route.query.per_page) || 12,
-            sort:    route.query.sort
-        }),
-        meta:      {
-            requiresAuth: true,
-        }
-    },
-    {
-        path:      "/images/:imageId/",
-        component: EditImage,
-        props:     true,
-        name:      "EditImage",
-        meta:      {
-            requiresAuth: true,
-        }
+        children:  [
+            {
+                path:      "",
+                component: ListImages,
+                name:      "Images",
+                props:     route => ({
+                    search:  route.query.search,
+                    page:    Number(route.query.page) || 1,
+                    perPage: Number(route.query.per_page) || 12,
+                    sort:    route.query.sort
+                }),
+                meta:      {
+                    requiresAuth: true,
+                }
+            },
+            {
+                path:      ":imageId/",
+                component: EditImage,
+                props:     true,
+                name:      "EditImage",
+                meta:      {
+                    requiresAuth: true,
+                }
+            },
+        ]
     },
     {
         path:      "*",
