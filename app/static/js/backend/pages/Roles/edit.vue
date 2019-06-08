@@ -18,8 +18,13 @@
         data() {
             return {
                 formRef:  "edit-role-form",
-                title:    "Edit role",
                 role: new Role(),
+            }
+        },
+
+        computed: {
+            title() {
+                return "Edit role"
             }
         },
 

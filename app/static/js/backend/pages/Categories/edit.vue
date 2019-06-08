@@ -18,8 +18,13 @@
         data() {
             return {
                 formRef:  "edit-category-form",
-                title:    "Edit category",
                 category: new Category(),
+            }
+        },
+
+        computed: {
+            title() {
+                return "Edit category"
             }
         },
 

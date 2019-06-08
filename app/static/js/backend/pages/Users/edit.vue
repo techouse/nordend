@@ -18,7 +18,6 @@
         data() {
             return {
                 formRef: "edit-user-form",
-                title:   "Edit user",
                 user:    new User(),
                 rules:   {
                     email:           [
@@ -70,6 +69,12 @@
                     ],
                     about_me:        [],
                 }
+            }
+        },
+
+        computed: {
+            title() {
+                return "Edit user"
             }
         },
 
