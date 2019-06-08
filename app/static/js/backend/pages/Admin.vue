@@ -110,7 +110,6 @@
 <script>
     import {mapActions, mapGetters} from "vuex"
     import User                     from "../models/User"
-    import {linkProp}               from "vue-breadcrumbs"
 
     export default {
         name: "Admin",
