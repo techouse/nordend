@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <div class="col-sm-12">
-            <el-form :ref="formRef" :model="user" :rules="rules" class="card" :label-width="labelWidth">
+            <el-form :ref="formRef" v-loading="loading" :model="user" :rules="rules" class="card" :label-width="labelWidth">
                 <div class="card-header">
                     <el-page-header :content="title" @back="goBack" />
                     <div v-if="user.id" class="card-header-actions">

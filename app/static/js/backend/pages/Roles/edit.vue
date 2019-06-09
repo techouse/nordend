@@ -17,8 +17,8 @@
 
         data() {
             return {
-                formRef:  "edit-role-form",
-                role: new Role(),
+                formRef: "edit-role-form",
+                role:    new Role(),
             }
         },
 
@@ -29,9 +29,15 @@
         },
 
         created() {
+            this.$set(this, "loading", true)
+
             this.getRole(this.roleId)
                 .then(({data}) => {
                     this.$set(this, "role", new Role(data))
+                    this.$set(this, "loading", false)
+                })
+                .catch(() => {
+                    this.$set(this, "loading", false)
                 })
         },
 

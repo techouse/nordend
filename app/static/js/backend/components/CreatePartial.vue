@@ -8,7 +8,8 @@
             return {
                 labelWidth: "140px",
                 formRef:    "create-form",
-                rules:      {}
+                rules:      {},
+                loading:    false
             }
         },
 
@@ -38,7 +39,7 @@
 
 <style lang="scss" scoped>
     .el-form-item__content {
-        &>div:first-child {
+        & > div:first-child {
             width: calc(100% - 140px);
         }
     }

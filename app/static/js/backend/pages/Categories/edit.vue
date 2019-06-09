@@ -29,9 +29,15 @@
         },
 
         created() {
+            this.$set(this, "loading", true)
+
             this.getCategory(this.categoryId)
                 .then(({data}) => {
                     this.$set(this, "category", new Category(data))
+                    this.$set(this, "loading", false)
+                })
+                .catch(() => {
+                    this.$set(this, "loading", false)
                 })
         },
 

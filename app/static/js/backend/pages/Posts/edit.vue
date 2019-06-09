@@ -71,10 +71,15 @@
             }
         },
 
+        created() {
+            this.$set(this, "loading", true)
+        },
+
         mounted() {
             this.getPost(this.postId)
                 .then(({data}) => {
                     this.$set(this, "post", new Post(data))
+                    this.$set(this, "loading", false)
                     if (this.editable) {
                         this.lockPost(this.post)
                             .then(() => {
@@ -84,6 +89,9 @@
                             })
                     }
                     this.editor.setContent(this.post.body)
+                })
+                .catch(() => {
+                    this.$set(this, "loading", false)
                 })
         },
 

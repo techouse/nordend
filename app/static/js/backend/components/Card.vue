@@ -8,6 +8,9 @@
                 <div class="card-body">
                     <slot name="body"/>
                 </div>
+                <div class="card-footer">
+                    <slot name="footer"/>
+                </div>
             </div>
         </div>
     </div>

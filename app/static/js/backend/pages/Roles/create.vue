@@ -2,7 +2,7 @@
     <div>
         <div class="row">
             <div class="col-sm-12">
-                <el-form :ref="formRef" :model="role" :rules="rules" :label-width="labelWidth" class="card">
+                <el-form :ref="formRef" v-loading="loading" :model="role" :rules="rules" :label-width="labelWidth" class="card">
                     <div class="card-header">
                         <el-page-header :content="title" @back="goBack" />
                         <div v-if="role.id" class="card-header-actions">

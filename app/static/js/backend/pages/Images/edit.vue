@@ -1,41 +1,38 @@
 <template>
-    <div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header">
-                        <el-page-header :content="title" @back="goBack" />
-                        <div v-if="image.id" class="card-header-actions">
-                            <button class="btn btn-sm btn-danger" @click.prevent="remove">
-                                Delete image
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body edit-image">
-                        <tui-image-editor v-if="image.id"
-                                          :ref="refName"
-                                          :include-ui="useDefaultUI"
-                                          :options="options"
-                        />
-                    </div>
-                    <div class="card-footer">
-                        <el-button type="success" @click="submit">
-                            Save
-                        </el-button>
-                        <el-button type="danger" @click="$router.push({name: 'Images'})">
-                            Cancel
-                        </el-button>
-                    </div>
-                </div>
+    <card>
+        <template v-slot:header>
+            <el-page-header :content="title" @back="goBack"/>
+            <div v-if="image.id" class="card-header-actions">
+                <button class="btn btn-sm btn-danger" @click.prevent="remove">
+                    Delete image
+                </button>
             </div>
-        </div>
-    </div>
+        </template>
+        <template v-slot:body>
+            <div class="edit-image">
+                <tui-image-editor v-if="image.id"
+                                  :ref="refName"
+                                  :include-ui="useDefaultUI"
+                                  :options="options"
+                />
+            </div>
+        </template>
+        <template v-slot:footer>
+            <el-button type="success" @click="submit">
+                Save
+            </el-button>
+            <el-button type="danger" @click="$router.push({name: 'Images'})">
+                Cancel
+            </el-button>
+        </template>
+    </card>
 </template>
 
 <script>
     import {ImageEditor}         from "@toast-ui/vue-image-editor"
     import {mapActions}          from "vuex"
     import Photo                 from "../../models/Image"
+    import Card                  from "../../components/Card"
     import CreatePartial         from "../../components/CreatePartial"
     import {white as whiteTheme} from "../../components/image_editor/theme"
 
@@ -43,7 +40,8 @@
         name: "EditImage",
 
         components: {
-            "tui-image-editor": ImageEditor
+            "tui-image-editor": ImageEditor,
+            Card
         },
 
         extends: CreatePartial,
@@ -153,7 +151,7 @@
 </script>
 
 <style lang="scss" scoped>
-    .card-body {
+    .edit-image {
         width: 100%;
         height: (1024px + 128px);
     }

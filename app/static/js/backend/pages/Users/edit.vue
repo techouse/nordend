@@ -79,9 +79,15 @@
         },
 
         created() {
+            this.$set(this, "loading", true)
+
             this.getUser(this.userId)
                 .then(({data}) => {
                     this.$set(this, "user", new User(data))
+                    this.$set(this, "loading", false)
+                })
+                .catch(() => {
+                    this.$set(this, "loading", false)
                 })
         },
 
