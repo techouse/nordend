@@ -24,25 +24,18 @@
                 <span class="navbar-toggler-icon"/>
             </button>
             <ul class="nav navbar-nav ml-auto mr-4">
-                <li v-if="currentUser" class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
-                       aria-expanded="false"
-                    >
-                        <i class="fas fa-user-tie"/>
-                        <span>{{ currentUser.name || currentUser.email }}</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <div class="dropdown-header text-center">
-                            <strong>Settings</strong>
-                        </div>
-                        <router-link :to="{name: 'EditUser', params: {userId: currentUser.id}}" class="dropdown-item">
-                            <i class="fa fa-user"/> Profile
-                        </router-link>
-                        <a class="dropdown-item" href="#" @click.prevent="logout">
-                            <i class="fa fa-lock"/> Logout
-                        </a>
-                    </div>
-                </li>
+                <el-dropdown v-if="currentUser" size="medium" split-button
+                             type="primary" @command="handleDropdownCommand"
+                             @click="$router.push({name: 'EditUser', params: {userId: currentUser.id}})"
+                >
+                    <i class="el-icon-user-solid el-icon--right"/>
+                    {{ currentUser.name || currentUser.email }}
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item icon="el-icon-lock" :command="logout">
+                            Logout
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
             </ul>
         </header>
         <div class="app-body">
@@ -197,6 +190,10 @@
                 } else {
                     navbarBrandMinimized.style.display = "none"
                 }
+            },
+
+            handleDropdownCommand(command) {
+                command()
             }
         }
     }
