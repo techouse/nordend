@@ -1,40 +1,34 @@
 <template>
-    <div>
-        <div class="row">
-            <div class="col-sm-12">
-                <el-form :ref="formRef" v-loading="loading" :model="role" :rules="rules" :label-width="labelWidth" class="card">
-                    <div class="card-header">
-                        <el-page-header :content="title" @back="goBack" />
-                        <div v-if="role.id" class="card-header-actions">
-                            <button class="btn btn-sm btn-danger" @click.prevent="remove">
-                                Delete role
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <el-form-item label="Name" prop="name">
-                            <el-input v-model="role.name" type="string" required />
-                        </el-form-item>
-                        <el-form-item label="Permissions">
-                            <el-checkbox v-model="role.follow" label="Follow" />
-                            <el-checkbox v-model="role.comment" label="Comment" />
-                            <el-checkbox v-model="role.write" label="Write" />
-                            <el-checkbox v-model="role.moderate" label="Moderate" />
-                            <el-checkbox v-model="role.admin" label="Admin" />
-                        </el-form-item>
-                    </div>
-                    <div class="card-footer">
-                        <el-button type="success" @click="submit">
-                            Submit
-                        </el-button>
-                        <el-button type="danger" @click="$router.push({name: 'Roles'})">
-                            Cancel
-                        </el-button>
-                    </div>
-                </el-form>
+    <card-form :form-ref="formRef" :loading="loading" :model="role" :rules="rules" :label-width="labelWidth">
+        <template v-slot:header>
+            <el-page-header :content="title" @back="goBack" />
+            <div v-if="role.id" class="card-header-actions">
+                <button class="btn btn-sm btn-danger" @click.prevent="remove">
+                    Delete role
+                </button>
             </div>
-        </div>
-    </div>
+        </template>
+        <template v-slot:body>
+            <el-form-item label="Name" prop="name">
+                <el-input v-model="role.name" type="string" required />
+            </el-form-item>
+            <el-form-item label="Permissions">
+                <el-checkbox v-model="role.follow" label="Follow" />
+                <el-checkbox v-model="role.comment" label="Comment" />
+                <el-checkbox v-model="role.write" label="Write" />
+                <el-checkbox v-model="role.moderate" label="Moderate" />
+                <el-checkbox v-model="role.admin" label="Admin" />
+            </el-form-item>
+        </template>
+        <template v-slot:footer>
+            <el-button type="success" @click="submit">
+                Submit
+            </el-button>
+            <el-button type="danger" @click="$router.push({name: 'Roles'})">
+                Cancel
+            </el-button>
+        </template>
+    </card-form>
 </template>
 
 <script>

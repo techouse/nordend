@@ -1,73 +1,69 @@
 <template>
-    <div class="row">
-        <div class="col-sm-12">
-            <el-form :ref="formRef" v-loading="loading" :model="user" :rules="rules" class="card" :label-width="labelWidth">
-                <div class="card-header">
-                    <el-page-header :content="title" @back="goBack" />
-                    <div v-if="user.id" class="card-header-actions">
-                        <button class="btn btn-sm btn-danger" @click.prevent="remove">
-                            Delete user
-                        </button>
-                    </div>
+    <card-form :form-ref="formRef" :loading="loading" :model="user" :rules="rules" :label-width="labelWidth">
+        <template v-slot:header>
+            <el-page-header :content="title" @back="goBack"/>
+            <div v-if="user.id" class="card-header-actions">
+                <button class="btn btn-sm btn-danger" @click.prevent="remove">
+                    Delete user
+                </button>
+            </div>
+        </template>
+        <template v-slot:body>
+            <div class="row">
+                <div class="col-sm-6">
+                    <el-form-item label="E-mail" prop="email">
+                        <el-input v-model="user.email" type="email" required/>
+                    </el-form-item>
+                    <el-form-item label="Password" prop="password">
+                        <el-input v-model="user.password" type="password" :required="!user.id"/>
+                    </el-form-item>
+                    <el-form-item label="Repeat password" prop="password_repeat">
+                        <el-input v-model="user.password_repeat" type="password" :required="!user.id"/>
+                    </el-form-item>
+                    <el-form-item label="Role" prop="role_id">
+                        <el-select v-model="user.role_id" placeholder="User role" required>
+                            <el-option v-for="role in roles"
+                                       :key="role.id"
+                                       :label="role.name"
+                                       :value="role.id"
+                            />
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="Confirmed" prop="confirmed">
+                        <el-switch v-model="user.confirmed"
+                                   active-color="#13ce66"
+                                   inactive-color="#ff4949"
+                                   active-text="Yes"
+                                   inactive-text="No"
+                                   required
+                        />
+                    </el-form-item>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <el-form-item label="E-mail" prop="email">
-                                <el-input v-model="user.email" type="email" required />
-                            </el-form-item>
-                            <el-form-item label="Password" prop="password">
-                                <el-input v-model="user.password" type="password" :required="!user.id" />
-                            </el-form-item>
-                            <el-form-item label="Repeat password" prop="password_repeat">
-                                <el-input v-model="user.password_repeat" type="password" :required="!user.id" />
-                            </el-form-item>
-                            <el-form-item label="Role" prop="role_id">
-                                <el-select v-model="user.role_id" placeholder="User role" required>
-                                    <el-option v-for="role in roles"
-                                               :key="role.id"
-                                               :label="role.name"
-                                               :value="role.id"
-                                    />
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="Confirmed" prop="confirmed">
-                                <el-switch v-model="user.confirmed"
-                                           active-color="#13ce66"
-                                           inactive-color="#ff4949"
-                                           active-text="Yes"
-                                           inactive-text="No"
-                                           required
-                                />
-                            </el-form-item>
-                        </div>
-                        <div class="col-sm-6">
-                            <el-form-item label="Name" prop="name">
-                                <el-input v-model="user.name" type="text" required />
-                            </el-form-item>
-                            <el-form-item label="Location" prop="location">
-                                <el-input v-model="user.location" type="text" />
-                            </el-form-item>
-                            <el-form-item label="About" prop="about_me">
-                                <el-input v-model="user.about_me"
-                                          type="textarea"
-                                          :autosize="{ minRows: 8, maxRows: 16}"
-                                />
-                            </el-form-item>
-                        </div>
-                    </div>
+                <div class="col-sm-6">
+                    <el-form-item label="Name" prop="name">
+                        <el-input v-model="user.name" type="text" required/>
+                    </el-form-item>
+                    <el-form-item label="Location" prop="location">
+                        <el-input v-model="user.location" type="text"/>
+                    </el-form-item>
+                    <el-form-item label="About" prop="about_me">
+                        <el-input v-model="user.about_me"
+                                  type="textarea"
+                                  :autosize="{ minRows: 8, maxRows: 16}"
+                        />
+                    </el-form-item>
                 </div>
-                <div class="card-footer">
-                    <el-button type="success" @click="submit">
-                        Submit
-                    </el-button>
-                    <el-button type="danger" @click="$router.push({name: 'Users'})">
-                        Cancel
-                    </el-button>
-                </div>
-            </el-form>
-        </div>
-    </div>
+            </div>
+        </template>
+        <template v-slot:footer>
+            <el-button type="success" @click="submit">
+                Submit
+            </el-button>
+            <el-button type="danger" @click="$router.push({name: 'Users'})">
+                Cancel
+            </el-button>
+        </template>
+    </card-form>
 </template>
 
 <script>

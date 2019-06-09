@@ -1,8 +1,11 @@
 <script>
     import {mapActions, mapGetters} from "vuex"
+    import CardForm                 from "./CardForm"
 
     export default {
         name: "CreatePartial",
+
+        components: {CardForm},
 
         data() {
             return {
