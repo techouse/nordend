@@ -42,7 +42,7 @@
             },
 
             title() {
-                return this.editable ? "Edit post" : "View post"
+                return this.post.title
             }
         },
 

@@ -24,7 +24,7 @@
 
         computed: {
             title() {
-                return "Edit role"
+                return this.role.name
             }
         },
 

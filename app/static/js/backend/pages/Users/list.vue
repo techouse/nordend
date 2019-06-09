@@ -1,7 +1,7 @@
 <template>
     <card>
         <template v-slot:header>
-            <b>{{ title }}</b>
+            <el-page-header class="no-back" :content="title"/>
             <div class="card-header-actions">
                 <router-link :to="{name: 'CreateUser'}" class="btn btn-sm btn-primary">
                     Create new user

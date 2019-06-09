@@ -1,7 +1,7 @@
 <template>
     <card>
         <template v-slot:header>
-            <b>{{ title }}</b>
+            <el-page-header class="no-back" :content="title"/>
             <div class="card-header-actions">
                 <router-link :to="{name: 'CreateRole'}" class="btn btn-sm btn-primary">
                     Create new role
@@ -10,42 +10,42 @@
         </template>
         <template v-slot:body>
             <el-table v-loading="loading" :data="roles" class="w-100" @sort-change="orderBy">
-                <el-table-column label="#" prop="id" width="60" sortable="custom" />
-                <el-table-column label="Name" prop="name" sortable="custom" />
+                <el-table-column label="#" prop="id" width="60" sortable="custom"/>
+                <el-table-column label="Name" prop="name" sortable="custom"/>
                 <el-table-column label="Default" prop="default" align="center" width="120" sortable="custom">
                     <template slot-scope="scope">
-                        <i v-if="scope.row.default" class="fas fa-check text-success" />
-                        <i v-else class="fas fa-times text-danger" />
+                        <i v-if="scope.row.default" class="fas fa-check text-success"/>
+                        <i v-else class="fas fa-times text-danger"/>
                     </template>
                 </el-table-column>
                 <el-table-column label="Follow" prop="follow" align="center" width="120" sortable="custom">
                     <template slot-scope="scope">
-                        <i v-if="scope.row.follow" class="fas fa-check text-success" />
-                        <i v-else class="fas fa-times text-danger" />
+                        <i v-if="scope.row.follow" class="fas fa-check text-success"/>
+                        <i v-else class="fas fa-times text-danger"/>
                     </template>
                 </el-table-column>
                 <el-table-column label="Comment" prop="comment" align="center" width="120" sortable="custom">
                     <template slot-scope="scope">
-                        <i v-if="scope.row.comment" class="fas fa-check text-success" />
-                        <i v-else class="fas fa-times text-danger" />
+                        <i v-if="scope.row.comment" class="fas fa-check text-success"/>
+                        <i v-else class="fas fa-times text-danger"/>
                     </template>
                 </el-table-column>
                 <el-table-column label="Write" prop="write" align="center" width="120" sortable="custom">
                     <template slot-scope="scope">
-                        <i v-if="scope.row.write" class="fas fa-check text-success" />
-                        <i v-else class="fas fa-times text-danger" />
+                        <i v-if="scope.row.write" class="fas fa-check text-success"/>
+                        <i v-else class="fas fa-times text-danger"/>
                     </template>
                 </el-table-column>
                 <el-table-column label="Moderate" prop="moderate" align="center" width="120" sortable="custom">
                     <template slot-scope="scope">
-                        <i v-if="scope.row.moderate" class="fas fa-check text-success" />
-                        <i v-else class="fas fa-times text-danger" />
+                        <i v-if="scope.row.moderate" class="fas fa-check text-success"/>
+                        <i v-else class="fas fa-times text-danger"/>
                     </template>
                 </el-table-column>
                 <el-table-column label="Admin" prop="admin" align="center" width="120" sortable="custom">
                     <template slot-scope="scope">
-                        <i v-if="scope.row.admin" class="fas fa-check text-success" />
-                        <i v-else class="fas fa-times text-danger" />
+                        <i v-if="scope.row.admin" class="fas fa-check text-success"/>
+                        <i v-else class="fas fa-times text-danger"/>
                     </template>
                 </el-table-column>
                 <el-table-column align="right">

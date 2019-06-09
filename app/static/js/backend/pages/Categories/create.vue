@@ -4,7 +4,7 @@
             <div class="col-sm-12">
                 <el-form :ref="formRef" :model="category" :rules="rules" :label-width="labelWidth" class="card">
                     <div class="card-header">
-                        <b>{{ title }}</b> <i>{{ category.name }}</i>
+                        <el-page-header :content="title" @back="goBack" />
                         <div v-if="category.id" class="card-header-actions">
                             <button class="btn btn-sm btn-danger" @click.prevent="remove">
                                 Delete category
@@ -55,7 +55,7 @@
 
         computed: {
             title() {
-                return "Create category"
+                return "Create new category"
             }
         },
 

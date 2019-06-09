@@ -3,7 +3,7 @@
         <div class="col-sm-12">
             <el-form :ref="formRef" :model="user" :rules="rules" class="card" :label-width="labelWidth">
                 <div class="card-header">
-                    <b>{{ title }}</b> <i>{{ user.name }}</i>
+                    <el-page-header :content="title" @back="goBack" />
                     <div v-if="user.id" class="card-header-actions">
                         <button class="btn btn-sm btn-danger" @click.prevent="remove">
                             Delete user
@@ -143,7 +143,7 @@
 
         computed: {
             title() {
-                return "Create user"
+                return "Create new user"
             }
         },
 

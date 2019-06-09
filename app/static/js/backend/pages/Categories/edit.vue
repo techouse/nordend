@@ -24,7 +24,7 @@
 
         computed: {
             title() {
-                return "Edit category"
+                return this.category.name
             }
         },
 

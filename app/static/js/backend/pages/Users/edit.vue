@@ -74,7 +74,7 @@
 
         computed: {
             title() {
-                return "Edit user"
+                return this.user.name
             }
         },
 

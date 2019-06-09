@@ -52,3 +52,12 @@ class PaginationHelper:
             "count": paginated_objects.total,
             self.per_page_argument_name: results_per_page,
         }
+
+
+class RedisHelper:
+    @staticmethod
+    def decode_data(data):
+        try:
+            return data.decode()
+        except AttributeError:
+            return data

@@ -27,6 +27,10 @@
             },
 
             remove() {
+            },
+
+            goBack() {
+                this.$router.go(-1)
             }
         }
     }

@@ -4,7 +4,7 @@
             <div class="col-sm-12">
                 <el-form :ref="formRef" :model="role" :rules="rules" :label-width="labelWidth" class="card">
                     <div class="card-header">
-                        <b>{{ title }}</b> <i>{{ role.name }}</i>
+                        <el-page-header :content="title" @back="goBack" />
                         <div v-if="role.id" class="card-header-actions">
                             <button class="btn btn-sm btn-danger" @click.prevent="remove">
                                 Delete role
@@ -62,7 +62,7 @@
 
         computed: {
             title() {
-                return "Create role"
+                return "Create new role"
             }
         },
 

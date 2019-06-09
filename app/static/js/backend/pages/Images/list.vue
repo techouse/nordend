@@ -1,7 +1,7 @@
 <template>
     <card>
         <template v-slot:header>
-            <b>{{ title }}</b>
+            <el-page-header class="no-back" :content="title"/>
             <div class="card-header-actions">
                 <button class="btn btn-sm btn-primary" @click.prevent="upload">
                     Upload new image
@@ -39,7 +39,8 @@
             <el-container v-loading="loading">
                 <viewer :images="viewerImages" :options="viewerOptions">
                     <template slot-scope="scope">
-                        <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex" :gutter="20">
+                        <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex"
+                                :gutter="20">
                             <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
                                 <el-card :body-style="{ padding: '0', textAlign: 'center' }" class="image-card"
                                          shadow="hover"

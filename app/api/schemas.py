@@ -9,6 +9,7 @@ from marshmallow import fields, pre_load, validates_schema, ValidationError
 from marshmallow import validate
 
 from app import redis
+from .helpers import RedisHelper
 from .broadcast.post import PostBroadcast
 from ..redis_keys import locked_posts_redis_key
 from .validators import valid_permission, valid_password_reset_token
@@ -157,7 +158,7 @@ class PostSchema(ma.Schema):
 
     def is_locked(self, obj):
         if redis.hexists(locked_posts_redis_key, obj.id):
-            lock_data = json.loads(redis.hget(locked_posts_redis_key, obj.id))
+            lock_data = json.loads(RedisHelper.decode_data(redis.hget(locked_posts_redis_key, obj.id)))
             expires = datetime.fromisoformat(lock_data["expires"])
             if expires >= datetime.now(pytz.utc):
                 return True
@@ -169,7 +170,7 @@ class PostSchema(ma.Schema):
     def get_locked_since(self, obj):
         if self.is_locked(obj):
             try:
-                lock_data = json.loads(redis.hget(locked_posts_redis_key, obj.id))
+                lock_data = json.loads(RedisHelper.decode_data(redis.hget(locked_posts_redis_key, obj.id)))
                 return lock_data["timestamp"]
             except:
                 pass
@@ -178,7 +179,7 @@ class PostSchema(ma.Schema):
     def get_lock_expires(self, obj):
         if self.is_locked(obj):
             try:
-                lock_data = json.loads(redis.hget(locked_posts_redis_key, obj.id))
+                lock_data = json.loads(RedisHelper.decode_data(redis.hget(locked_posts_redis_key, obj.id)))
                 return lock_data["expires"]
             except:
                 pass
@@ -187,7 +188,7 @@ class PostSchema(ma.Schema):
     def get_locked_by(self, obj):
         if self.is_locked(obj):
             try:
-                lock_data = json.loads(redis.hget(locked_posts_redis_key, obj.id))
+                lock_data = json.loads(RedisHelper.decode_data(redis.hget(locked_posts_redis_key, obj.id)))
                 user_schema = UserSchema(only=("id", "name", "email"))
                 return user_schema.dump(User.query.get(lock_data["user_id"])).data
             except:

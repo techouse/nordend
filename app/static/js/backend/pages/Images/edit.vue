@@ -4,7 +4,7 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header">
-                        <b>Edit image</b> <i>{{ title }}</i>
+                        <el-page-header :content="title" @back="goBack" />
                         <div v-if="image.id" class="card-header-actions">
                             <button class="btn btn-sm btn-danger" @click.prevent="remove">
                                 Delete image

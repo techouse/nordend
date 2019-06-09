@@ -4,7 +4,7 @@
             <div class="col-sm-12">
                 <el-form :ref="formRef" :model="post" :rules="rules" :label-width="labelWidth" class="card">
                     <div class="card-header">
-                        <b>{{ title }}</b> <i>{{ post.title }}</i>
+                        <el-page-header :content="title" @back="goBack" />
                         <div v-if="post.id" class="card-header-actions">
                             <el-button class="btn btn-sm btn-danger" :disabled="!editable" @click="remove">
                                 Delete post
@@ -649,7 +649,7 @@
             },
 
             title() {
-                return this.editable ? "Create post" : "View post"
+                return this.editable ? "Create new post" : "View post"
             }
         },
 
