@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 
+from .resources.tag import TagListResource, TagResource, TagPostListResource, TagImageListResource
 from .resources.csrf import CSRFResource
 from .resources.image import ImageResource, ImageListResource
 from .resources.authentication import (
@@ -8,7 +9,8 @@ from .resources.authentication import (
     ResetPasswordRequestResource,
     ResetPasswordResource,
     RegistrationResource,
-    RegistrationConfirmationResource)
+    RegistrationConfirmationResource,
+)
 from .resources.category import CategoryListResource, CategoryResource, CategoryPostListResource
 from .resources.post import PostListResource, PostResource
 from .resources.role import RoleListResource, RoleResource, RoleUserListResource
@@ -41,5 +43,10 @@ api.add_resource(PostResource, "/posts/<int:id>", endpoint="post")
 
 api.add_resource(ImageListResource, "/images/", endpoint="images")
 api.add_resource(ImageResource, "/images/<int:id>", endpoint="image")
+
+api.add_resource(TagListResource, "/tags/", endpoint="tags")
+api.add_resource(TagResource, "/tags/<int:id>", endpoint="tag")
+api.add_resource(TagPostListResource, "/tags/<int:id>/posts/", endpoint="tag_posts")
+api.add_resource(TagImageListResource, "/tags/<int:id>/images/", endpoint="tag_images")
 
 from . import broadcast as broadcast_events

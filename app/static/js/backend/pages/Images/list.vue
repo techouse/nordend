@@ -9,7 +9,7 @@
             </div>
         </template>
         <template v-slot:body>
-            <el-row :gutter="20">
+            <el-row v-if="images.length" :gutter="20">
                 <el-col :span="9" :style="{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}">
                     <b>Sort by: </b>
                     <el-select v-model="params.sort" clearable placeholder="Sort by">
@@ -37,7 +37,7 @@
                 </el-col>
             </el-row>
             <el-container v-loading="loading">
-                <viewer :images="viewerImages" :options="viewerOptions">
+                <viewer v-if="images.length" :images="viewerImages" :options="viewerOptions">
                     <template slot-scope="scope">
                         <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex"
                                 :gutter="20">
@@ -75,8 +75,11 @@
                         </el-row>
                     </template>
                 </viewer>
+                <div v-else :style="{width: '100%', textAlign: 'center', opacity: .5}">
+                    No images <i class="fal fa-frown"/>
+                </div>
             </el-container>
-            <div class="d-flex justify-content-center mt-2">
+            <div v-if="images.length" class="d-flex justify-content-center mt-2">
                 <el-pagination :current-page.sync="params.page"
                                :page-sizes="pageSizes"
                                :page-size.sync="params.per_page"

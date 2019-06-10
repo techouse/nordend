@@ -12,7 +12,7 @@ from app import redis
 from .broadcast.post import PostBroadcast
 from ..redis_keys import locked_posts_redis_key
 from .validators import valid_permission, valid_password_reset_token
-from ..models import Post, User, Role, Category, Image
+from ..models import Post, User, Role, Category, Image, Tag, PostCategory
 
 ma = Marshmallow()
 
@@ -107,6 +107,7 @@ class CategorySchema(ma.Schema):
     id = fields.Integer(dump_only=True)
     name = fields.String(required=True, validate=lambda x: 0 < len(x) <= 255)
     slug = fields.String(dump_only=True)
+    posts = fields.Nested("PostCategorySchema", many=True, only=("post",))
     links = ma.Hyperlinks(
         {
             "self": ma.URLFor("api.category", id="<id>", _external=True),
@@ -114,6 +115,14 @@ class CategorySchema(ma.Schema):
             "relationships": {"posts": ma.URLFor("api.category_posts", id="<id>", _external=True)},
         }
     )
+
+
+class PostCategorySchema(ma.Schema):
+    class Meta:
+        model = PostCategory
+
+    category = fields.Nested("CategorySchema", only=("id", "name", "slug", "links"))
+    post = fields.Nested("PostSchema", only=("id", "title", "slug", "links"))
 
 
 class PostSchema(ma.Schema):
@@ -127,9 +136,9 @@ class PostSchema(ma.Schema):
     body_html = fields.String(dump_only=True)
     created_at = fields.DateTime(dump_only=True, format="iso8601")
     updated_at = fields.DateTime(dump_only=True, format="iso8601")
-    author = fields.Nested("UserSchema", dump_only=True, exclude=("posts",))
-    category_id = fields.Integer(required=True, validate=lambda x: x >= 0 and Category.query.get(x) is not None)
-    category = fields.Nested("CategorySchema", dump_only=True, exclude=("posts",))
+    authors = fields.Nested("UserSchema", many=True, only=("id", "name", "email"))
+    categories = fields.Nested("PostCategorySchema", many=True, only=("category",))
+    tags = fields.Nested("TagSchema", many=True, only=("id", "name", "slug"))
     locked = fields.Method("is_locked", dump_only=True)
     locked_since = fields.Method("get_locked_since", dump_only=True)
     lock_expires = fields.Method("get_lock_expires", dump_only=True)
@@ -211,6 +220,7 @@ class ImageSchema(ma.Schema):
     original_filename = fields.String(nullable=True)
     data_url = fields.String(allow_none=True, load_only=True)
     author_id = fields.Integer(dump_only=True)
+    tags = fields.Nested("TagSchema", many=True, exclude=("posts", "images"))
     created_at = fields.DateTime(format="iso8601")
     updated_at = fields.DateTime(format="iso8601")
     links = ma.Hyperlinks(
@@ -232,3 +242,22 @@ class ImageSchema(ma.Schema):
                 obj.hash,
             )
         )
+
+
+class TagSchema(ma.Schema):
+    class Meta:
+        model = Tag
+
+    id = fields.Integer(dump_only=True)
+    name = fields.String(required=True, validate=lambda x: 0 < len(x) <= 255)
+    slug = fields.String(dump_only=True)
+    links = ma.Hyperlinks(
+        {
+            "self": ma.URLFor("api.tag", id="<id>", _external=True),
+            "collection": ma.URLFor("api.tags", _external=True),
+            "relationships": {
+                "posts": ma.URLFor("api.tag_posts", id="<id>", _external=True),
+                "images": ma.URLFor("api.tag_images", id="<id>", _external=True),
+            },
+        }
+    )

@@ -1,5 +1,5 @@
 from flask import request
-from sqlalchemy import desc
+from sqlalchemy import desc, String
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields
 from webargs.flaskparser import use_args
@@ -7,40 +7,40 @@ from webargs.flaskparser import use_args
 from .authentication import TokenRequiredResource
 from .post import post_schema
 from ..helpers import PaginationHelper
-from ..schemas import CategorySchema
+from ..schemas import TagSchema
 from ... import db, status
-from ...models import Category, Post, PostCategory
+from ...models import Tag, Post, Image
 
-category_schema = CategorySchema()
+tag_schema = TagSchema()
 
 
-class CategoryResource(TokenRequiredResource):
+class TagResource(TokenRequiredResource):
     def get(self, id):
-        category = Category.query.get_or_404(id)
-        result = category_schema.dump(category).data
+        tag = Tag.query.get_or_404(id)
+        result = tag_schema.dump(tag).data
         return result
 
     def put(self, id):
         return self.patch(id)
 
     def patch(self, id):
-        category = Category.query.get_or_404(id)
+        tag = Tag.query.get_or_404(id)
         request_dict = request.get_json()
         if not request_dict:
             response = {"message": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
-        errors = category_schema.validate(request_dict)
+        errors = tag_schema.validate(request_dict)
         if errors:
             return errors, status.HTTP_400_BAD_REQUEST
         try:
             if "name" in request_dict:
-                category_name = request_dict["name"]
-                if Category.is_unique(id=0, name=category_name):
-                    category.name = category_name
+                tag_name = request_dict["name"]
+                if Tag.is_unique(id=0, name=tag_name):
+                    tag.name = tag_name
                 else:
-                    response = {"message": "A category with the same name already exists"}
+                    response = {"message": "A tag with the same name already exists"}
                     return response, status.HTTP_400_BAD_REQUEST
-            category.update()
+            tag.update()
             return self.get(id)
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -48,9 +48,9 @@ class CategoryResource(TokenRequiredResource):
             return resp, status.HTTP_400_BAD_REQUEST
 
     def delete(self, id):
-        category = Category.query.get_or_404(id)
+        tag = Tag.query.get_or_404(id)
         try:
-            category.delete(category)
+            tag.delete(tag)
             resp = {}
             return resp, status.HTTP_204_NO_CONTENT
         except SQLAlchemyError as e:
@@ -59,7 +59,7 @@ class CategoryResource(TokenRequiredResource):
             return resp, status.HTTP_401_UNAUTHORIZED
 
 
-class CategoryListResource(TokenRequiredResource):
+class TagListResource(TokenRequiredResource):
     get_args = {
         "search": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "sort": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
@@ -69,24 +69,24 @@ class CategoryListResource(TokenRequiredResource):
 
     @use_args(get_args)
     def get(self, query_args):
-        query = Category.query
+        query = Tag.query
 
         filters = []
         if "search" in query_args and query_args["search"]:
-            filters.append(Category.name.like("%{filter}%".format(filter=query_args["search"])))
+            filters.append(Tag.name.like("%{filter}%".format(filter=query_args["search"])))
         if "name" in query_args:
-            filters.append(Category.name.like("%{filter}%".format(filter=query_args["name"])))
+            filters.append(Tag.name.like("%{filter}%".format(filter=query_args["name"])))
         if "slug" in query_args:
-            filters.append(Category.slug.like("%{filter}%".format(filter=query_args["slug"])))
+            filters.append(Tag.slug.like("%{filter}%".format(filter=query_args["slug"])))
         if filters:
             query = query.filter(*filters)
 
         # Apply sorting
-        order_by = Category.id
+        order_by = Tag.id
         if "sort" in query_args and query_args["sort"]:
             column, direction = PaginationHelper.decode_sort(query_args["sort"])
-            if column in set(Category.__table__.columns.keys()):
-                order_by = getattr(Category, column)
+            if column in set(Tag.__table__.columns.keys()):
+                order_by = getattr(Tag, column)
             if direction == PaginationHelper.SORT_DESCENDING:
                 order_by = desc(order_by)
             query = query.order_by(order_by)
@@ -94,9 +94,9 @@ class CategoryListResource(TokenRequiredResource):
         pagination_helper = PaginationHelper(
             request,
             query=query,
-            resource_for_url="api.categories",
+            resource_for_url="api.tags",
             key_name="results",
-            schema=category_schema,
+            schema=tag_schema,
             query_args=query_args,
         )
         result = pagination_helper.paginate_query()
@@ -107,18 +107,18 @@ class CategoryListResource(TokenRequiredResource):
         if not request_dict:
             response = {"message": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
-        errors = category_schema.validate(request_dict)
+        errors = tag_schema.validate(request_dict)
         if errors:
             return errors, status.HTTP_400_BAD_REQUEST
-        category_name = request_dict["name"]
-        if not Category.is_unique(id=0, name=category_name):
-            response = {"message": "A category with the same name already exists"}
+        tag_name = request_dict["name"]
+        if not Tag.is_unique(id=0, name=tag_name):
+            response = {"message": "A tag with the same name already exists"}
             return response, status.HTTP_400_BAD_REQUEST
         try:
-            category = Category(name=category_name)
-            category.add(category)
-            query = Category.query.get(category.id)
-            result = category_schema.dump(query).data
+            tag = Tag(name=tag_name)
+            tag.add(tag)
+            query = Tag.query.get(tag.id)
+            result = tag_schema.dump(query).data
             return result, status.HTTP_201_CREATED
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -126,7 +126,7 @@ class CategoryListResource(TokenRequiredResource):
             return resp, status.HTTP_400_BAD_REQUEST
 
 
-class CategoryPostListResource(TokenRequiredResource):
+class TagPostListResource(TokenRequiredResource):
     get_args = {
         "title": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "slug": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
@@ -137,8 +137,6 @@ class CategoryPostListResource(TokenRequiredResource):
     @use_args(get_args)
     def get(self, query_args, id):
         filters = []
-        if "main" in query_args:
-            filters.append(PostCategory.primary == query_args["main"])
         if "title" in query_args:
             filters.append(Post.title.like("%{filter}%".format(filter=query_args["title"])))
         if "slug" in query_args:
@@ -150,8 +148,41 @@ class CategoryPostListResource(TokenRequiredResource):
 
         pagination_helper = PaginationHelper(
             request,
-            query=Category.query.get(id).posts.filter(*filters),
-            resource_for_url="api.category_posts",
+            query=Tag.query.get(id).posts.filter(*filters),
+            resource_for_url="api.tag_posts",
+            key_name="results",
+            schema=post_schema,
+            url_parameters={"id": id},
+            query_args=query_args,
+        )
+        result = pagination_helper.paginate_query()
+        return result
+
+
+class TagImageListResource(TokenRequiredResource):
+    get_args = {
+        "title": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "slug": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "author_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
+        "created_at": fields.DateTime(allow_none=True, format="iso8601"),
+    }
+
+    @use_args(get_args)
+    def get(self, query_args, id):
+        filters = []
+        if "title" in query_args:
+            filters.append(Image.title.like("%{filter}%".format(filter=query_args["title"])))
+        if "original_filename" in query_args:
+            filters.append(Image.original_filename.like("%{filter}%".format(filter=query_args["original_filename"])))
+        if "size" in query_args:
+            filters.append(Image.sizes.contains(query_args["size"]))
+        if "created_at" in query_args:
+            filters.append(Image.created_at == query_args["created_at"])
+
+        pagination_helper = PaginationHelper(
+            request,
+            query=Tag.query.get(id).images.filter(*filters),
+            resource_for_url="api.tag_images",
             key_name="results",
             schema=post_schema,
             url_parameters={"id": id},
