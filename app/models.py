@@ -152,7 +152,6 @@ class User(UserMixin, db.Model, AddUpdateDelete):
     member_since = db.Column(db.DateTime(), default=db.func.current_timestamp())
     last_seen = db.Column(db.DateTime, default=db.func.current_timestamp())
     avatar_hash = db.Column(db.String(32))
-    posts = db.relationship("Post", backref="author", lazy="dynamic", passive_deletes=True)
     created_at = db.Column(db.TIMESTAMP, nullable=False, default=db.func.current_timestamp())
     updated_at = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
@@ -289,7 +288,6 @@ class Category(db.Model, AddUpdateDelete):
     id = db.Column(db.Integer, primary_key=True)
     slug = db.Column(db.String(255), unique=True, nullable=False)
     name = db.Column(db.String(255), unique=True, nullable=False)
-    posts = db.relationship("Post", backref="category", lazy=True, passive_deletes=True)
 
     @staticmethod
     def on_changed_name(target, value, oldvalue, initiator):
@@ -308,12 +306,39 @@ class Category(db.Model, AddUpdateDelete):
 
 db.event.listen(Category.name, "set", Category.on_changed_name)
 
+post_authors = db.Table(
+    "post_authors",
+    db.Column("post_id", db.Integer, db.ForeignKey("posts.id"), primary_key=True),
+    db.Column("user_id", db.Integer, db.ForeignKey("users.id"), primary_key=True),
+    db.Column("created_at", db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False),
+)
+
+post_tags = db.Table(
+    "post_tags",
+    db.Column("post_id", db.Integer, db.ForeignKey("posts.id"), primary_key=True),
+    db.Column("tag_id", db.Integer, db.ForeignKey("tags.id"), primary_key=True),
+    db.Column("created_at", db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False),
+)
+
 post_images = db.Table(
     "post_images",
     db.Column("post_id", db.Integer, db.ForeignKey("posts.id"), primary_key=True),
     db.Column("image_id", db.Integer, db.ForeignKey("images.id"), primary_key=True),
     db.Column("created_at", db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False),
 )
+
+
+class PostCategory(db.Model, AddUpdateDelete):
+    __tablename__ = "post_categories"
+    post_id = db.Column(db.Integer, db.ForeignKey("posts.id"), primary_key=True)
+    category_id = db.Column(db.Integer, db.ForeignKey("categories.id"), primary_key=True)
+    primary = db.Column(db.Boolean, default=False, index=True)
+    created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
+    post = db.relationship("Post", backref=db.backref("post_categories", lazy="dynamic"))
+    category = db.relationship("Category", backref=db.backref("post_categories", lazy="dynamic"))
+
+    def __repr__(self):
+        return self.category.__repr__()
 
 
 class Post(db.Model, AddUpdateDelete):
@@ -323,14 +348,20 @@ class Post(db.Model, AddUpdateDelete):
     slug = db.Column(db.String(255), index=True)
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)
-    author_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey("categories.id", ondelete="CASCADE"), nullable=False)
-    images = db.relationship(
-        "Image", secondary=post_images, backref=db.backref("images", lazy="dynamic"), lazy="dynamic"
-    )
     created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
     updated_at = db.Column(
         db.TIMESTAMP, index=True, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp()
+    )
+    # relationships
+    authors = db.relationship(
+        "User", secondary=post_authors, backref=db.backref("post_users", lazy="dynamic"), lazy="dynamic"
+    )
+    categories = db.relationship(
+        "PostCategory", lazy="dynamic"
+    )
+    tags = db.relationship("Tag", secondary=post_tags, backref=db.backref("post_tags", lazy="dynamic"), lazy="dynamic")
+    images = db.relationship(
+        "Image", secondary=post_images, backref=db.backref("post_images", lazy="dynamic"), lazy="dynamic"
     )
 
     @classmethod
@@ -367,6 +398,13 @@ class Post(db.Model, AddUpdateDelete):
 db.event.listen(Post.title, "set", Post.on_changed_title)
 db.event.listen(Post.body, "set", Post.on_changed_body)
 
+image_tags = db.Table(
+    "image_tags",
+    db.Column("image_id", db.Integer, db.ForeignKey("images.id"), primary_key=True),
+    db.Column("tag_id", db.Integer, db.ForeignKey("tags.id"), primary_key=True),
+    db.Column("created_at", db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False),
+)
+
 
 class Image(db.Model, AddUpdateDelete):
     __tablename__ = "images"
@@ -382,3 +420,31 @@ class Image(db.Model, AddUpdateDelete):
     updated_at = db.Column(
         db.TIMESTAMP, index=True, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp()
     )
+    # relationships
+    tags = db.relationship(
+        "Tag", secondary=image_tags, backref=db.backref("image_tags", lazy="dynamic"), lazy="dynamic"
+    )
+
+
+class Tag(db.Model, AddUpdateDelete):
+    __tablename__ = "tags"
+    id = db.Column(db.Integer, primary_key=True)
+    slug = db.Column(db.String(255), unique=True, nullable=False)
+    name = db.Column(db.String(255), unique=True, nullable=False)
+
+    @staticmethod
+    def on_changed_name(target, value, oldvalue, initiator):
+        target.slug = slugify(value)
+
+    @classmethod
+    def is_unique(cls, id, name):
+        existing_tag = cls.query.filter_by(name=name).first()
+        if existing_tag is None:
+            return True
+        return existing_tag.id == id
+
+    def __repr__(self):
+        return "<Tag {}>".format(self.name)
+
+
+db.event.listen(Tag.name, "set", Tag.on_changed_name)

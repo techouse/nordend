@@ -1,5 +1,5 @@
 from app import create_app, cli, db, socketio
-from app.models import User, Role, Permission, Post, Category, Image
+from app.models import User, Role, Permission, Post, Category, Image, Tag
 
 app = create_app()
 cli.register(app)
@@ -7,7 +7,7 @@ cli.register(app)
 
 @app.shell_context_processor
 def make_shell_context():
-    return dict(db=db, User=User, Role=Role, Permission=Permission, Post=Post, Category=Category, Image=Image)
+    return dict(db=db, User=User, Role=Role, Permission=Permission, Post=Post, Category=Category, Image=Image, Tag=Tag)
 
 
 if __name__ == "__main__":
