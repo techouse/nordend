@@ -6,7 +6,7 @@ from io import BytesIO
 from os.path import join, dirname, isdir
 
 from flask import request, g, current_app
-from sqlalchemy import desc, or_
+from sqlalchemy import desc, or_, collate
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields
 from webargs.flaskparser import use_args
@@ -128,6 +128,7 @@ class ImageListResource(TokenRequiredResource):
                 order_by = User.name
             elif column in set(Image.__table__.columns.keys()):
                 order_by = getattr(Image, column)
+            order_by = collate(order_by, "NOCASE")
             if direction == PaginationHelper.SORT_DESCENDING:
                 order_by = desc(order_by)
             query = query.order_by(order_by)

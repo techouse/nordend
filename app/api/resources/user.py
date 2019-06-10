@@ -1,5 +1,5 @@
 from flask import request
-from sqlalchemy import or_, desc
+from sqlalchemy import or_, desc, collate
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields, validate
 from webargs.flaskparser import use_args
@@ -125,6 +125,7 @@ class UserListResource(TokenRequiredResource):
                 order_by = Role.name
             elif column in set(User.__table__.columns.keys()):
                 order_by = getattr(User, column)
+            order_by = collate(order_by, "NOCASE")
             if direction == PaginationHelper.SORT_DESCENDING:
                 order_by = desc(order_by)
             query = query.order_by(order_by)

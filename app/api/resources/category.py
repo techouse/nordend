@@ -1,5 +1,5 @@
 from flask import request
-from sqlalchemy import desc
+from sqlalchemy import desc, collate
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields
 from webargs.flaskparser import use_args
@@ -87,6 +87,7 @@ class CategoryListResource(TokenRequiredResource):
             column, direction = PaginationHelper.decode_sort(query_args["sort"])
             if column in set(Category.__table__.columns.keys()):
                 order_by = getattr(Category, column)
+            order_by = collate(order_by, "NOCASE")
             if direction == PaginationHelper.SORT_DESCENDING:
                 order_by = desc(order_by)
             query = query.order_by(order_by)

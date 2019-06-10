@@ -1,5 +1,5 @@
 from flask import request
-from sqlalchemy import desc
+from sqlalchemy import desc, collate
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields, validate
 from webargs.flaskparser import use_args
@@ -90,6 +90,7 @@ class RoleListResource(TokenRequiredResource):
             column, direction = PaginationHelper.decode_sort(query_args["sort"])
             if column in set(Role.__table__.columns.keys() + ["follow", "comment", "write", "moderate", "admin"]):
                 order_by = getattr(Role, column)
+            order_by = collate(order_by, "NOCASE")
             if direction == PaginationHelper.SORT_DESCENDING:
                 order_by = desc(order_by)
             query = query.order_by(order_by)

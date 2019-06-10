@@ -1,5 +1,5 @@
 from flask import request, g
-from sqlalchemy import desc
+from sqlalchemy import desc, collate
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields
 from webargs.flaskparser import use_args
@@ -9,7 +9,7 @@ from ..broadcast.post import PostBroadcast
 from ..helpers import PaginationHelper
 from ..schemas import PostSchema
 from ... import db, status
-from ...models import Post, Category, User
+from ...models import Post, Category, User, PostCategory, PostAuthor
 
 post_schema = PostSchema()
 
@@ -110,13 +110,18 @@ class PostListResource(TokenRequiredResource):
         if "sort" in query_args and query_args["sort"]:
             column, direction = PaginationHelper.decode_sort(query_args["sort"])
             if column == "category.name":
-                query = query.join(Category, Post.category)
+                query = query.join(PostCategory, Post.categories).\
+                              join(Category, PostCategory.category).\
+                              filter(PostCategory.primary.is_(True))
                 order_by = Category.name
             elif column == "author.name":
-                query = query.join(User, Post.author)
+                query = query.join(PostAuthor, Post.authors).\
+                              join(User, PostAuthor.user).\
+                              filter(PostAuthor.primary.is_(True))
                 order_by = User.name
             elif column in set(Post.__table__.columns.keys()):
                 order_by = getattr(Post, column)
+            order_by = collate(order_by, "NOCASE")
             if direction == PaginationHelper.SORT_DESCENDING:
                 order_by = desc(order_by)
             query = query.order_by(order_by)

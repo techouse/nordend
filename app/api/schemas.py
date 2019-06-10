@@ -12,7 +12,7 @@ from app import redis
 from .broadcast.post import PostBroadcast
 from ..redis_keys import locked_posts_redis_key
 from .validators import valid_permission, valid_password_reset_token
-from ..models import Post, User, Role, Category, Image, Tag, PostCategory
+from ..models import Post, User, Role, Category, Image, Tag, PostCategory, PostAuthor
 
 ma = Marshmallow()
 
@@ -107,7 +107,7 @@ class CategorySchema(ma.Schema):
     id = fields.Integer(dump_only=True)
     name = fields.String(required=True, validate=lambda x: 0 < len(x) <= 255)
     slug = fields.String(dump_only=True)
-    posts = fields.Nested("PostCategorySchema", many=True, only=("post",))
+    posts = fields.Nested("PostCategorySchema", many=True, exclude=("category",))
     links = ma.Hyperlinks(
         {
             "self": ma.URLFor("api.category", id="<id>", _external=True),
@@ -117,12 +117,22 @@ class CategorySchema(ma.Schema):
     )
 
 
+class PostAuthorSchema(ma.Schema):
+    class Meta:
+        model = PostAuthor
+
+    user = fields.Nested("UserSchema", only=("id", "name", "email", "links"))
+    post = fields.Nested("PostSchema", only=("id", "title", "slug", "links"))
+    primary = fields.Boolean()
+
+
 class PostCategorySchema(ma.Schema):
     class Meta:
         model = PostCategory
 
     category = fields.Nested("CategorySchema", only=("id", "name", "slug", "links"))
     post = fields.Nested("PostSchema", only=("id", "title", "slug", "links"))
+    primary = fields.Boolean()
 
 
 class PostSchema(ma.Schema):
@@ -136,8 +146,8 @@ class PostSchema(ma.Schema):
     body_html = fields.String(dump_only=True)
     created_at = fields.DateTime(dump_only=True, format="iso8601")
     updated_at = fields.DateTime(dump_only=True, format="iso8601")
-    authors = fields.Nested("UserSchema", many=True, only=("id", "name", "email"))
-    categories = fields.Nested("PostCategorySchema", many=True, only=("category",))
+    authors = fields.Nested("PostAuthorSchema", many=True, exclude=("post",))
+    categories = fields.Nested("PostCategorySchema", many=True, exclude=("post",))
     tags = fields.Nested("TagSchema", many=True, only=("id", "name", "slug"))
     locked = fields.Method("is_locked", dump_only=True)
     locked_since = fields.Method("get_locked_since", dump_only=True)
