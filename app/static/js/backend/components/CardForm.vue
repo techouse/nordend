@@ -46,8 +46,8 @@
         },
 
         methods: {
-            validate(valid) {
-                return this.$refs[this.formRef].validate(valid)
+            validate(callback) {
+                return this.$refs[this.formRef].validate(callback)
             }
         }
     }

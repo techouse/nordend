@@ -1,5 +1,5 @@
 <template>
-    <card-form :form-ref="formRef" :loading="loading" :model="role" :rules="rules" :label-width="labelWidth">
+    <card-form :ref="formRef" :form-ref="formRef" :loading="loading" :model="role" :rules="rules" :label-width="labelWidth">
         <template v-slot:header>
             <el-page-header :content="title" @back="goBack" />
             <div v-if="role.id" class="card-header-actions">
