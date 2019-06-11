@@ -10,9 +10,9 @@ from marshmallow import validate
 
 from app import redis
 from .broadcast.post import PostBroadcast
-from ..redis_keys import locked_posts_redis_key
 from .validators import valid_permission, valid_password_reset_token
-from ..models import Post, User, Role, Category, Image, Tag, PostCategory, PostAuthor
+from ..models import Post, User, Role, Category, Image, Tag, PostCategory, PostAuthor, PostImage
+from ..redis_keys import locked_posts_redis_key
 
 ma = Marshmallow()
 
@@ -135,6 +135,15 @@ class PostCategorySchema(ma.Schema):
     primary = fields.Boolean()
 
 
+class PostImageSchema(ma.Schema):
+    class Meta:
+        model = PostImage
+
+    image = fields.Nested("ImageSchema", only=("id", "title", "public_path", "sizes", "original_filename", "links"))
+    post = fields.Nested("PostSchema", only=("id", "title", "slug", "links"))
+    primary = fields.Boolean()
+
+
 class PostSchema(ma.Schema):
     class Meta:
         model = Post
@@ -146,8 +155,14 @@ class PostSchema(ma.Schema):
     body_html = fields.String(dump_only=True)
     created_at = fields.DateTime(dump_only=True, format="iso8601")
     updated_at = fields.DateTime(dump_only=True, format="iso8601")
+    author = fields.Nested("UserSchema", only=("id", "name", "email", "links"), dump_only=True)
     authors = fields.Nested("PostAuthorSchema", many=True, exclude=("post",))
+    category = fields.Nested("CategorySchema", only=("id", "name", "slug", "links"), dump_only=True)
     categories = fields.Nested("PostCategorySchema", many=True, exclude=("post",))
+    image = fields.Nested(
+        "ImageSchema", only=("id", "title", "public_path", "sizes", "original_filename", "links"), dump_only=True
+    )
+    images = fields.Nested("PostImageSchema", many=True, exclude=("post",))
     tags = fields.Nested("TagSchema", many=True, only=("id", "name", "slug"))
     locked = fields.Method("is_locked", dump_only=True)
     locked_since = fields.Method("get_locked_since", dump_only=True)

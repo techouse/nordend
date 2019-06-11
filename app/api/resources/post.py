@@ -110,14 +110,14 @@ class PostListResource(TokenRequiredResource):
         if "sort" in query_args and query_args["sort"]:
             column, direction = PaginationHelper.decode_sort(query_args["sort"])
             if column == "category.name":
-                query = query.join(PostCategory, Post.categories).\
-                              join(Category, PostCategory.category).\
-                              filter(PostCategory.primary.is_(True))
+                query = query.join(PostCategory, Post.categories)\
+                             .join(Category, PostCategory.category)\
+                             .filter(PostCategory.primary.is_(True))
                 order_by = Category.name
             elif column == "author.name":
-                query = query.join(PostAuthor, Post.authors).\
-                              join(User, PostAuthor.user).\
-                              filter(PostAuthor.primary.is_(True))
+                query = query.join(PostAuthor, Post.authors)\
+                             .join(User, PostAuthor.user)\
+                             .filter(PostAuthor.primary.is_(True))
                 order_by = User.name
             elif column in set(Post.__table__.columns.keys()):
                 order_by = getattr(Post, column)

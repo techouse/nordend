@@ -399,6 +399,21 @@ class Post(db.Model, AddUpdateDelete):
             )
         )
 
+    @hybrid_property
+    def author(self):
+        author = self.authors.filter(PostAuthor.primary.is_(True)).first()
+        return author.user if author else None
+
+    @hybrid_property
+    def category(self):
+        category = self.categories.filter(PostCategory.primary.is_(True)).first()
+        return category.category if category else None
+
+    @hybrid_property
+    def image(self):
+        image = self.images.filter(PostImage.primary.is_(True)).first()
+        return image.image if image else None
+
     def __repr__(self):
         return "<Post {}>".format(self.title)
 
