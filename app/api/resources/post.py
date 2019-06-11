@@ -31,6 +31,8 @@ class PostResource(TokenRequiredResource):
             return response, status.HTTP_400_BAD_REQUEST
         if "category_id" in request_dict:
             post.category = Category.query.get(request_dict["category_id"])
+        if "category_ids" in request_dict:
+            post.additional_categories = Category.query.filter(Category.id.in_(request_dict["category_ids"])).all()
         if "title" in request_dict:
             post.title = request_dict["title"]
         if "slug" in request_dict:

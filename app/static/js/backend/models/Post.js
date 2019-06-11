@@ -9,12 +9,14 @@ export default class Post {
         this.title = null
         this.body = null
         this.body_html = null
-        this.author_id = null
         this.author = null
+        this.author_id = null
         this.authors = []
+        this.author_ids = []
         this.category = null
         this.category_id = null
         this.categories = []
+        this.category_ids = []
         this.image = null
         this.images = []
         this.created_at = null
@@ -30,9 +32,23 @@ export default class Post {
             this.author = new User(this.author)
         }
 
+        if (this.authors) {
+            this.authors = this.authors
+                               .filter(el => el.primary === false)
+                               .map(el => el.user)
+            this.author_ids = this.authors.map(el => el.id)
+        }
+
         if (this.category) {
             this.category = new Category(this.category)
             this.category_id = this.category.id
+        }
+
+        if (this.categories) {
+            this.categories = this.categories
+                                  .filter(el => el.primary === false)
+                                  .map(el => el.category)
+            this.category_ids = this.categories.map(el => el.id)
         }
 
         if (this.image) {
@@ -62,10 +78,11 @@ export default class Post {
 
     mappedForSubmission() {
         return {
-            slug:        this.slug,
-            title:       this.title,
-            body:        this.body,
-            category_id: this.category_id
+            slug:         this.slug,
+            title:        this.title,
+            body:         this.body,
+            category_id:  this.category_id,
+            category_ids: this.category_ids
         }
     }
 }

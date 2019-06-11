@@ -376,9 +376,7 @@ class Post(db.Model, AddUpdateDelete):
     def is_unique(cls, id, category, slug):
         if not category:
             return True
-        existing_post = cls.query.filter_by(slug=slug)\
-                                 .filter(PostCategory.category_id == category.id)\
-                                 .first()
+        existing_post = cls.query.filter_by(slug=slug).filter(PostCategory.category_id == category.id).first()
         if existing_post is None:
             return True
         return existing_post.id == id
@@ -436,6 +434,28 @@ class Post(db.Model, AddUpdateDelete):
             new_category.primary = True
         else:
             self.categories.append(PostCategory(category=value, primary=True))
+
+    @hybrid_property
+    def additional_categories(self):
+        return self.categories.filter(PostCategory.primary.isnot(True))
+
+    @additional_categories.setter
+    def additional_categories(self, categories):
+        ids = set(category.id for category in categories)
+        current = set(
+            category[0] for category in self.categories.filter(PostCategory.primary.isnot(True)).values("category_id")
+        )
+
+        detach = current - ids
+        if detach:
+            PostCategory.query.filter_by(post_id=self.id, primary=False).filter(
+                PostCategory.category_id.in_(list(detach))
+            ).delete(synchronize_session="fetch")
+
+        attach = ids - current
+        if attach:
+            for category_id in attach:
+                self.categories.append(PostCategory(category_id=category_id, primary=False))
 
     @hybrid_property
     def image(self):
