@@ -427,7 +427,7 @@ class Post(db.Model, AddUpdateDelete):
     @category.setter
     def category(self, value):
         current_category = self.categories.filter(PostCategory.primary.is_(True)).first()
-        new_category = self.categories.filter(PostCategory.category_id == value.id)
+        new_category = self.categories.filter(PostCategory.category_id == value.id).first()
         if current_category:
             if current_category.category_id == value.id:
                 return
@@ -445,7 +445,7 @@ class Post(db.Model, AddUpdateDelete):
     @image.setter
     def image(self, value):
         current_image = self.images.filter(PostImage.primary.is_(True)).first()
-        new_image = self.images.filter(PostImage.image_id == value.id)
+        new_image = self.images.filter(PostImage.image_id == value.id).first()
         if current_image:
             if current_image.image_id == value.id:
                 return
