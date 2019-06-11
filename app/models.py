@@ -448,7 +448,7 @@ class Post(db.Model, AddUpdateDelete):
 
         detach = current - ids
         if detach:
-            PostCategory.query.filter_by(post_id=self.id, primary=False).filter(
+            self.categories.filter(PostCategory.primary.isnot(True)).filter(
                 PostCategory.category_id.in_(list(detach))
             ).delete(synchronize_session="fetch")
 
