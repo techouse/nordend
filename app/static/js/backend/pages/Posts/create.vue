@@ -1,6 +1,6 @@
 <template>
     <div>
-        <card-form :form-ref="formRef" :loading="loading" :model="post" :rules="rules" :label-width="labelWidth">
+        <card-form :ref="formRef" :form-ref="formRef" :loading="loading" :model="post" :rules="rules" :label-width="labelWidth">
             <template v-slot:header>
                 <el-page-header :content="title" @back="goBack" />
                 <div v-if="post.id" class="card-header-actions">
@@ -632,6 +632,8 @@
         },
 
         computed: {
+            ...mapGetters("alert", ["alert"]),
+
             ...mapGetters("postImage", {
                 imageEditorVisible: "editorVisible",
                 imageEditorImage:   "image"

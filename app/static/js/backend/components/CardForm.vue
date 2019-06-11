@@ -43,6 +43,12 @@
                 type:    String,
                 default: "140px"
             },
+        },
+
+        methods: {
+            validate(valid) {
+                return this.$refs[this.formRef].validate(valid)
+            }
         }
     }
 </script>

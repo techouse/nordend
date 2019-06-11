@@ -29,6 +29,8 @@ class PostResource(TokenRequiredResource):
         if not request_dict:
             response = {"message": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
+        if "category_id" in request_dict:
+            post.category = Category.query.get(request_dict["category_id"])
         if "title" in request_dict:
             post.title = request_dict["title"]
         if "slug" in request_dict:
@@ -38,10 +40,10 @@ class PostResource(TokenRequiredResource):
             else:
                 response = {"message": "A post with the same slug already exists"}
                 return response, status.HTTP_400_BAD_REQUEST
-        if "category_id" in request_dict:
-            post.category_id = request_dict["category_id"]
         if "body" in request_dict:
             post.body = request_dict["body"]
+        if post.authors.filter(PostAuthor.user_id == g.current_user.id).count() == 0:
+            post.authors.append(PostAuthor(user=g.current_user))
         dumped_post, dump_errors = post_schema.dump(post)
         if dump_errors:
             return dump_errors, status.HTTP_400_BAD_REQUEST
@@ -97,9 +99,9 @@ class PostListResource(TokenRequiredResource):
         if "slug" in query_args:
             filters.append(Post.slug.like("%{filter}%".format(filter=query_args["slug"])))
         if "category_id" in query_args:
-            filters.append(Post.category_id == query_args["category_id"])
+            filters.append(PostCategory.category_id == query_args["category_id"])
         if "author_id" in query_args:
-            filters.append(Post.author_id == query_args["author_id"])
+            filters.append(PostAuthor.user_id == query_args["author_id"])
         if "created_at" in query_args:
             filters.append(Post.created_at == query_args["created_at"])
         if filters:
@@ -145,14 +147,19 @@ class PostListResource(TokenRequiredResource):
         errors = post_schema.validate(request_dict)
         if errors:
             return errors, status.HTTP_400_BAD_REQUEST
+        if "category_id" in request_dict:
+            category = Category.query.get(request_dict["category_id"])
+        else:
+            category = None
         try:
             post = Post(
                 title=request_dict["title"],
                 body=request_dict["body"],
                 slug=request_dict["slug"] if "slug" in request_dict else "",
-                author_id=g.current_user.id,
-                category_id=request_dict["category_id"],
+                author=g.current_user
             )
+            if category is not None:
+                post.category = category
             post.add(post)
             created_post = Post.query.get(post.id)
             result = post_schema.dump(created_post).data

@@ -1,5 +1,6 @@
 import User     from "./User"
 import Category from "./Category"
+import Photo    from "./Image"
 
 export default class Post {
     constructor(values = {}) {
@@ -10,8 +11,12 @@ export default class Post {
         this.body_html = null
         this.author_id = null
         this.author = null
-        this.category_id = null
+        this.authors = []
         this.category = null
+        this.category_id = null
+        this.categories = []
+        this.image = null
+        this.images = []
         this.created_at = null
         this.updated_at = null
         this.locked = false
@@ -27,6 +32,11 @@ export default class Post {
 
         if (this.category) {
             this.category = new Category(this.category)
+            this.category_id = this.category.id
+        }
+
+        if (this.image) {
+            this.image = new Photo(this.image)
         }
 
         if (this.created_at) {
