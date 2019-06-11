@@ -404,15 +404,54 @@ class Post(db.Model, AddUpdateDelete):
         author = self.authors.filter(PostAuthor.primary.is_(True)).first()
         return author.user if author else None
 
+    @author.setter
+    def author(self, value):
+        current_author = self.authors.filter(PostAuthor.primary.is_(True)).first()
+        new_author = self.authors.filter(PostAuthor.user_id == value.id).first()
+        if current_author:
+            if current_author.user_id == value.id:
+                return
+            current_author.primary = False
+        if new_author:
+            new_author.primary = True
+        else:
+            self.authors.append(PostAuthor(user=value, primary=True))
+
     @hybrid_property
     def category(self):
         category = self.categories.filter(PostCategory.primary.is_(True)).first()
         return category.category if category else None
 
+    @category.setter
+    def category(self, value):
+        current_category = self.categories.filter(PostCategory.primary.is_(True)).first()
+        new_category = self.categories.filter(PostCategory.category_id == value.id)
+        if current_category:
+            if current_category.category_id == value.id:
+                return
+            current_category.primary = False
+        if new_category:
+            new_category.primary = True
+        else:
+            self.categories.append(PostCategory(category=value, primary=True))
+
     @hybrid_property
     def image(self):
         image = self.images.filter(PostImage.primary.is_(True)).first()
         return image.image if image else None
+
+    @image.setter
+    def image(self, value):
+        current_image = self.images.filter(PostImage.primary.is_(True)).first()
+        new_image = self.images.filter(PostImage.image_id == value.id)
+        if current_image:
+            if current_image.image_id == value.id:
+                return
+            current_image.primary = False
+        if new_image:
+            new_image.primary = True
+        else:
+            self.images.append(PostImage(image=value, primary=True))
 
     def __repr__(self):
         return "<Post {}>".format(self.title)
