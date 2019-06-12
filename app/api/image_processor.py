@@ -16,11 +16,13 @@ class ImageProcessor:
     def process(file, filename=None):
         root_path = join(dirname(current_app.instance_path), "app")
         digest = sha256(file.read()).hexdigest()
+        file.seek(0)
         if filename is None:
             try:
                 filename = file.filename
             except AttributeError:
                 filename = "{}.jpg".format(md5(file.read()).hexdigest())
+                file.seek(0)
         local_datetime = datetime.now(pytz.utc).astimezone(current_app.config["TIMEZONE"])
         path = join(
             current_app.config["PUBLIC_IMAGE_PATH"],
@@ -33,7 +35,6 @@ class ImageProcessor:
         original_image_path = join(root_path, path, "original.jpg")
         width, height = 0, 0
         sizes = []
-        file.seek(0)
         with PImage.open(file if isinstance(file, BytesIO) else BytesIO(file.read())) as img:
             width, height = img.size
             if img.format == "JPEG":
