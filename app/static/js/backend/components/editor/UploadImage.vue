@@ -24,7 +24,7 @@
                                         </div>
                                     </el-image>
                                     <div style="padding: 14px;">
-                                        <span>{{ (image.title || image.original_filename) | truncate(20) }}</span>
+                                        <span>{{ (image.title || image.original_filename) | truncate_middle(20) }}</span>
                                     </div>
                                 </el-card>
                             </div>

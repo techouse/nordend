@@ -109,7 +109,7 @@
             return {
                 title: "Posts",
                 posts: [],
-                maxTitleLength: 22
+                maxTitleLength: 30
             }
         },
 
