@@ -11,7 +11,15 @@
         <template v-slot:body>
             <el-table v-loading="loading" :data="posts" class="w-100" @sort-change="orderBy">
                 <el-table-column label="#" prop="id" width="60" sortable="custom"/>
-                <el-table-column label="Title" prop="title" sortable="custom"/>
+                <el-table-column label="Title" prop="title" sortable="custom">
+                    <template slot-scope="scope">
+                        <el-tooltip v-if="scope.row.title.length > maxTitleLength" class="item" effect="dark"
+                                    :content="scope.row.title" placement="top-start">
+                            <span>{{ scope.row.title | truncate(maxTitleLength) }}</span>
+                        </el-tooltip>
+                        <span v-else>{{ scope.row.title }}</span>
+                    </template>
+                </el-table-column>
                 <el-table-column label="Category" prop="category.name" sortable="custom"/>
                 <el-table-column label="Author" prop="author.name" sortable="custom"/>
                 <el-table-column label="Created" align="center" width="160" prop="created_at" sortable="custom">
@@ -100,7 +108,8 @@
         data() {
             return {
                 title: "Posts",
-                posts: []
+                posts: [],
+                maxTitleLength: 22
             }
         },
 

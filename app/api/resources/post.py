@@ -41,13 +41,11 @@ class PostResource(TokenRequiredResource):
         if "body" in request_dict:
             post.body = request_dict["body"]
         if "category_id" in request_dict:
-            post.category = Category.query.get(request_dict["category_id"])
+            post.category = int(request_dict["category_id"])
         if "additional_category_ids" in request_dict:
-            post.additional_categories = Category.query.filter(
-                Category.id.in_(request_dict["additional_category_ids"])
-            ).all()
+            post.additional_categories = list(map(int, request_dict["additional_category_ids"]))
         if "tag_ids" in request_dict:
-            post.tags = Tag.query.filter(Tag.id.in_(request_dict["tag_ids"])).all()
+            post.tags = list(map(int, request_dict["tag_ids"]))
         if post.authors.filter(PostAuthor.user_id == g.current_user.id).count() == 0:
             post.authors.append(PostAuthor(user=g.current_user))
         dumped_post, dump_errors = post_schema.dump(post)

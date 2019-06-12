@@ -429,16 +429,18 @@ class Post(db.Model, AddUpdateDelete):
 
     @category.setter
     def category(self, value):
+        if isinstance(value, Category):
+            value = value.id
         current_category = self.categories.filter(PostCategory.primary.is_(True)).first()
-        new_category = self.categories.filter(PostCategory.category_id == value.id).first()
+        new_category = self.categories.filter(PostCategory.category_id == value).first()
         if current_category:
-            if current_category.category_id == value.id:
+            if current_category.category_id == value:
                 return
             current_category.primary = False
         if new_category:
             new_category.primary = True
         else:
-            self.categories.append(PostCategory(category=value, primary=True))
+            self.categories.append(PostCategory(category_id=value, primary=True))
 
     @hybrid_property
     def additional_categories(self):
@@ -446,7 +448,12 @@ class Post(db.Model, AddUpdateDelete):
 
     @additional_categories.setter
     def additional_categories(self, categories):
-        ids = set(category.id for category in categories)
+        ids = set()
+        for category in categories:
+            if isinstance(category, Category):
+                ids.add(category.id)
+            else:
+                ids.add(category)
         current = set(
             category[0] for category in self.categories.filter(PostCategory.primary.isnot(True)).values("category_id")
         )
@@ -466,7 +473,12 @@ class Post(db.Model, AddUpdateDelete):
 
     @tags.setter
     def tags(self, tags):
-        ids = set(tag.id for tag in tags)
+        ids = set()
+        for tag in tags:
+            if isinstance(tag, Tag):
+                ids.add(tag.id)
+            else:
+                ids.add(tag)
         current = set(tag[0] for tag in self._tags.values("tag_id"))
         ids_to_delete = current - ids
         if ids_to_delete:
@@ -483,16 +495,18 @@ class Post(db.Model, AddUpdateDelete):
 
     @image.setter
     def image(self, value):
+        if isinstance(value, Image):
+            value = value.id
         current_image = self.images.filter(PostImage.primary.is_(True)).first()
-        new_image = self.images.filter(PostImage.image_id == value.id).first()
+        new_image = self.images.filter(PostImage.image_id == value).first()
         if current_image:
-            if current_image.image_id == value.id:
+            if current_image.image_id == value:
                 return
             current_image.primary = False
         if new_image:
             new_image.primary = True
         else:
-            self.images.append(PostImage(image=value, primary=True))
+            self.images.append(PostImage(image_id=value, primary=True))
 
     def __repr__(self):
         return "<Post {}>".format(self.title)

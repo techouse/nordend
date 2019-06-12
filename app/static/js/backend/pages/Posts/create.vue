@@ -18,10 +18,12 @@
                 <el-row>
                     <el-col :lg="6" :md="24">
                         <el-form-item label="Main category" prop="category_id">
-                            <el-select v-model="post.category_id" :disabled="!editable" placeholder="Main post category"
-                                       required
+                            <el-select v-model="post.category_id" :disabled="!editable"
+                                       placeholder="Main post category"
+                                       filterable required
+                                       @change="handleMainCategoryChanged"
                             >
-                                <el-option v-for="category in categories"
+                                <el-option v-for="category in categoriesWithoutAdditional"
                                            :key="category.id"
                                            :label="category.name"
                                            :value="category.id"
@@ -32,7 +34,7 @@
                     <el-col :lg="18" :md="24">
                         <el-form-item label="Extra categories">
                             <el-select v-model="post.additional_category_ids" :disabled="!editable"
-                                       placeholder="Additional post categories" multiple
+                                       placeholder="Additional post categories" multiple filterable
                             >
                                 <el-option v-for="category in categoriesWithoutPrimary"
                                            :key="category.id"
@@ -676,7 +678,9 @@
                     wrap_line_length: 140,
                 },
                 tagInputVisible:          false,
-                newTagName:               ""
+                newTagName:               "",
+                currentCategory:          null,
+                previousCategory:         null
             }
         },
 
@@ -701,8 +705,22 @@
                 return this.editable ? "Create new post" : "View post"
             },
 
+            categoriesWithoutAdditional() {
+                return this.categories.filter(category => !this.post.additional_category_ids.includes(category.id))
+            },
+
             categoriesWithoutPrimary() {
                 return this.categories.filter(category => category.id !== this.post.category_id)
+            }
+        },
+
+        watch: {
+            "post.category_id": {
+                handler(current, previous) {
+                    this.$set(this, "currentCategory", current)
+                    this.$set(this, "previousCategory", previous)
+                },
+                immediate: true
             }
         },
 
@@ -766,6 +784,16 @@
             addCommand(data) {
                 if (data.command !== null) {
                     data.command(data.data)
+                }
+            },
+
+            handleMainCategoryChanged(categoryId) {
+                if (!this.post.additional_categories.some(el => Number(el.id) === Number(this.currentCategory))) {
+                    this.post.additional_categories.push(this.categories.find(el => Number(el.id) === Number(this.currentCategory)))
+                }
+
+                if (!this.post.additional_category_ids.includes(this.currentCategory)) {
+                    this.post.additional_category_ids.push(this.currentCategory)
                 }
             },
 
