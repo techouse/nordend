@@ -73,11 +73,11 @@ class TagListResource(TokenRequiredResource):
 
         filters = []
         if "search" in query_args and query_args["search"]:
-            filters.append(Tag.name.like("%{filter}%".format(filter=query_args["search"])))
+            filters.append(Tag.name.ilike("%{filter}%".format(filter=query_args["search"])))
         if "name" in query_args:
-            filters.append(Tag.name.like("%{filter}%".format(filter=query_args["name"])))
+            filters.append(Tag.name.ilike("{filter}".format(filter=query_args["name"])))
         if "slug" in query_args:
-            filters.append(Tag.slug.like("%{filter}%".format(filter=query_args["slug"])))
+            filters.append(Tag.slug.ilike("{filter}".format(filter=query_args["slug"])))
         if filters:
             query = query.filter(*filters)
 

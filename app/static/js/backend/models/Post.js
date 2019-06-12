@@ -1,6 +1,7 @@
 import User     from "./User"
 import Category from "./Category"
 import Photo    from "./Image"
+import Tag      from "./Tag"
 
 export default class Post {
     constructor(values = {}) {
@@ -17,6 +18,8 @@ export default class Post {
         this.category_id = null
         this.additional_categories = []
         this.additional_category_ids = []
+        this.tags = []
+        this.tag_ids = []
         this.image = null
         this.images = []
         this.created_at = null
@@ -50,6 +53,11 @@ export default class Post {
             this.additional_category_ids = this.additional_categories.map(el => el.id)
         }
 
+        if (this.tags) {
+            this.tags = this.tags.map(el => new Tag(el.tag))
+            this.tag_ids = this.tags.map(el => el.id)
+        }
+
         if (this.image) {
             this.image = new Photo(this.image)
         }
@@ -77,11 +85,12 @@ export default class Post {
 
     mappedForSubmission() {
         return {
-            slug:         this.slug,
-            title:        this.title,
-            body:         this.body,
-            category_id:  this.category_id,
-            category_ids: this.category_ids
+            slug:                    this.slug,
+            title:                   this.title,
+            body:                    this.body,
+            category_id:             this.category_id,
+            additional_category_ids: this.additional_category_ids,
+            tag_ids:                 this.tag_ids
         }
     }
 }

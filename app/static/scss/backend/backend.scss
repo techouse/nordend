@@ -29,6 +29,24 @@
 // tiptap
 @import "tiptap";
 
+.post-tags {
+  .el-tag + .el-tag {
+    margin-left: 10px;
+  }
+  .button-new-tag {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .input-new-tag {
+    width: 90px;
+    margin-left: 10px;
+    vertical-align: bottom;
+  }
+}
+
 // Toast UI Image Editor
 @import url("~tui-image-editor/dist/tui-image-editor.min.css");
 

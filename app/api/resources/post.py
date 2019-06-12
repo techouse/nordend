@@ -9,7 +9,7 @@ from ..broadcast.post import PostBroadcast
 from ..helpers import PaginationHelper
 from ..schemas import PostSchema
 from ... import db, status
-from ...models import Post, Category, User, PostCategory, PostAuthor
+from ...models import Post, Category, User, PostCategory, PostAuthor, Tag
 
 post_schema = PostSchema()
 
@@ -29,10 +29,6 @@ class PostResource(TokenRequiredResource):
         if not request_dict:
             response = {"message": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
-        if "category_id" in request_dict:
-            post.category = Category.query.get(request_dict["category_id"])
-        if "category_ids" in request_dict:
-            post.additional_categories = Category.query.filter(Category.id.in_(request_dict["category_ids"])).all()
         if "title" in request_dict:
             post.title = request_dict["title"]
         if "slug" in request_dict:
@@ -44,6 +40,14 @@ class PostResource(TokenRequiredResource):
                 return response, status.HTTP_400_BAD_REQUEST
         if "body" in request_dict:
             post.body = request_dict["body"]
+        if "category_id" in request_dict:
+            post.category = Category.query.get(request_dict["category_id"])
+        if "additional_category_ids" in request_dict:
+            post.additional_categories = Category.query.filter(
+                Category.id.in_(request_dict["additional_category_ids"])
+            ).all()
+        if "tag_ids" in request_dict:
+            post.tags = Tag.query.filter(Tag.id.in_(request_dict["tag_ids"])).all()
         if post.authors.filter(PostAuthor.user_id == g.current_user.id).count() == 0:
             post.authors.append(PostAuthor(user=g.current_user))
         dumped_post, dump_errors = post_schema.dump(post)
@@ -114,14 +118,18 @@ class PostListResource(TokenRequiredResource):
         if "sort" in query_args and query_args["sort"]:
             column, direction = PaginationHelper.decode_sort(query_args["sort"])
             if column == "category.name":
-                query = query.join(PostCategory, Post.categories)\
-                             .join(Category, PostCategory.category)\
-                             .filter(PostCategory.primary.is_(True))
+                query = (
+                    query.join(PostCategory, Post.categories)
+                    .join(Category, PostCategory.category)
+                    .filter(PostCategory.primary.is_(True))
+                )
                 order_by = Category.name
             elif column == "author.name":
-                query = query.join(PostAuthor, Post.authors)\
-                             .join(User, PostAuthor.user)\
-                             .filter(PostAuthor.primary.is_(True))
+                query = (
+                    query.join(PostAuthor, Post.authors)
+                    .join(User, PostAuthor.user)
+                    .filter(PostAuthor.primary.is_(True))
+                )
                 order_by = User.name
             elif column in set(Post.__table__.columns.keys()):
                 order_by = getattr(Post, column)
@@ -158,7 +166,7 @@ class PostListResource(TokenRequiredResource):
                 title=request_dict["title"],
                 body=request_dict["body"],
                 slug=request_dict["slug"] if "slug" in request_dict else "",
-                author=g.current_user
+                author=g.current_user,
             )
             if category is not None:
                 post.category = category

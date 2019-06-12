@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 
 from . import db
 from .factories import UserFactory, PostFactory, CategoryFactory, TagFactory
-from .models import User, Category, Role, Tag, PostCategory, PostAuthor
+from .models import User, Category, Role, Tag, PostCategory, PostAuthor, PostTag
 
 
 def roles():
@@ -51,7 +51,7 @@ def posts(count=100):
         tag = Tag.query.offset(randint(0, tag_count - 1)).first()
         category = Category.query.offset(randint(0, category_count - 1)).first()
         post = PostFactory()
-        post.tags.append(tag)
+        post.tags.append(PostTag(tag=tag))
         post.authors.append(PostAuthor(user=user, primary=True))
         post.categories.append(PostCategory(category=category, primary=True))
         db.session.add(post)

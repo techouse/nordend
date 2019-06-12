@@ -43,6 +43,33 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
+                <el-row class="post-tags">
+                    <el-col :span="24">
+                        <el-form-item label="Tags">
+                            <el-tag v-for="tag in post.tags"
+                                    :key="tag.id"
+                                    :closable="editable"
+                                    :disable-transitions="false"
+                                    @close="handleTagRemove(tag)"
+                            >
+                                {{ tag.name }}
+                            </el-tag>
+                            <template v-if="editable">
+                                <el-input v-if="tagInputVisible"
+                                          ref="saveTagInput"
+                                          v-model="newTagName"
+                                          class="input-new-tag"
+                                          size="mini"
+                                          @keyup.enter.native="handleTagConfirm"
+                                          @blur="handleTagConfirm"
+                                />
+                                <el-button v-else class="button-new-tag" size="small" @click="showTagInput">
+                                    + New Tag
+                                </el-button>
+                            </template>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
                 <el-form-item label="Content">
                     <div class="editor">
                         <editor-menu-bar v-if="editable" :editor="editor">
@@ -524,6 +551,7 @@
     import shell                    from "highlight.js/lib/languages/shell"
     import sql                      from "highlight.js/lib/languages/sql"
     import swift                    from "highlight.js/lib/languages/swift"
+    import Tag                      from "../../models/Tag"
 
     export default {
         name: "CreatePost",
@@ -646,7 +674,9 @@
                         preserve_newlines: true
                     },
                     wrap_line_length: 140,
-                }
+                },
+                tagInputVisible:          false,
+                newTagName:               ""
             }
         },
 
@@ -691,6 +721,8 @@
             ...mapActions("post", ["createPost"]),
 
             ...mapActions("category", ["getCategories"]),
+
+            ...mapActions("tag", ["getTags", "createTag"]),
 
             showLinkMenu(attrs) {
                 this.$set(this, "linkUrl", attrs.href)
@@ -739,6 +771,49 @@
 
             updateImage(image) {
                 console.log(image)
+            },
+
+            showTagInput() {
+                this.$set(this, "tagInputVisible", true)
+                this.$nextTick(_ => {
+                    this.$refs.saveTagInput.$refs.input.focus()
+                })
+            },
+
+            handleTagConfirm() {
+                const name = this.newTagName
+                if (name) {
+                    const exists = this.post.tags.some(tag => tag.name.toLowerCase() === name.trim().toLowerCase())
+
+                    if (!exists) {
+                        this.getTags({params: {name}})
+                            .then(({data}) => {
+                                if (data.results.length > 0) {
+                                    const tag = new Tag(data.results.shift())
+                                    this.post.tags.push(tag)
+                                    this.post.tag_ids.push(tag.id)
+                                } else {
+                                    this.createTag({name})
+                                        .then(({data}) => {
+                                            const tag = new Tag(data)
+                                            this.post.tags.push(tag)
+                                            this.post.tag_ids.push(tag.id)
+                                        })
+                                }
+                            })
+                    } else {
+                        this.warning(`A tag with the name ${name} is already associated with this post.`)
+                    }
+                }
+                this.$set(this, "tagInputVisible", false)
+                this.$set(this, "newTagName", "")
+            },
+
+            handleTagRemove(tag) {
+                if (this.post.tags.length > 0 && this.post.tag_ids.length > 0) {
+                    this.post.tags.splice(this.post.tags.findIndex(el => Number(el.id) === Number(tag.id)), 1)
+                    this.post.tag_ids.splice(this.post.tag_ids.findIndex(el => Number(el) === Number(tag.id)), 1)
+                }
             },
 
             submit() {

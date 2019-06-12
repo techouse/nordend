@@ -1,5 +1,5 @@
 from app import create_app, cli, db, socketio
-from app.models import User, Role, Permission, Post, Category, Image, Tag, PostCategory, PostImage, PostAuthor
+from app.models import User, Role, Permission, Post, Category, Image, Tag, PostCategory, PostImage, PostAuthor, PostTag
 
 app = create_app()
 cli.register(app)
@@ -16,6 +16,7 @@ def make_shell_context():
         PostAuthor=PostAuthor,
         PostCategory=PostCategory,
         PostImage=PostImage,
+        PostTag=PostTag,
         Role=Role,
         Tag=Tag,
         User=User,
