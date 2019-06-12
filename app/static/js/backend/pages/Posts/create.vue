@@ -66,7 +66,7 @@
                                           @blur="handleTagConfirm"
                                 />
                                 <el-button v-else class="button-new-tag" size="small" @click="showTagInput">
-                                    + New Tag
+                                    <i class="fal fa-plus-circle"/> New tag
                                 </el-button>
                             </template>
                         </el-form-item>
@@ -788,13 +788,17 @@
             },
 
             handleMainCategoryChanged(categoryId) {
+                const currentMainCategory = this.categories.find(el => Number(el.id) === Number(this.currentCategory))
+
                 if (!this.post.additional_categories.some(el => Number(el.id) === Number(this.currentCategory))) {
-                    this.post.additional_categories.push(this.categories.find(el => Number(el.id) === Number(this.currentCategory)))
+                    this.post.additional_categories.push(currentMainCategory)
                 }
 
                 if (!this.post.additional_category_ids.includes(this.currentCategory)) {
                     this.post.additional_category_ids.push(this.currentCategory)
                 }
+
+                this.info(`The previous main category '${currentMainCategory.name}' was moved to the additional categories list.`)
             },
 
             updateImage(image) {
