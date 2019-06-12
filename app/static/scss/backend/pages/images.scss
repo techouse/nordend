@@ -1,0 +1,23 @@
+// Toast UI Image Editor
+@import url("~tui-image-editor/dist/tui-image-editor.min.css");
+
+// Image Viewer
+@import url("~viewerjs/dist/viewer.min.css");
+
+.card-body, .edit-image-within-editor {
+  &.edit-image {
+    .tui-image-editor-header-buttons {
+      display: none !important;
+    }
+  }
+}
+
+.image-viewer-thumbnail {
+  &:hover {
+    cursor: zoom-in;
+  }
+}
+
+.modal-xxl {
+  max-width: 85% !important;
+}

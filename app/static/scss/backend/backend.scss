@@ -15,58 +15,11 @@
 // Element UI
 @import url("~element-ui/lib/theme-chalk/index.css");
 
-.el-page-header {
-  float: left;
-  line-height: 30px;
+// Common admin styles
+@import "admin";
 
-  &.no-back {
-    .el-page-header__left {
-      display: none !important;
-    }
-  }
-}
+// Posts
+@import "pages/posts";
 
-// tiptap
-@import "tiptap";
-
-.post-tags {
-  .el-tag + .el-tag {
-    margin-left: 10px;
-  }
-  .button-new-tag {
-    margin-left: 10px;
-    height: 32px;
-    line-height: 30px;
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-  .input-new-tag {
-    width: 90px;
-    margin-left: 10px;
-    vertical-align: bottom;
-  }
-}
-
-// Toast UI Image Editor
-@import url("~tui-image-editor/dist/tui-image-editor.min.css");
-
-.card-body, .edit-image-within-editor {
-  &.edit-image {
-    .tui-image-editor-header-buttons {
-      display: none !important;
-    }
-  }
-}
-
-// Image Viewer
-@import url("~viewerjs/dist/viewer.min.css");
-
-.image-viewer-thumbnail {
-  &:hover {
-    cursor: zoom-in;
-  }
-}
-
-.modal-xxl {
-  max-width: 85% !important;
-}
+// Images
+@import "pages/images";

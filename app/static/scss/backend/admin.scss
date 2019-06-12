@@ -1,0 +1,10 @@
+.el-page-header {
+  float: left;
+  line-height: 30px;
+
+  &.no-back {
+    .el-page-header__left {
+      display: none !important;
+    }
+  }
+}
