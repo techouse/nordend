@@ -37,7 +37,7 @@
                 </el-col>
             </el-row>
             <el-container v-loading="loading">
-                <viewer v-if="images.length" :images="viewerImages" :options="viewerOptions">
+                <viewer v-if="images.length" :images="viewerImages" :options="viewerOptions" class="w-100">
                     <template slot-scope="scope">
                         <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex"
                                 :gutter="20">
