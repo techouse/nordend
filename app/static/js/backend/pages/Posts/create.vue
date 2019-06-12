@@ -31,7 +31,7 @@
                     </el-col>
                     <el-col :lg="18" :md="24">
                         <el-form-item label="Extra categories">
-                            <el-select v-model="post.category_ids" :disabled="!editable"
+                            <el-select v-model="post.additional_category_ids" :disabled="!editable"
                                        placeholder="Additional post categories" multiple
                             >
                                 <el-option v-for="category in categoriesWithoutPrimary"

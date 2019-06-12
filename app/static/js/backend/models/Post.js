@@ -15,8 +15,8 @@ export default class Post {
         this.author_ids = []
         this.category = null
         this.category_id = null
-        this.categories = []
-        this.category_ids = []
+        this.additional_categories = []
+        this.additional_category_ids = []
         this.image = null
         this.images = []
         this.created_at = null
@@ -44,11 +44,10 @@ export default class Post {
             this.category_id = this.category.id
         }
 
-        if (this.categories) {
-            this.categories = this.categories
-                                  .filter(el => el.primary === false)
-                                  .map(el => el.category)
-            this.category_ids = this.categories.map(el => el.id)
+        if (this.additional_categories) {
+            this.additional_categories = this.additional_categories
+                                             .map(el => el.category)
+            this.additional_category_ids = this.additional_categories.map(el => el.id)
         }
 
         if (this.image) {

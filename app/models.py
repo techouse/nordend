@@ -308,12 +308,17 @@ class Category(db.Model, AddUpdateDelete):
 
 db.event.listen(Category.name, "set", Category.on_changed_name)
 
-post_tags = db.Table(
-    "post_tags",
-    db.Column("post_id", db.Integer, db.ForeignKey("posts.id"), primary_key=True),
-    db.Column("tag_id", db.Integer, db.ForeignKey("tags.id"), primary_key=True),
-    db.Column("created_at", db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False),
-)
+
+class PostTag(db.Model, AddUpdateDelete):
+    __tablename__ = "post_tags"
+    post_id = db.Column(db.Integer, db.ForeignKey("posts.id"), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey("tags.id"), primary_key=True)
+    created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
+    post = db.relationship("Post", backref=db.backref("post_tags", lazy="dynamic"))
+    tag = db.relationship("Tag", backref=db.backref("post_tags", lazy="dynamic"))
+
+    def __repr__(self):
+        return "<PostTag {}, {}>".format(self.post.title, self.tag.name)
 
 
 class PostImage(db.Model, AddUpdateDelete):
@@ -370,7 +375,7 @@ class Post(db.Model, AddUpdateDelete):
     authors = db.relationship("PostAuthor", lazy="dynamic")
     categories = db.relationship("PostCategory", lazy="dynamic")
     images = db.relationship("PostImage", lazy="dynamic")
-    tags = db.relationship("Tag", secondary=post_tags, backref=db.backref("post_tags", lazy="dynamic"), lazy="dynamic")
+    _tags = db.relationship("PostTag", lazy="dynamic")
 
     @classmethod
     def is_unique(cls, id, category, slug):
@@ -445,17 +450,31 @@ class Post(db.Model, AddUpdateDelete):
         current = set(
             category[0] for category in self.categories.filter(PostCategory.primary.isnot(True)).values("category_id")
         )
-
-        detach = current - ids
-        if detach:
+        ids_to_delete = current - ids
+        if ids_to_delete:
             self.categories.filter(PostCategory.primary.isnot(True)).filter(
-                PostCategory.category_id.in_(list(detach))
+                PostCategory.category_id.in_(list(ids_to_delete))
             ).delete(synchronize_session="fetch")
-
-        attach = ids - current
-        if attach:
-            for category_id in attach:
+        ids_to_append = ids - current
+        if ids_to_append:
+            for category_id in ids_to_append:
                 self.categories.append(PostCategory(category_id=category_id, primary=False))
+
+    @hybrid_property
+    def tags(self):
+        return self._tags
+
+    @tags.setter
+    def tags(self, tags):
+        ids = set(tag.id for tag in tags)
+        current = set(tag[0] for tag in self._tags.values("tag_id"))
+        ids_to_delete = current - ids
+        if ids_to_delete:
+            self._tags.filter(PostTag.tag_id.in_(list(ids_to_delete))).delete(synchronize_session="fetch")
+        ids_to_append = ids - current
+        if ids_to_append:
+            for tag_id in ids_to_append:
+                self._tags.append(PostTag(tag_id=tag_id))
 
     @hybrid_property
     def image(self):
@@ -482,12 +501,17 @@ class Post(db.Model, AddUpdateDelete):
 db.event.listen(Post.title, "set", Post.on_changed_title)
 db.event.listen(Post.body, "set", Post.on_changed_body)
 
-image_tags = db.Table(
-    "image_tags",
-    db.Column("image_id", db.Integer, db.ForeignKey("images.id"), primary_key=True),
-    db.Column("tag_id", db.Integer, db.ForeignKey("tags.id"), primary_key=True),
-    db.Column("created_at", db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False),
-)
+
+class ImageTag(db.Model, AddUpdateDelete):
+    __tablename__ = "image_tags"
+    image_id = db.Column(db.Integer, db.ForeignKey("images.id"), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey("tags.id"), primary_key=True)
+    created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
+    image = db.relationship("Image", backref=db.backref("image_tags", lazy="dynamic"))
+    tag = db.relationship("Tag", backref=db.backref("image_tags", lazy="dynamic"))
+
+    def __repr__(self):
+        return "<ImageTag {}, {}>".format(self.image.original_filename, self.tag.name)
 
 
 class Image(db.Model, AddUpdateDelete):
@@ -505,9 +529,7 @@ class Image(db.Model, AddUpdateDelete):
         db.TIMESTAMP, index=True, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp()
     )
     # relationships
-    tags = db.relationship(
-        "Tag", secondary=image_tags, backref=db.backref("image_tags", lazy="dynamic"), lazy="dynamic"
-    )
+    tags = db.relationship("ImageTag", lazy="dynamic")
     posts = db.relationship("PostImage", lazy="dynamic")
 
 
@@ -516,12 +538,8 @@ class Tag(db.Model, AddUpdateDelete):
     id = db.Column(db.Integer, primary_key=True)
     slug = db.Column(db.String(255), unique=True, nullable=False)
     name = db.Column(db.String(255), unique=True, nullable=False)
-    posts = db.relationship(
-        "Post", secondary=post_tags, backref=db.backref("tag_posts", lazy="dynamic"), lazy="dynamic"
-    )
-    images = db.relationship(
-        "Image", secondary=image_tags, backref=db.backref("tag_images", lazy="dynamic"), lazy="dynamic"
-    )
+    posts = db.relationship("PostTag", lazy="dynamic")
+    images = db.relationship("ImageTag", lazy="dynamic")
 
     @staticmethod
     def on_changed_name(target, value, oldvalue, initiator):

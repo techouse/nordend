@@ -158,7 +158,7 @@ class PostSchema(ma.Schema):
     author = fields.Nested("UserSchema", only=("id", "name", "email", "links"), dump_only=True)
     authors = fields.Nested("PostAuthorSchema", many=True, exclude=("post",))
     category = fields.Nested("CategorySchema", only=("id", "name", "slug", "links"), dump_only=True)
-    categories = fields.Nested("PostCategorySchema", many=True, exclude=("post",))
+    additional_categories = fields.Nested("PostCategorySchema", many=True, exclude=("post",))
     image = fields.Nested(
         "ImageSchema", only=("id", "title", "public_path", "sizes", "original_filename", "links"), dump_only=True
     )
