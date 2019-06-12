@@ -156,7 +156,6 @@ class ImageListResource(TokenRequiredResource):
             try:
                 digest = sha256(file.read()).hexdigest()
                 file.seek(0)
-                print(digest)
                 root_path = join(dirname(current_app.instance_path), "app")
                 if Image.query.filter_by(hash=digest).count() > 0:
                     for image in Image.query.filter_by(hash=digest).all():
@@ -176,7 +175,6 @@ class ImageListResource(TokenRequiredResource):
                             # Image does not exist so we delete it from the database
                             image.delete(image)
                 processed_image = ImageProcessor.process(file)
-                print(processed_image["hash"])
                 image = Image(
                     original_filename=processed_image["original_filename"],
                     hash=processed_image["hash"],
