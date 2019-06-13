@@ -4,6 +4,7 @@ from binascii import Error as BinasciiError
 from hashlib import sha256, md5
 from io import BytesIO
 from os.path import join, dirname, isdir
+from shutil import rmtree
 
 from flask import request, g, current_app
 from sqlalchemy import desc, or_, collate
@@ -69,7 +70,16 @@ class ImageResource(TokenRequiredResource):
     def delete(self, id):
         image = Image.query.get_or_404(id)
         try:
+            date = image.updated_at if image.updated_at is not None else image.created_at
+            path = join(
+                join(dirname(current_app.instance_path), "app"),
+                join(
+                    current_app.config["PUBLIC_IMAGE_PATH"], str(date.year), str(date.month), str(date.day), image.hash
+                ),
+            )
             image.delete(image)
+            if isdir(path):
+                rmtree(path)
             resp = {}
             return resp, status.HTTP_204_NO_CONTENT
         except SQLAlchemyError as e:

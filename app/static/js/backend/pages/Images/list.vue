@@ -231,7 +231,7 @@
                                       this.success("Image successfully deleted")
                                   })
                                   .catch(() => {
-                                      this.error(`There was an error deleting the image: ${this.alert.message}`)
+                                      this.error("There was an error deleting the image")
                                   })
                           }
                     )
