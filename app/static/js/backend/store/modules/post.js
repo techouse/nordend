@@ -3,10 +3,13 @@ import {create, destroy, get, update} from "../../services"
 const state = {
     created:                 0,
     createdId:               null,
+    createdIds:              [],
     updated:                 0,
     updatedId:               null,
+    updatedIds:              [],
     deleted:                 0,
     deletedId:               null,
+    deletedIds:              [],
     lockedPosts:             [],
     gotLockedPosts:          false,
     notifyAboutForcedUnlock: false
@@ -15,42 +18,57 @@ const state = {
 const getters = {
     created:                 state => state.created,
     createdId:               state => state.createdId,
+    createdIds:              state => state.createdIds,
     updated:                 state => state.updated,
     updatedId:               state => state.updatedId,
+    updatedIds:              state => state.updatedIds,
     deleted:                 state => state.deleted,
     deletedId:               state => state.deletedId,
+    deletedIds:              state => state.deletedIds,
     lockedPosts:             state => state.lockedPosts,
     gotLockedPosts:          state => state.gotLockedPosts,
     notifyAboutForcedUnlock: state => state.notifyAboutForcedUnlock,
 }
 
 const mutations = {
-    setCreated:       (state, id) => {
+    setCreated:                 (state, {post_id, by_user_id}) => {
         state.created++
-        state.createdId = id
+        state.createdId = post_id
+        state.createdIds.push({post_id, by_user_id})
     },
-    setUpdated:       (state, id) => {
+    popCreatedIds:              (state) => {
+        state.createdIds.pop()
+    },
+    setUpdated:                 (state, {post_id, by_user_id}) => {
         state.updated++
-        state.updatedId = id
+        state.updatedId = post_id
+        state.updatedIds.push({post_id, by_user_id})
     },
-    setDeleted:       (state, id) => {
+    popUpdatedIds:              (state) => {
+        state.updatedIds.pop()
+    },
+    setDeleted:                 (state, {post_id, by_user_id}) => {
         state.deleted++
-        state.deletedId = id
+        state.deletedId = post_id
+        state.deletedIds.push({post_id, by_user_id})
     },
-    setLockedPosts:   (state, ids) => {
+    popDeletedIds:              (state) => {
+        state.deletedIds.pop()
+    },
+    setLockedPosts:             (state, ids) => {
         state.lockedPosts = ids
         state.gotLockedPosts = true
     },
-    clearLockedPosts: state => {
+    clearLockedPosts:           state => {
         state.lockedPosts = []
         state.gotLockedPosts = false
     },
-    lockPost:         (state, id) => {
+    lockPost:                   (state, id) => {
         if (!state.lockedPosts.includes(id)) {
             state.lockedPosts.push(id)
         }
     },
-    unlockPost:       (state, id) => {
+    unlockPost:                 (state, id) => {
         if (state.lockedPosts.includes(id)) {
             state.lockedPosts.splice(state.lockedPosts.indexOf(id), 1)
         }
@@ -112,23 +130,23 @@ const actions = {
 
     setPublicSocketHooks: ({commit, dispatch}) => {
         dispatch("socket/getPublicSocket", {}, {root: true}).then(socket => {
-            socket.on("post.created", ({data, timestamp}) => {
-                      commit("setCreated", data.id)
+            socket.on("post.created", ({data, by_user_id, timestamp}) => {
+                      commit("setCreated", {post_id: data.id, by_user_id})
                       dispatch("console/log", `Post titled ${data.title} created`, {root: true})
                   })
-                  .on("post.updated", ({data, timestamp}) => {
-                      commit("setUpdated", data.id)
+                  .on("post.updated", ({data, by_user_id, timestamp}) => {
+                      commit("setUpdated", {post_id: data.id, by_user_id})
                       dispatch("console/log", `Post titled ${data.title} updated`, {root: true})
                   })
-                  .on("post.deleted", ({data, timestamp}) => {
-                      commit("setDeleted", data.id)
+                  .on("post.deleted", ({data, by_user_id, timestamp}) => {
+                      commit("setDeleted", {post_id: data.id, by_user_id})
                       dispatch("console/log", `Post with ID ${data.id} deleted`, {root: true})
                   })
-                  .on("post.locked", ({data, timestamp}) => {
+                  .on("post.locked", ({data, by_user_id, timestamp}) => {
                       commit("lockPost", data.id)
                       dispatch("console/log", `Post with ID ${data.id} locked`, {root: true})
                   })
-                  .on("post.unlocked", ({data, forced, notify_user_id, timestamp}) => {
+                  .on("post.unlocked", ({data, forced, notify_user_id, by_user_id, timestamp}) => {
                       commit("unlockPost", data.id)
                       if (forced) {
                           dispatch("notifyAboutForcedUnlock", {post: data, notify_user_id: notify_user_id})
@@ -146,7 +164,25 @@ const actions = {
 
     setPrivateSocketHooks: ({commit, dispatch}, user) => {
         // TODO add some private stuff maybe
-    }
+    },
+
+    getLatestCreated: ({state, commit}) => new Promise(resolve => {
+        const latest = state.createdIds[state.createdIds.length - 1]
+        commit("popCreatedIds")
+        return resolve(latest)
+    }),
+
+    getLatestUpdated: ({state, commit}) => new Promise(resolve => {
+        const latest = state.updatedIds[state.updatedIds.length - 1]
+        commit("popUpdatedIds")
+        return resolve(latest)
+    }),
+
+    getLatestDeleted: ({state, commit}) => new Promise(resolve => {
+        const latest = state.deletedIds[state.deletedIds.length - 1]
+        commit("popDeletedIds")
+        return resolve(latest)
+    }),
 }
 
 export default {

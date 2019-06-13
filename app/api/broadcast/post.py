@@ -12,53 +12,54 @@ from ...redis_keys import locked_posts_redis_key
 
 class PostBroadcast:
     @staticmethod
-    def created(post):
+    def created(post, by_user_id=None):
         socketio.emit(
             "post.created",
-            {"data": post, "timestamp": datetime.now(pytz.utc).isoformat()},
+            {"data": post, "by_user_id": by_user_id, "timestamp": datetime.now(pytz.utc).isoformat()},
             broadcast=True,
             room=Channel.get_room(),
             namespace=Channel.NAMESPACE,
         )
 
     @staticmethod
-    def updated(post):
+    def updated(post, by_user_id=None):
         socketio.emit(
             "post.updated",
-            {"data": post, "timestamp": datetime.now(pytz.utc).isoformat()},
+            {"data": post, "by_user_id": by_user_id, "timestamp": datetime.now(pytz.utc).isoformat()},
             broadcast=True,
             room=Channel.get_room(),
             namespace=Channel.NAMESPACE,
         )
 
     @staticmethod
-    def deleted(id_):
+    def deleted(id_, by_user_id=None):
         socketio.emit(
             "post.deleted",
-            {"data": {"id": id_}, "timestamp": datetime.now(pytz.utc).isoformat()},
+            {"data": {"id": id_}, "by_user_id": by_user_id, "timestamp": datetime.now(pytz.utc).isoformat()},
             broadcast=True,
             room=Channel.get_room(),
             namespace=Channel.NAMESPACE,
         )
 
     @staticmethod
-    def locked(id_):
+    def locked(id_, by_user_id=None):
         socketio.emit(
             "post.locked",
-            {"data": {"id": id_}, "timestamp": datetime.now(pytz.utc).isoformat()},
+            {"data": {"id": id_}, "by_user_id": by_user_id, "timestamp": datetime.now(pytz.utc).isoformat()},
             broadcast=True,
             room=Channel.get_room(),
             namespace=Channel.NAMESPACE,
         )
 
     @staticmethod
-    def unlocked(id_, forced=False, notify_user_id=None):
+    def unlocked(id_, forced=False, notify_user_id=None, by_user_id=None):
         socketio.emit(
             "post.unlocked",
             {
                 "data": {"id": id_},
                 "forced": forced,
                 "notify_user_id": notify_user_id,
+                "by_user_id": by_user_id,
                 "timestamp": datetime.now(pytz.utc).isoformat(),
             },
             broadcast=True,
@@ -108,7 +109,7 @@ def lock(data):
                     }
                 ),
             )
-            return PostBroadcast.locked(data["post_id"])
+            return PostBroadcast.locked(data["post_id"], by_user_id=current_user.id)
     return False
 
 
@@ -126,7 +127,10 @@ def unlock(data):
                     ):
                         redis.hdel(locked_posts_redis_key, data["post_id"])
                         return PostBroadcast.unlocked(
-                            data["post_id"], forced=bool(data["forced"]), notify_user_id=lock_data["user_id"]
+                            data["post_id"],
+                            by_user_id=current_user.id,
+                            forced=bool(data["forced"]),
+                            notify_user_id=lock_data["user_id"],
                         )
                 except:
                     pass

@@ -25,7 +25,7 @@
         computed: {
             ...mapGetters("auth", ["token"]),
 
-            ...mapGetters("post", ["notifyAboutForcedUnlock", "lockedPosts"]),
+            ...mapGetters("post", ["notifyAboutForcedUnlock", "lockedPosts", "updatedId", "updatedIds"]),
 
             postIsLocked() {
                 return this.lockedPosts.includes(this.post.id) &&
@@ -67,6 +67,30 @@
                         }
                     })
                 }
+            },
+
+            updatedIds: {
+                handler(updatedIds) {
+                    if (updatedIds.length > 0) {
+                        this.getLatestUpdated()
+                            .then(({post_id, by_user_id}) => {
+                                if (post_id === this.post.id && by_user_id !== this.currentUser.id) {
+                                    this.$set(this, "loading", true)
+
+                                    this.getPost(this.postId)
+                                        .then(({data}) => {
+                                            this.$set(this, "post", new Post(data))
+                                            this.$set(this, "loading", false)
+                                            this.editor.setContent(this.post.body)
+                                        })
+                                        .catch(() => {
+                                            this.$set(this, "loading", false)
+                                        })
+                                }
+                            })
+                    }
+                },
+                deep: true
             },
 
             editable(editable) {
@@ -123,7 +147,8 @@
         },
 
         methods: {
-            ...mapActions("post", ["getPost", "updatePost", "deletePost", "lockPost", "unlockPost", "clearForcedUnlockNotification"]),
+            ...mapActions("post", ["getPost", "updatePost", "deletePost", "lockPost", "unlockPost",
+                                   "clearForcedUnlockNotification", "getLatestUpdated"]),
 
             submit() {
                 this.$refs[this.formRef].validate((valid) => {

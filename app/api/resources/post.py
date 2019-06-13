@@ -9,7 +9,7 @@ from ..broadcast.post import PostBroadcast
 from ..helpers import PaginationHelper
 from ..schemas import PostSchema
 from ... import db, status
-from ...models import Post, Category, User, PostCategory, PostAuthor, Tag
+from ...models import Post, Category, User, PostCategory, PostAuthor
 
 post_schema = PostSchema()
 
@@ -57,7 +57,9 @@ class PostResource(TokenRequiredResource):
         try:
             post.update()
             updated_post = self.get(id)
-            PostBroadcast.updated(post_schema.dump(updated_post).data)
+            PostBroadcast.updated(
+                post=post_schema.dump(updated_post).data, by_user_id=g.current_user.id
+            )
             return updated_post
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -70,7 +72,7 @@ class PostResource(TokenRequiredResource):
         try:
             post.delete(post)
             resp = {}
-            PostBroadcast.deleted(id)
+            PostBroadcast.deleted(id, by_user_id=g.current_user.id)
             return resp, status.HTTP_204_NO_CONTENT
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -171,7 +173,7 @@ class PostListResource(TokenRequiredResource):
             post.add(post)
             created_post = Post.query.get(post.id)
             result = post_schema.dump(created_post).data
-            PostBroadcast.created(result)
+            PostBroadcast.created(post=result, by_user_id=g.current_user.id)
             return result, status.HTTP_201_CREATED
         except SQLAlchemyError as e:
             db.session.rollback()
