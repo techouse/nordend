@@ -27,18 +27,19 @@
 
             ...mapGetters("user", ["currentUser"]),
 
-            ...mapGetters("post", ["notifyAboutForcedUnlock"]),
+            ...mapGetters("post", ["notifyAboutForcedUnlock", "lockedPosts"]),
+
+            postIsLocked() {
+                return this.lockedPosts.includes(this.post.id) &&
+                       this.post.locked &&
+                       this.post.lock_expires >= new Date() &&
+                       this.currentUser &&
+                       this.post.locked_by &&
+                       this.post.locked_by.id !== this.currentUser.id
+            },
 
             editable() {
-                return !this.readonly &&
-                       (
-                           !this.post.locked ||
-                           this.post.locked &&
-                           this.post.lock_expires >= new Date() &&
-                           this.currentUser &&
-                           this.post.locked_by &&
-                           this.post.locked_by.id === this.currentUser.id
-                       )
+                return !this.readonly && !this.postIsLocked
             },
 
             title() {
@@ -67,6 +68,27 @@
                             this.clearForcedUnlockNotification()
                         }
                     })
+                }
+            },
+
+            editable(editable) {
+                if (editable) {
+                    this.lockPost(this.post)
+                        .then(() => {
+                            this.$set(this.post, "locked_by", this.currentUser)
+
+                            window.addEventListener("beforeunload", () => {
+                                this.unlockPost({post: this.post})
+                            })
+
+                            this.$alert(
+                                "This post has just been unlocked by the previous editor! You may now edit it.",
+                                {
+                                    type:              "info",
+                                    confirmButtonText: "OK",
+                                }
+                            )
+                        })
                 }
             }
         },

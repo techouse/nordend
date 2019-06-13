@@ -5,8 +5,8 @@
         >
             <template v-slot:header>
                 <el-page-header :content="title" @back="goBack"/>
-                <div v-if="post.id" class="card-header-actions">
-                    <el-button class="btn btn-sm btn-danger" :disabled="!editable" @click="remove">
+                <div v-if="post.id && editable" class="card-header-actions">
+                    <el-button class="btn btn-sm btn-danger" @click="remove">
                         Delete post
                     </el-button>
                 </div>
@@ -54,7 +54,7 @@
                                     :disable-transitions="false"
                                     @close="handleTagRemove(tag)"
                             >
-                                {{ tag.name }}
+                                <i class="fal fa-tag"/> {{ tag.name }}
                             </el-tag>
                             <template v-if="editable">
                                 <el-input v-if="tagInputVisible"
@@ -66,7 +66,7 @@
                                           @blur="handleTagConfirm"
                                 />
                                 <el-button v-else class="button-new-tag" size="small" @click="showTagInput">
-                                    <i class="fal fa-plus-circle"/> New tag
+                                    <i class="fal fa-tags"/> Add new tag
                                 </el-button>
                             </template>
                         </el-form-item>
@@ -479,7 +479,7 @@
                     </div>
                 </el-form-item>
             </template>
-            <template v-slot:footer>
+            <template v-if="editable" v-slot:footer>
                 <el-button type="success" :disabled="!editable" @click="submit">
                     Submit
                 </el-button>

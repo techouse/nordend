@@ -55,7 +55,7 @@
                             </button>
                         </template>
                         <template v-else>
-                            <router-link :to="{name: 'EditPost', params: {postId: scope.row.id, readonly: false}}"
+                            <router-link :to="{name: 'EditPost', params: {postId: scope.row.id}}"
                                          class="btn btn-sm btn-outline-secondary"
                             >
                                 <i class="fas fa-eye"/>

@@ -48,6 +48,18 @@
         methods: {
             validate(callback) {
                 return this.$refs[this.formRef].validate(callback)
+            },
+
+            validateField(callback) {
+                return this.$refs[this.formRef].validateField(callback)
+            },
+
+            resetFields() {
+                return this.$refs[this.formRef].resetFields()
+            },
+
+            clearValidate(callback) {
+                return this.$refs[this.formRef].clearValidate(callback)
             }
         }
     }
