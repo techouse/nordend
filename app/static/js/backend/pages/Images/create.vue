@@ -101,11 +101,13 @@
 
                 if (!["image/jpeg", "image/png", "image/gif", "image/bmp"].includes(file.type)) {
                     this.error("Photo must be of type JPG, PNG, GIF or BMP.")
+                    this.$set(this, "loading", false)
                     return false
                 }
 
                 if (file.size / 1024 / 1024 > 2) {
                     this.error("Photo can not exceed 2 MB in size.")
+                    this.$set(this, "loading", false)
                     return false
                 }
 
