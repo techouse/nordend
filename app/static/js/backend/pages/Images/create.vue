@@ -16,7 +16,7 @@
             >
                 <img v-if="imageUrl" class="preview-img" :src="previewImageUrl">
                 <div v-else>
-                    <i class="el-icon-upload"/>
+                    <i class="el-icon-upload" />
                     <div class="el-upload__text">
                         Drop image file here or <em>click to upload</em>
                     </div>
@@ -91,6 +91,8 @@
 
                 this.success(`Image ${this.photo.original_filename} uploaded successfully!`)
                 this.$emit("success", true)
+
+                this.closeModal()
             },
 
             beforeImageUpload(file) {
