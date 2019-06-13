@@ -1,6 +1,5 @@
 // Toast UI Image Editor
 @import url("~tui-image-editor/dist/tui-image-editor.min.css");
-
 // Image Viewer
 @import url("~viewerjs/dist/viewer.min.css");
 
@@ -10,6 +9,13 @@
       display: none !important;
     }
   }
+}
+
+.preview-img {
+  width: 100%;
+  max-width: 280px;
+  max-height: 280px;
+  object-fit: contain;
 }
 
 .image-viewer-thumbnail {

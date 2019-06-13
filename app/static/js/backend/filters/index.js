@@ -22,7 +22,7 @@ Vue.filter("truncate", (text = "", length = 30, clamp = "...") => {
     return tcText + clamp
 })
 
-Vue.filter("truncate_middle", (fullStr, strLen, separator = "...") => {
+Vue.filter("truncateMiddle", (fullStr, strLen, separator = "...") => {
     if (fullStr.length <= strLen) {
         return fullStr
     }

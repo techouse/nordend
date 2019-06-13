@@ -6,25 +6,17 @@
         <template v-slot:body>
             <el-tabs v-model="activeTab" @tab-click="handleTabChange">
                 <el-tab-pane label="Gallery" name="gallery">
-                    <el-row v-loading="loading" v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)"
-                            :key="rowIndex" :gutter="20"
+                    <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex"
+                            v-loading="loading" :gutter="20"
                     >
                         <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
                             <div @click.prevent="handleImageGallerySelect(image)">
                                 <el-card :body-style="{ padding: '0', textAlign: 'center' }"
                                          :class="{selected: photo.id === image.id}" class="image-card" shadow="hover"
                                 >
-                                    <el-image :style="{width: '100%', height: '100%'}"
-                                              :src="`${image.public_path}/${thumbnailSize}.jpg`"
-                                              fit="cover"
-                                              lazy
-                                    >
-                                        <div slot="error" class="image-slot">
-                                            <i class="el-icon-picture-outline"></i>
-                                        </div>
-                                    </el-image>
+                                    <img :src="getThumbnailSrc(image)" class="image-list-thumbnail">
                                     <div style="padding: 14px;">
-                                        <span>{{ (image.title || image.original_filename) | truncate_middle(20) }}</span>
+                                        <span>{{ (image.title || image.original_filename) | truncateMiddle(20) }}</span>
                                     </div>
                                 </el-card>
                             </div>
@@ -114,17 +106,18 @@
                 activeTab:       "gallery",
                 uploadHeaders:   {},
 
-                imagesPerRow:  6,
-                thumbnailSize: 280,
-                images:        [],
-                params:        {
+                imagesPerRow:       6,
+                images:             [],
+                params:             {
                     search:   this.search,
                     page:     this.page,
                     per_page: this.per_page,
                     sort:     null
                 },
-                pageSizes:     [12, 24, 48, 96],
-                totalCount:    0
+                pageSizes:          [12, 24, 48, 96],
+                totalCount:         0,
+                minimumImageWidth:  100,
+                minimumImageHeight: 100,
             }
         },
 
@@ -158,6 +151,18 @@
                         : segments,
                     []
                 )
+            },
+
+            getThumbnailSrc(image) {
+                if (image.thumbnail_sizes.length > 0) {
+                    for (let size of [280, 220]) {
+                        if (image.thumbnail_sizes.includes(size)) {
+                            return `${image.public_path}/${size}.jpg`
+                        }
+                    }
+                }
+
+                return `${image.public_path}/original.jpg`
             },
 
             getData() {
@@ -212,17 +217,48 @@
                 this.$set(this, "loading", true)
                 this.$set(this.uploadHeaders, "Authorization", `Bearer ${this.token}`)
 
-                if (!["image/jpeg", "image/png", "image/gif", "image/bmp"].includes(file.type)) {
-                    this.error("Photo must be of type JPG, PNG, GIF or BMP.")
-                    return false
-                }
+                return new Promise((resolve, reject) => {
+                    if (!["image/jpeg", "image/png", "image/gif", "image/bmp"].includes(file.type)) {
+                        this.error("Photo must be of type JPG, PNG, GIF or BMP.")
+                        this.$set(this, "loading", false)
+                        return reject(false)
+                    }
 
-                if (file.size / 1024 / 1024 > 2) {
-                    this.error("Photo can not exceed 2 MB in size.")
-                    return false
-                }
+                    if (file.size / 1024 / 1024 > 2) {
+                        this.error("Photo can not exceed 2 MB in size.")
+                        this.$set(this, "loading", false)
+                        return reject(false)
+                    }
 
-                return true
+                    if (this.minimumImageWidth > 0 || this.minimumImageHeight > 0) {
+                        try {
+                            let img = new Image()
+
+                            img.onload = () => {
+                                const width  = img.naturalWidth,
+                                      height = img.naturalHeight
+
+                                window.URL.revokeObjectURL(img.src)
+
+                                if (width >= this.minimumImageWidth && height >= this.minimumImageHeight) {
+                                    return resolve(true)
+                                } else {
+                                    this.error(`Photo too small. It must be at least ${this.minimumImageWidth}px wide and ${this.minimumImageHeight}px high!`)
+                                    this.$set(this, "loading", false)
+                                    return reject(false)
+                                }
+                            }
+
+                            img.src = window.URL.createObjectURL(file)
+                        } catch (exception) {
+                            this.error(exception)
+                            this.$set(this, "loading", false)
+                            return reject(exception)
+                        }
+                    } else {
+                        return resolve(true)
+                    }
+                })
             },
 
             insertImage() {
@@ -273,10 +309,6 @@
 
 <style lang="scss" scoped>
     .modal {
-        .preview-img {
-            width: 100%;
-        }
-
         .image-card {
             &:hover {
                 cursor: pointer;
@@ -297,6 +329,16 @@
             height: auto !important;
             min-height: 180px;
             max-width: 360px;
+        }
+    }
+</style>
+
+<style lang="scss" scoped>
+    .el-row {
+        margin-bottom: 20px;
+
+        &:last-child {
+            margin-bottom: 0;
         }
     }
 </style>

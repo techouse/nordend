@@ -51,7 +51,7 @@
                                          class="image-viewer-thumbnail"
                                     >
                                     <div style="padding: 14px;">
-                                        <span>{{ (image.title || image.original_filename) | truncate_middle(20) }}</span>
+                                        <span>{{ (image.title || image.original_filename) | truncateMiddle(20) }}</span>
                                         <div class="bottom clearfix">
                                             <el-tooltip class="item" effect="dark" content="Edit in image editor"
                                                         placement="left"

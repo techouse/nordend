@@ -19,3 +19,10 @@
     vertical-align: bottom;
   }
 }
+
+.image-list-thumbnail {
+  width: 100%;
+  max-width: 280px;
+  max-height: 280px;
+  object-fit: contain;
+}
