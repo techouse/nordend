@@ -25,8 +25,6 @@
         computed: {
             ...mapGetters("auth", ["token"]),
 
-            ...mapGetters("user", ["currentUser"]),
-
             ...mapGetters("post", ["notifyAboutForcedUnlock", "lockedPosts"]),
 
             postIsLocked() {

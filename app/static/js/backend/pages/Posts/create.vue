@@ -9,7 +9,8 @@
                     <el-button v-if="editable && !postIsLocked" class="btn btn-sm btn-danger" @click="remove">
                         Delete post
                     </el-button>
-                    <el-button v-if="!editable && postIsLocked" class="btn btn-sm btn-warning" @click="unlock">
+                    <el-button v-if="!editable && postIsLocked && (currentUser.role.moderate || currentUser.role.admin)"
+                               class="btn btn-sm btn-warning" @click="unlock">
                         Forcefully unlock post
                     </el-button>
                 </div>
@@ -689,6 +690,8 @@
 
         computed: {
             ...mapGetters("alert", ["alert"]),
+
+            ...mapGetters("user", ["currentUser"]),
 
             ...mapGetters("postImage", {
                 imageEditorVisible: "editorVisible",
