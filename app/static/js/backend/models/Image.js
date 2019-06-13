@@ -6,6 +6,7 @@ export default class Image {
         this.public_path = null
         this.original_filename = null
         this.sizes = []
+        this.thumbnail_sizes = []
         this.created_at = null
         this.data_url = null
 
@@ -16,6 +17,11 @@ export default class Image {
         }
 
         if (this.sizes.length > 0) {
+            this.thumbnail_sizes = this.sizes
+                                       .map(size => Number(size))
+                                       .filter(size => size < 440)
+                                       .sort((a, b) => a - b)
+
             this.sizes = this.sizes
                              .map(size => Number(size))
                              .filter(size => size >= 440) // Minimum size for srcset

@@ -16,7 +16,7 @@
             >
                 <img v-if="imageUrl" class="preview-img" :src="previewImageUrl">
                 <div v-else>
-                    <i class="el-icon-upload" />
+                    <i class="el-icon-upload"/>
                     <div class="el-upload__text">
                         Drop image file here or <em>click to upload</em>
                     </div>
@@ -48,12 +48,14 @@
 
         data() {
             return {
-                loading:         false,
-                photo:           new Photo(),
-                imageUrl:        "",
-                previewImageUrl: "",
-                show:            false,
-                uploadHeaders:   {}
+                loading:            false,
+                photo:              new Photo(),
+                imageUrl:           "",
+                previewImageUrl:    "",
+                show:               false,
+                uploadHeaders:      {},
+                minimumImageWidth:  100,
+                minimumImageHeight: 100,
             }
         },
 
@@ -99,20 +101,49 @@
                 this.$set(this, "loading", true)
                 this.$set(this.uploadHeaders, "Authorization", `Bearer ${this.token}`)
 
-                if (!["image/jpeg", "image/png", "image/gif", "image/bmp"].includes(file.type)) {
-                    this.error("Photo must be of type JPG, PNG, GIF or BMP.")
-                    this.$set(this, "loading", false)
-                    return false
-                }
+                return new Promise((resolve, reject) => {
+                    if (!["image/jpeg", "image/png", "image/gif", "image/bmp"].includes(file.type)) {
+                        this.error("Photo must be of type JPG, PNG, GIF or BMP.")
+                        this.$set(this, "loading", false)
+                        return reject(false)
+                    }
 
-                if (file.size / 1024 / 1024 > 2) {
-                    this.error("Photo can not exceed 2 MB in size.")
-                    this.$set(this, "loading", false)
-                    return false
-                }
+                    if (file.size / 1024 / 1024 > 2) {
+                        this.error("Photo can not exceed 2 MB in size.")
+                        this.$set(this, "loading", false)
+                        return reject(false)
+                    }
 
-                return true
-            },
+                    if (this.minimumImageWidth > 0 || this.minimumImageHeight > 0) {
+                        try {
+                            let img = new Image()
+
+                            img.onload = () => {
+                                const width  = img.naturalWidth,
+                                      height = img.naturalHeight
+
+                                window.URL.revokeObjectURL(img.src)
+
+                                if (width >= this.minimumImageWidth && height >= this.minimumImageHeight) {
+                                    return resolve(true)
+                                } else {
+                                    this.error(`Photo too small. It must be at least ${this.minimumImageWidth}px wide and ${this.minimumImageHeight}px high!`)
+                                    this.$set(this, "loading", false)
+                                    return reject(false)
+                                }
+                            }
+
+                            img.src = window.URL.createObjectURL(file)
+                        } catch (exception) {
+                            this.error(exception)
+                            this.$set(this, "loading", false)
+                            return reject(exception)
+                        }
+                    } else {
+                        return resolve(true)
+                    }
+                })
+            }
         }
     }
 </script>

@@ -45,8 +45,7 @@
                                 <el-card :body-style="{ padding: '0', textAlign: 'center' }" class="image-card"
                                          shadow="hover"
                                 >
-                                    <img :style="{width: '100%', height: '100%'}"
-                                         :src="`${image.public_path}/${thumbnailSize}.jpg`"
+                                    <img :src="getThumbnailSrc(image)"
                                          :data-source="getLargestImageSrc(image)"
                                          :alt="image.original_filename"
                                          class="image-viewer-thumbnail"
@@ -117,7 +116,6 @@
                 title:         "Images",
                 images:        [],
                 imagesPerRow:  6,
-                thumbnailSize: 280,
                 viewerOptions: {
                     "button":     true,
                     "navbar":     false,
@@ -141,7 +139,7 @@
             viewerImages() {
                 return this.images.map(image => {
                     return {
-                        thumbnail: `${image.public_path}/${this.thumbnailSize}.jpg`,
+                        thumbnail: this.getThumbnailSrc(image),
                         source:    this.getLargestImageSrc(image)
                     }
                 })
@@ -238,6 +236,18 @@
                     .catch(() => {
                         this.info("Image not deleted")
                     })
+            },
+
+            getThumbnailSrc(image) {
+                if (image.thumbnail_sizes.length > 0) {
+                    for (let size of [280, 220]) {
+                        if (image.thumbnail_sizes.includes(size)) {
+                            return `${image.public_path}/${size}.jpg`
+                        }
+                    }
+                }
+
+                return `${image.public_path}/original.jpg`
             },
 
             getLargestImageSrc(image) {
