@@ -82,7 +82,7 @@
                             })
 
                             this.$alert(
-                                "This post has just been unlocked by the previous editor! You may now edit it.",
+                                "This post has just been unlocked! You may now edit it.",
                                 {
                                     type:              "info",
                                     confirmButtonText: "OK",

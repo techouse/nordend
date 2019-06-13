@@ -3,8 +3,8 @@
         <template v-slot:header>
             <el-page-header class="no-back" :content="title"/>
             <div class="card-header-actions">
-                <button class="btn btn-sm btn-primary" @click.prevent="upload">
-                    Upload new image
+                <button class="btn btn-sm btn-success" @click.prevent="upload">
+                    <i class="far fa-camera-retro"/> Upload new image
                 </button>
             </div>
         </template>

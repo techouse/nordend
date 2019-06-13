@@ -3,8 +3,8 @@
         <template v-slot:header>
             <el-page-header class="no-back" :content="title"/>
             <div class="card-header-actions">
-                <router-link :to="{name: 'CreateRole'}" class="btn btn-sm btn-primary">
-                    Create new role
+                <router-link :to="{name: 'CreateRole'}" class="btn btn-sm btn-success">
+                    <i class="far fa-graduation-cap"/> Create new role
                 </router-link>
             </div>
         </template>

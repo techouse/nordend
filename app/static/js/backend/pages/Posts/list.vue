@@ -3,8 +3,8 @@
         <template v-slot:header>
             <el-page-header class="no-back" :content="title"/>
             <div class="card-header-actions">
-                <router-link :to="{name: 'CreatePost'}" class="btn btn-sm btn-primary">
-                    Create new post
+                <router-link :to="{name: 'CreatePost'}" class="btn btn-sm btn-success">
+                    <i class="far fa-pencil"/> Create new post
                 </router-link>
             </div>
         </template>

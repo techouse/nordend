@@ -5,9 +5,12 @@
         >
             <template v-slot:header>
                 <el-page-header :content="title" @back="goBack"/>
-                <div v-if="post.id && editable" class="card-header-actions">
-                    <el-button class="btn btn-sm btn-danger" @click="remove">
+                <div v-if="post.id" class="card-header-actions">
+                    <el-button v-if="editable && !postIsLocked" class="btn btn-sm btn-danger" @click="remove">
                         Delete post
+                    </el-button>
+                    <el-button v-if="!editable && postIsLocked" class="btn btn-sm btn-warning" @click="unlock">
+                        Forcefully unlock post
                     </el-button>
                 </div>
             </template>
@@ -692,6 +695,8 @@
                 imageEditorImage:   "image"
             }),
 
+            postIsLocked: () => false,
+
             selectedType() {
                 const selection = this.editor.state.selection
                 return selection.node ? selection.node.type.name : selection.toJSON().type
@@ -736,7 +741,7 @@
         },
 
         methods: {
-            ...mapActions("post", ["createPost"]),
+            ...mapActions("post", ["createPost", "unlockPost"]),
 
             ...mapActions("category", ["getCategories"]),
 
@@ -846,6 +851,20 @@
                     this.post.tags.splice(this.post.tags.findIndex(el => Number(el.id) === Number(tag.id)), 1)
                     this.post.tag_ids.splice(this.post.tag_ids.findIndex(el => Number(el) === Number(tag.id)), 1)
                 }
+            },
+
+            unlock() {
+                this.$confirm(`Are you sure you want to forcefully unlock ${this.post.title}?`, "Warning", {
+                        confirmButtonText: "Yes",
+                        cancelButtonText:  "No",
+                        type:              "warning"
+                    })
+                    .then(() => {
+                        this.unlockPost({post: this.post, forced: true})
+                    })
+                    .catch(() => {
+                        this.info("Post not forcefully unlocked.")
+                    })
             },
 
             submit() {
