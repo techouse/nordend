@@ -42,10 +42,19 @@ class PostBroadcast:
         )
 
     @staticmethod
-    def locked(id_, by_user_id=None):
+    def locked(id_, by_user_id=None, timestamp=None, expires=None):
+        if timestamp is None:
+            timestamp = datetime.now(pytz.utc)
+        if expires is None and timestamp is not None:
+            expires = timestamp + timedelta(seconds=Config.POST_EDIT_LOCK_TIMEOUT)
         socketio.emit(
             "post.locked",
-            {"data": {"id": id_}, "by_user_id": by_user_id, "timestamp": datetime.now(pytz.utc).isoformat()},
+            {
+                "data": {"id": id_},
+                "by_user_id": by_user_id,
+                "timestamp": timestamp.isoformat(),
+                "expires": expires.isoformat() if expires else None,
+            },
             broadcast=True,
             room=Channel.get_room(),
             namespace=Channel.NAMESPACE,
@@ -103,13 +112,15 @@ def lock(data):
                 json.dumps(
                     {
                         "post_id": int(data["post_id"]),
-                        "user_id": int(current_user.id),
+                        "by_user_id": current_user.id,
                         "timestamp": timestamp.isoformat(),
                         "expires": expires.isoformat(),
                     }
                 ),
             )
-            return PostBroadcast.locked(data["post_id"], by_user_id=current_user.id)
+            return PostBroadcast.locked(
+                int(data["post_id"]), by_user_id=current_user.id, timestamp=timestamp, expires=expires
+            )
     return False
 
 
@@ -122,15 +133,15 @@ def unlock(data):
             if lock_data:
                 try:
                     lock_data = json.loads(lock_data)
-                    if {"post_id", "user_id", "timestamp", "expires"} == lock_data.keys() and (
-                        lock_data["user_id"] == current_user.id or current_user.can(Permission.MODERATE)
+                    if {"post_id", "by_user_id", "timestamp", "expires"} == lock_data.keys() and (
+                        lock_data["by_user_id"] == current_user.id or current_user.can(Permission.MODERATE)
                     ):
                         redis.hdel(locked_posts_redis_key, data["post_id"])
                         return PostBroadcast.unlocked(
                             data["post_id"],
                             by_user_id=current_user.id,
                             forced=bool(data["forced"]),
-                            notify_user_id=lock_data["user_id"],
+                            notify_user_id=lock_data["by_user_id"],
                         )
                 except:
                     pass

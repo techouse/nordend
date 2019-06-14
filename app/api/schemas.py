@@ -234,7 +234,7 @@ class PostSchema(ma.Schema):
             try:
                 lock_data = json.loads(redis.hget(locked_posts_redis_key, obj.id))
                 user_schema = UserSchema(only=("id", "name", "email"))
-                return user_schema.dump(User.query.get(lock_data["user_id"])).data
+                return user_schema.dump(User.query.get(lock_data["by_user_id"])).data
             except:
                 pass
         return None

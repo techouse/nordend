@@ -11,6 +11,7 @@ const state = {
     deletedId:               null,
     deletedIds:              [],
     lockedPosts:             [],
+    unlockedPosts:           [],
     notifyAboutForcedUnlock: false
 }
 
@@ -25,6 +26,7 @@ const getters = {
     deletedId:               state => state.deletedId,
     deletedIds:              state => state.deletedIds,
     lockedPosts:             state => state.lockedPosts,
+    unlockedPosts:           state => state.unlockedPosts,
     notifyAboutForcedUnlock: state => state.notifyAboutForcedUnlock,
 }
 
@@ -59,9 +61,9 @@ const mutations = {
     clearLockedPosts:           state => {
         state.lockedPosts = []
     },
-    lockPost:                   (state, {post_id, by_user_id}) => {
+    lockPost:                   (state, {post_id, by_user_id, timestamp, expires}) => {
         if (!state.lockedPosts.find(el => el.post_id === post_id)) {
-            state.lockedPosts.push({post_id, by_user_id})
+            state.lockedPosts.push({post_id, by_user_id, timestamp: new Date(timestamp), expires: new Date(expires)})
         }
     },
     unlockPost:                 (state, post_id) => {
@@ -156,8 +158,8 @@ const actions = {
                       commit("setDeleted", {post_id: data.id, by_user_id})
                       dispatch("console/log", `Post with ID ${data.id} deleted`, {root: true})
                   })
-                  .on("post.locked", ({data, by_user_id, timestamp}) => {
-                      commit("lockPost", {post_id: data.id, by_user_id})
+                  .on("post.locked", ({data, by_user_id, timestamp, expires}) => {
+                      commit("lockPost", {post_id: data.id, by_user_id, timestamp, expires})
                       dispatch("console/log", `Post with ID ${data.id} locked`, {root: true})
                   })
                   .on("post.unlocked", ({data, forced, notify_user_id, by_user_id, timestamp}) => {

@@ -140,10 +140,8 @@
         },
 
         beforeDestroy() {
+            this.unlockPost({post: this.post})
             this.editor.destroy()
-            if (this.editable) {
-                this.unlockPost({post: this.post})
-            }
         },
 
         methods: {
