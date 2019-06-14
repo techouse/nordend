@@ -120,8 +120,6 @@
 
             editable(editable) {
                 if (editable) {
-                    console.log("lock in watcher")
-
                     this.$set(this, "postWasLocked", false)
 
                     this.lockPost(this.post)
@@ -152,15 +150,12 @@
                                                      this.post.locked_by &&
                                                      this.post.locked_by.id !== this.currentUser.id)
                     if (!this.postWasLocked) {
-                        console.log("lock on mounted")
                         this.lockPost(this.post)
                             .then(() => {
                                 window.addEventListener("beforeunload", () => {
                                     this.unlockPost({post: this.post})
                                 })
                             })
-                    } else {
-                        console.log('fuq')
                     }
                     this.editor.setContent(this.post.body)
                 })
