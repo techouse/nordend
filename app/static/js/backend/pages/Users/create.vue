@@ -59,9 +59,6 @@
             <el-button type="success" @click="submit">
                 Submit
             </el-button>
-            <el-button type="danger" @click="$router.push({name: 'Users'})">
-                Cancel
-            </el-button>
         </template>
     </card-form>
 </template>

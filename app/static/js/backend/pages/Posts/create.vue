@@ -483,12 +483,9 @@
                     </div>
                 </el-form-item>
             </template>
-            <template v-if="editable" v-slot:footer>
+            <template v-slot:footer>
                 <el-button type="success" :disabled="!editable" @click="submit">
                     Submit
-                </el-button>
-                <el-button type="danger" @click="$router.push({name: 'Posts'})">
-                    Cancel
                 </el-button>
             </template>
         </card-form>

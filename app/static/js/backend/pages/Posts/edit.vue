@@ -25,10 +25,19 @@
         computed: {
             ...mapGetters("auth", ["token"]),
 
-            ...mapGetters("post", ["notifyAboutForcedUnlock", "lockedPosts", "updatedId", "updatedIds"]),
+            ...mapGetters("post", ["lockedPosts", "updatedId", "updatedIds", "notifyAboutUnlock", "notifyAboutForcedUnlock"]),
 
             postIsLocked() {
                 const lock = this.lockedPosts.find(el => el.post_id === this.post.id)
+
+                // return (lock &&
+                //         lock.expires >= new Date() &&
+                //         lock.by_user_id !== this.currentUser.id) ||
+                //        (this.post.locked &&
+                //         this.post.lock_expires >= new Date() &&
+                //         this.currentUser &&
+                //         this.post.locked_by &&
+                //         this.post.locked_by.id !== this.currentUser.id)
 
                 return lock &&
                        lock.expires >= new Date() &&
@@ -46,25 +55,32 @@
         },
 
         watch: {
-            notifyAboutForcedUnlock(postId) {
-                if (postId) {
-                    let message
-                    if (this.post.id === postId) {
-                        message = "A moderator or administrator has forcefully unlocked " +
-                                  "the article you are currently editing. Please be advised " +
-                                  "that now also other people can edit this article."
-                    } else {
-                        message = "A moderator or administrator has forcefully unlocked " +
-                                  "an article you were recently editing. Please be advised " +
-                                  "that now other people can edit that article."
-                    }
+            notifyAboutUnlock(unlock) {
+                if (unlock && unlock.post_id === this.post.id && unlock.by_user_id !== this.currentUser.id) {
+                    this.clearUnlockNotification()
+
+                    this.$alert(
+                        "This post has just been unlocked! You may now edit it.",
+                        {
+                            type:              "info",
+                            confirmButtonText: "OK",
+                        }
+                    )
+                }
+            },
+
+            notifyAboutForcedUnlock(forcedUnlock) {
+                if (forcedUnlock && forcedUnlock.by_user_id !== this.currentUser.id) {
+                    this.clearForcedUnlockNotification()
+
+                    const message = `A moderator or administrator has forcefully unlocked and
+                                     taken over ${this.post.id === forcedUnlock.post_id ? "the" : "an"}
+                                     article you were recently editing. Please be advised that you will
+                                     not be able to edit this article until the lock persists!`
 
                     this.$alert(message, {
-                        type:              this.post.id === postId ? "warning" : "info",
-                        confirmButtonText: "OK",
-                        callback:          action => {
-                            this.clearForcedUnlockNotification()
-                        }
+                        type:              this.post.id === forcedUnlock.post_id ? "warning" : "info",
+                        confirmButtonText: "OK"
                     })
                 }
             },
@@ -93,25 +109,20 @@
                 deep: true
             },
 
-            editable(editable) {
-                if (editable) {
-                    this.lockPost(this.post)
-                        .then(() => {
-                            this.$set(this.post, "locked_by", this.currentUser)
+            editable: {
+                handler(editable) {
+                    if (editable) {
+                        this.lockPost(this.post)
+                            .then(() => {
+                                this.$set(this.post, "locked_by", this.currentUser)
 
-                            window.addEventListener("beforeunload", () => {
-                                this.unlockPost({post: this.post})
+                                window.addEventListener("beforeunload", () => {
+                                    this.unlockPost({post: this.post})
+                                })
                             })
-
-                            this.$alert(
-                                "This post has just been unlocked! You may now edit it.",
-                                {
-                                    type:              "info",
-                                    confirmButtonText: "OK",
-                                }
-                            )
-                        })
-                }
+                    }
+                },
+                immediate: true
             }
         },
 
@@ -146,7 +157,7 @@
 
         methods: {
             ...mapActions("post", ["getPost", "updatePost", "deletePost", "lockPost", "unlockPost",
-                                   "clearForcedUnlockNotification", "getLatestUpdated"]),
+                                   "clearForcedUnlockNotification", "getLatestUpdated", "clearUnlockNotification"]),
 
             submit() {
                 this.$refs[this.formRef].validate((valid) => {

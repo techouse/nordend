@@ -11,8 +11,8 @@ const state = {
     deletedId:               null,
     deletedIds:              [],
     lockedPosts:             [],
-    unlockedPosts:           [],
-    notifyAboutForcedUnlock: false
+    notifyAboutUnlock:       null,
+    notifyAboutForcedUnlock: null
 }
 
 const getters = {
@@ -26,33 +26,33 @@ const getters = {
     deletedId:               state => state.deletedId,
     deletedIds:              state => state.deletedIds,
     lockedPosts:             state => state.lockedPosts,
-    unlockedPosts:           state => state.unlockedPosts,
+    notifyAboutUnlock:       state => state.notifyAboutUnlock,
     notifyAboutForcedUnlock: state => state.notifyAboutForcedUnlock,
 }
 
 const mutations = {
-    setCreated:                 (state, {post_id, by_user_id}) => {
+    setCreated:                 (state, {post_id, by_user_id, timestamp}) => {
         state.created++
         state.createdId = post_id
-        state.createdIds.push({post_id, by_user_id})
+        state.createdIds.push({post_id, by_user_id, timestamp: new Date(timestamp)})
     },
-    popCreatedIds:              (state) => {
+    popCreatedIds:              state => {
         state.createdIds.pop()
     },
-    setUpdated:                 (state, {post_id, by_user_id}) => {
+    setUpdated:                 (state, {post_id, by_user_id, timestamp}) => {
         state.updated++
         state.updatedId = post_id
-        state.updatedIds.push({post_id, by_user_id})
+        state.updatedIds.push({post_id, by_user_id, timestamp: new Date(timestamp)})
     },
-    popUpdatedIds:              (state) => {
+    popUpdatedIds:              state => {
         state.updatedIds.pop()
     },
-    setDeleted:                 (state, {post_id, by_user_id}) => {
+    setDeleted:                 (state, {post_id, by_user_id, timestamp}) => {
         state.deleted++
         state.deletedId = post_id
-        state.deletedIds.push({post_id, by_user_id})
+        state.deletedIds.push({post_id, by_user_id, timestamp: new Date(timestamp)})
     },
-    popDeletedIds:              (state) => {
+    popDeletedIds:              state => {
         state.deletedIds.pop()
     },
     setLockedPosts:             (state, ids) => {
@@ -66,13 +66,16 @@ const mutations = {
             state.lockedPosts.push({post_id, by_user_id, timestamp: new Date(timestamp), expires: new Date(expires)})
         }
     },
-    unlockPost:                 (state, post_id) => {
+    unlockPost:                 (state, {post_id, by_user_id, timestamp}) => {
         if (state.lockedPosts.find(el => el.post_id === post_id)) {
             state.lockedPosts.splice(state.lockedPosts.findIndex(el => el.post_id === post_id), 1)
         }
     },
-    setNotifyAboutForcedUnlock: (state, id) => {
-        state.notifyAboutForcedUnlock = id
+    setNotifyAboutUnlock:       (state, unlock) => {
+        state.notifyAboutUnlock = unlock
+    },
+    setNotifyAboutForcedUnlock: (state, forcedUnlock) => {
+        state.notifyAboutForcedUnlock = forcedUnlock
     }
 }
 
@@ -134,28 +137,38 @@ const actions = {
         })
     },
 
-    notifyAboutForcedUnlock: ({commit, rootGetters}, {post, notify_user_id}) => {
+    notifyAboutUnlock: ({commit, rootGetters}, {post_id, by_user_id, timestamp}) => {
+        if (rootGetters["user/currentUser"].id !== by_user_id) {
+            commit("setNotifyAboutUnlock", {post_id, by_user_id, timestamp})
+        }
+    },
+
+    clearUnlockNotification: ({commit}) => {
+        commit("setNotifyAboutUnlock", null)
+    },
+
+    notifyAboutForcedUnlock: ({commit, rootGetters}, {post_id, notify_user_id, by_user_id, timestamp}) => {
         if (rootGetters["user/currentUser"].id === notify_user_id) {
-            commit("setNotifyAboutForcedUnlock", post.id)
+            commit("setNotifyAboutForcedUnlock", {post_id, notify_user_id, by_user_id, timestamp})
         }
     },
 
     clearForcedUnlockNotification: ({commit}) => {
-        commit("setNotifyAboutForcedUnlock", false)
+        commit("setNotifyAboutForcedUnlock", null)
     },
 
     setPublicSocketHooks: ({commit, dispatch}) => {
         dispatch("socket/getPublicSocket", {}, {root: true}).then(socket => {
             socket.on("post.created", ({data, by_user_id, timestamp}) => {
-                      commit("setCreated", {post_id: data.id, by_user_id})
+                      commit("setCreated", {post_id: data.id, by_user_id, timestamp})
                       dispatch("console/log", `Post titled ${data.title} created`, {root: true})
                   })
                   .on("post.updated", ({data, by_user_id, timestamp}) => {
-                      commit("setUpdated", {post_id: data.id, by_user_id})
+                      commit("setUpdated", {post_id: data.id, by_user_id, timestamp})
                       dispatch("console/log", `Post titled ${data.title} updated`, {root: true})
                   })
                   .on("post.deleted", ({data, by_user_id, timestamp}) => {
-                      commit("setDeleted", {post_id: data.id, by_user_id})
+                      commit("setDeleted", {post_id: data.id, by_user_id, timestamp})
                       dispatch("console/log", `Post with ID ${data.id} deleted`, {root: true})
                   })
                   .on("post.locked", ({data, by_user_id, timestamp, expires}) => {
@@ -163,13 +176,15 @@ const actions = {
                       dispatch("console/log", `Post with ID ${data.id} locked`, {root: true})
                   })
                   .on("post.unlocked", ({data, forced, notify_user_id, by_user_id, timestamp}) => {
-                      commit("unlockPost", data.id)
+                      commit("unlockPost", {post_id: data.id, by_user_id, timestamp})
                       if (forced) {
-                          dispatch("notifyAboutForcedUnlock", {post: data, notify_user_id: notify_user_id})
+                          dispatch("notifyAboutForcedUnlock", {post_id: data.id, notify_user_id, by_user_id, timestamp})
+                      } else {
+                          dispatch("notifyAboutUnlock", {post_id: data.id, by_user_id, timestamp})
                       }
                       dispatch("console/log", `Post with ID ${data.id} unlocked`, {root: true})
                   })
-                  .on("post.list.locked", ({data, timestamp}) => {
+                  .on("post.list.locked", ({data}) => {
                       if (data.length > 0) {
                           commit("setLockedPosts", data)
                           dispatch("console/log", "Set locked post IDs", {root: true})

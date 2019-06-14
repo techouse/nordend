@@ -126,20 +126,23 @@
                  */
                 this.getData()
             },
+
             updated() {
                 /**
                  * Update the posts table when a post gets updated
                  */
                 this.getData()
             },
+
             deleted() {
                 /**
                  * Update the posts table when a post gets deleted
                  */
                 this.getData()
             },
-            notifyAboutForcedUnlock(postId) {
-                if (postId) {
+
+            notifyAboutForcedUnlock(forcedUnlock) {
+                if (forcedUnlock && forcedUnlock.by_user_id !== this.currentUser.id) {
                     this.$alert("A moderator or administrator has forcefully unlocked " +
                                 "an article you were recently editing. Please be advised " +
                                 "that now other people can edit that article.",
