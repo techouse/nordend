@@ -17,27 +17,19 @@
 
         data() {
             return {
-                formRef: "edit-post-form",
-                post:    new Post(),
+                formRef:       "edit-post-form",
+                post:          new Post(),
+                postWasLocked: false
             }
         },
 
         computed: {
             ...mapGetters("auth", ["token"]),
 
-            ...mapGetters("post", ["lockedPosts", "updatedId", "updatedIds", "notifyAboutUnlock", "notifyAboutForcedUnlock"]),
+            ...mapGetters("post", ["lockedPosts", "updatedId", "updatedIds", "notifyAboutUnlock", "notifyAboutForcedUnlock", "forcefullyUnlockedPost"]),
 
             postIsLocked() {
                 const lock = this.lockedPosts.find(el => el.post_id === this.post.id)
-
-                // return (lock &&
-                //         lock.expires >= new Date() &&
-                //         lock.by_user_id !== this.currentUser.id) ||
-                //        (this.post.locked &&
-                //         this.post.lock_expires >= new Date() &&
-                //         this.currentUser &&
-                //         this.post.locked_by &&
-                //         this.post.locked_by.id !== this.currentUser.id)
 
                 return lock &&
                        lock.expires >= new Date() &&
@@ -46,7 +38,7 @@
             },
 
             editable() {
-                return !this.readonly && !this.postIsLocked
+                return !this.readonly && !this.postIsLocked && !this.postWasLocked
             },
 
             title() {
@@ -56,32 +48,49 @@
 
         watch: {
             notifyAboutUnlock(unlock) {
-                if (unlock && unlock.post_id === this.post.id && unlock.by_user_id !== this.currentUser.id) {
+                if (unlock) {
                     this.clearUnlockNotification()
 
-                    this.$alert(
-                        "This post has just been unlocked! You may now edit it.",
-                        {
-                            type:              "info",
-                            confirmButtonText: "OK",
+                    if (unlock.post_id === this.post.id) {
+                        if (unlock.by_user_id !== this.currentUser.id) {
+                            this.$alert(
+                                "This post has just been unlocked! You may now edit it.",
+                                {
+                                    type:              "info",
+                                    confirmButtonText: "OK",
+                                }
+                            )
+
+                            this.$set(this, "postWasLocked", false)
                         }
-                    )
+                    }
+                }
+            },
+
+            forcefullyUnlockedPost(forcedUnlock) {
+                if (forcedUnlock) {
+                    if (forcedUnlock.post_id === this.post.id) {
+                        this.$set(this, "postWasLocked", false)
+                    }
                 }
             },
 
             notifyAboutForcedUnlock(forcedUnlock) {
-                if (forcedUnlock && forcedUnlock.by_user_id !== this.currentUser.id) {
+                if (forcedUnlock) {
                     this.clearForcedUnlockNotification()
 
-                    const message = `A moderator or administrator has forcefully unlocked and
-                                     taken over ${this.post.id === forcedUnlock.post_id ? "the" : "an"}
-                                     article you were recently editing. Please be advised that you will
-                                     not be able to edit this article until the lock persists!`
+                    if (forcedUnlock.by_user_id !== this.currentUser.id) {
+                        const message = `A moderator or administrator has forcefully unlocked
+                                         ${this.post.id === forcedUnlock.post_id ? "the" : "an"}
+                                         article you were recently editing. In case the article was
+                                         also taken over you will not be able to edit it until the
+                                         lock persists.`
 
-                    this.$alert(message, {
-                        type:              this.post.id === forcedUnlock.post_id ? "warning" : "info",
-                        confirmButtonText: "OK"
-                    })
+                        this.$alert(message, {
+                            type:              this.post.id === forcedUnlock.post_id ? "warning" : "info",
+                            confirmButtonText: "OK"
+                        })
+                    }
                 }
             },
 
@@ -109,20 +118,21 @@
                 deep: true
             },
 
-            editable: {
-                handler(editable) {
-                    if (editable) {
-                        this.lockPost(this.post)
-                            .then(() => {
-                                this.$set(this.post, "locked_by", this.currentUser)
+            editable(editable) {
+                if (editable) {
+                    console.log("lock in watcher")
 
-                                window.addEventListener("beforeunload", () => {
-                                    this.unlockPost({post: this.post})
-                                })
+                    this.$set(this, "postWasLocked", false)
+
+                    this.lockPost(this.post)
+                        .then(() => {
+                            this.$set(this.post, "locked_by", this.currentUser)
+
+                            window.addEventListener("beforeunload", () => {
+                                this.unlockPost({post: this.post})
                             })
-                    }
-                },
-                immediate: true
+                        })
+                }
             }
         },
 
@@ -135,13 +145,22 @@
                 .then(({data}) => {
                     this.$set(this, "post", new Post(data))
                     this.$set(this, "loading", false)
-                    if (this.editable) {
+
+                    this.$set(this, "postWasLocked", this.post.locked &&
+                                                     this.post.lock_expires >= new Date() &&
+                                                     this.currentUser &&
+                                                     this.post.locked_by &&
+                                                     this.post.locked_by.id !== this.currentUser.id)
+                    if (!this.postWasLocked) {
+                        console.log("lock on mounted")
                         this.lockPost(this.post)
                             .then(() => {
                                 window.addEventListener("beforeunload", () => {
                                     this.unlockPost({post: this.post})
                                 })
                             })
+                    } else {
+                        console.log('fuq')
                     }
                     this.editor.setContent(this.post.body)
                 })

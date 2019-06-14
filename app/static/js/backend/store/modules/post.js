@@ -12,6 +12,7 @@ const state = {
     deletedIds:              [],
     lockedPosts:             [],
     notifyAboutUnlock:       null,
+    forcefullyUnlockedPost:  null,
     notifyAboutForcedUnlock: null
 }
 
@@ -27,6 +28,7 @@ const getters = {
     deletedIds:              state => state.deletedIds,
     lockedPosts:             state => state.lockedPosts,
     notifyAboutUnlock:       state => state.notifyAboutUnlock,
+    forcefullyUnlockedPost:  state => state.forcefullyUnlockedPost,
     notifyAboutForcedUnlock: state => state.notifyAboutForcedUnlock,
 }
 
@@ -66,13 +68,16 @@ const mutations = {
             state.lockedPosts.push({post_id, by_user_id, timestamp: new Date(timestamp), expires: new Date(expires)})
         }
     },
-    unlockPost:                 (state, {post_id, by_user_id, timestamp}) => {
+    unlockPost:                 (state, {post_id}) => {
         if (state.lockedPosts.find(el => el.post_id === post_id)) {
             state.lockedPosts.splice(state.lockedPosts.findIndex(el => el.post_id === post_id), 1)
         }
     },
     setNotifyAboutUnlock:       (state, unlock) => {
         state.notifyAboutUnlock = unlock
+    },
+    setForcefullyUnlockedPost:  (state, unlock) => {
+        state.forcefullyUnlockedPost = unlock
     },
     setNotifyAboutForcedUnlock: (state, forcedUnlock) => {
         state.notifyAboutForcedUnlock = forcedUnlock
@@ -147,6 +152,12 @@ const actions = {
         commit("setNotifyAboutUnlock", null)
     },
 
+    forcefullyUnlockPost: ({commit, rootGetters}, {post_id, notify_user_id, by_user_id, timestamp}) => {
+        if (rootGetters["user/currentUser"].id === by_user_id) {
+            commit("setForcefullyUnlockedPost", {post_id, notify_user_id, by_user_id, timestamp})
+        }
+    },
+
     notifyAboutForcedUnlock: ({commit, rootGetters}, {post_id, notify_user_id, by_user_id, timestamp}) => {
         if (rootGetters["user/currentUser"].id === notify_user_id) {
             commit("setNotifyAboutForcedUnlock", {post_id, notify_user_id, by_user_id, timestamp})
@@ -178,6 +189,7 @@ const actions = {
                   .on("post.unlocked", ({data, forced, notify_user_id, by_user_id, timestamp}) => {
                       commit("unlockPost", {post_id: data.id, by_user_id, timestamp})
                       if (forced) {
+                          dispatch("forcefullyUnlockPost", {post_id: data.id, notify_user_id, by_user_id, timestamp})
                           dispatch("notifyAboutForcedUnlock", {post_id: data.id, notify_user_id, by_user_id, timestamp})
                       } else {
                           dispatch("notifyAboutUnlock", {post_id: data.id, by_user_id, timestamp})
