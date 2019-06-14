@@ -11,7 +11,6 @@ const state = {
     deletedId:               null,
     deletedIds:              [],
     lockedPosts:             [],
-    gotLockedPosts:          false,
     notifyAboutForcedUnlock: false
 }
 
@@ -26,7 +25,6 @@ const getters = {
     deletedId:               state => state.deletedId,
     deletedIds:              state => state.deletedIds,
     lockedPosts:             state => state.lockedPosts,
-    gotLockedPosts:          state => state.gotLockedPosts,
     notifyAboutForcedUnlock: state => state.notifyAboutForcedUnlock,
 }
 
@@ -57,20 +55,18 @@ const mutations = {
     },
     setLockedPosts:             (state, ids) => {
         state.lockedPosts = ids
-        state.gotLockedPosts = true
     },
     clearLockedPosts:           state => {
         state.lockedPosts = []
-        state.gotLockedPosts = false
     },
-    lockPost:                   (state, id) => {
-        if (!state.lockedPosts.includes(id)) {
-            state.lockedPosts.push(id)
+    lockPost:                   (state, {post_id, by_user_id}) => {
+        if (!state.lockedPosts.find(el => el.post_id === post_id)) {
+            state.lockedPosts.push({post_id, by_user_id})
         }
     },
-    unlockPost:                 (state, id) => {
-        if (state.lockedPosts.includes(id)) {
-            state.lockedPosts.splice(state.lockedPosts.indexOf(id), 1)
+    unlockPost:                 (state, post_id) => {
+        if (state.lockedPosts.find(el => el.post_id === post_id)) {
+            state.lockedPosts.splice(state.lockedPosts.findIndex(el => el.post_id === post_id), 1)
         }
     },
     setNotifyAboutForcedUnlock: (state, id) => {
@@ -88,6 +84,24 @@ const actions = {
     updatePost: (context, post) => update(context, `/posts/${post.id}`, post),
 
     deletePost: (context, id) => destroy(context, `/posts/${id}`),
+
+    getLatestCreated: ({state, commit}) => new Promise(resolve => {
+        const latest = state.createdIds[state.createdIds.length - 1]
+        commit("popCreatedIds")
+        return resolve(latest)
+    }),
+
+    getLatestUpdated: ({state, commit}) => new Promise(resolve => {
+        const latest = state.updatedIds[state.updatedIds.length - 1]
+        commit("popUpdatedIds")
+        return resolve(latest)
+    }),
+
+    getLatestDeleted: ({state, commit}) => new Promise(resolve => {
+        const latest = state.deletedIds[state.deletedIds.length - 1]
+        commit("popDeletedIds")
+        return resolve(latest)
+    }),
 
     listLockedPosts: ({dispatch, rootGetters}) => {
         dispatch("socket/getPublicSocket", {}, {root: true}).then(socket => {
@@ -143,7 +157,7 @@ const actions = {
                       dispatch("console/log", `Post with ID ${data.id} deleted`, {root: true})
                   })
                   .on("post.locked", ({data, by_user_id, timestamp}) => {
-                      commit("lockPost", data.id)
+                      commit("lockPost", {post_id: data.id, by_user_id})
                       dispatch("console/log", `Post with ID ${data.id} locked`, {root: true})
                   })
                   .on("post.unlocked", ({data, forced, notify_user_id, by_user_id, timestamp}) => {
@@ -165,24 +179,6 @@ const actions = {
     setPrivateSocketHooks: ({commit, dispatch}, user) => {
         // TODO add some private stuff maybe
     },
-
-    getLatestCreated: ({state, commit}) => new Promise(resolve => {
-        const latest = state.createdIds[state.createdIds.length - 1]
-        commit("popCreatedIds")
-        return resolve(latest)
-    }),
-
-    getLatestUpdated: ({state, commit}) => new Promise(resolve => {
-        const latest = state.updatedIds[state.updatedIds.length - 1]
-        commit("popUpdatedIds")
-        return resolve(latest)
-    }),
-
-    getLatestDeleted: ({state, commit}) => new Promise(resolve => {
-        const latest = state.deletedIds[state.deletedIds.length - 1]
-        commit("popDeletedIds")
-        return resolve(latest)
-    }),
 }
 
 export default {

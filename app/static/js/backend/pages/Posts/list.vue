@@ -44,7 +44,7 @@
                         />
                     </template>
                     <template slot-scope="scope">
-                        <template v-if="!lockedPosts.includes(scope.row.id)">
+                        <template v-if="!lockedPosts.find(el => el.post_id === scope.row.id)">
                             <router-link :to="{name: 'EditPost', params: {postId: scope.row.id}}"
                                          class="btn btn-sm btn-outline-secondary"
                             >
@@ -114,7 +114,7 @@
         },
 
         computed: {
-            ...mapGetters("post", ["created", "updated", "deleted", "gotLockedPosts", "lockedPosts", "notifyAboutForcedUnlock"]),
+            ...mapGetters("post", ["created", "updated", "deleted", "lockedPosts", "notifyAboutForcedUnlock"]),
 
             ...mapGetters("user", ["currentUser"]),
         },
@@ -155,7 +155,7 @@
         },
 
         created() {
-            if (!this.gotLockedPosts) {
+            if (!this.lockedPosts.length) {
                 this.listLockedPosts()
             }
         },

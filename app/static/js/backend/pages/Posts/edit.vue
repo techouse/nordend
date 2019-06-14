@@ -28,7 +28,7 @@
             ...mapGetters("post", ["notifyAboutForcedUnlock", "lockedPosts", "updatedId", "updatedIds"]),
 
             postIsLocked() {
-                return this.lockedPosts.includes(this.post.id) &&
+                return this.lockedPosts.find(el => el.post_id === this.post.id) &&
                        this.post.locked &&
                        this.post.lock_expires >= new Date() &&
                        this.currentUser &&
