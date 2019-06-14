@@ -28,12 +28,12 @@
             ...mapGetters("post", ["notifyAboutForcedUnlock", "lockedPosts", "updatedId", "updatedIds"]),
 
             postIsLocked() {
-                return this.lockedPosts.find(el => el.post_id === this.post.id) &&
-                       this.post.locked &&
-                       this.post.lock_expires >= new Date() &&
+                const lock = this.lockedPosts.find(el => el.post_id === this.post.id)
+
+                return lock &&
+                       lock.expires >= new Date() &&
                        this.currentUser &&
-                       this.post.locked_by &&
-                       this.post.locked_by.id !== this.currentUser.id
+                       lock.by_user_id !== this.currentUser.id
             },
 
             editable() {
