@@ -25,6 +25,9 @@ export default class Post {
         this.related_ids = []
         this.image = null
         this.images = []
+        this.draft = true
+        this.published = false
+        this.published_at = null
         this.created_at = null
         this.updated_at = null
         this.locked = false
@@ -70,6 +73,10 @@ export default class Post {
             this.image = new Photo(this.image)
         }
 
+        if (this.published_at) {
+            this.published_at = new Date(this.published_at)
+        }
+
         if (this.created_at) {
             this.created_at = new Date(this.created_at)
         }
@@ -100,7 +107,9 @@ export default class Post {
             category_id:             this.category_id,
             additional_category_ids: this.additional_category_ids,
             tag_ids:                 this.tag_ids,
-            related_ids:             this.related_ids
+            related_ids:             this.related_ids,
+            draft:                   this.draft,
+            published:               this.published_at instanceof Date ? this.published_at.toISOString() : null
         }
     }
 }

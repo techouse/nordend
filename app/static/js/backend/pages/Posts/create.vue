@@ -94,6 +94,26 @@
                         />
                     </el-select>
                 </el-form-item>
+                <el-row>
+                    <el-col :span="18">
+                        <el-form-item label="Published">
+                            <el-date-picker v-model="post.published_at"
+                                            type="datetime"
+                                            placeholder="Select publish date and time"
+                                            :picker-options="publishPickerOptions"
+                                            :disabled="post.draft"
+                            />
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-form-item label="Draft" prop="draft">
+                            <el-switch v-model="post.draft"
+                                       active-text="Yes"
+                                       inactive-text="No"
+                            />
+                        </el-form-item>
+                    </el-col>
+                </el-row>
                 <el-form-item label="Content">
                     <div class="editor">
                         <editor-menu-bar v-if="editable" :editor="editor">
@@ -517,7 +537,6 @@
 
 <script>
     import {mapActions, mapGetters} from "vuex"
-    import debounce                 from "lodash"
     import {
         Editor,
         EditorContent,
@@ -558,6 +577,7 @@
     import CreatePartial            from "../../components/CreatePartial"
     import Post                     from "../../models/Post"
     import Category                 from "../../models/Category"
+    import {addDays, addWeeks}      from "date-fns"
     // Code highlighting
     import css                      from "highlight.js/lib/languages/css"
     import http                     from "highlight.js/lib/languages/http"
@@ -702,7 +722,35 @@
                 currentCategory:          null,
                 previousCategory:         null,
                 searchingRelatedPosts:    false,
-                relatedPosts:             []
+                relatedPosts:             [],
+                publishPickerOptions:     {
+                    shortcuts: [
+                        {
+                            text: "Now",
+                            onClick(picker) {
+                                picker.$emit("pick", new Date())
+                            }
+                        },
+                        {
+                            text: "Tomorrow",
+                            onClick(picker) {
+                                picker.$emit("pick", addDays(new Date(), 1))
+                            }
+                        },
+                        {
+                            text: "In two days",
+                            onClick(picker) {
+                                picker.$emit("pick", addDays(new Date(), 2))
+                            }
+                        },
+                        {
+                            text: "Next week",
+                            onClick(picker) {
+                                picker.$emit("pick", addWeeks(new Date(), 1))
+                            }
+                        }
+                    ]
+                }
             }
         },
 

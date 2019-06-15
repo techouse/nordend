@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from dateutil import parser as dp
 from flask import request, g
 from sqlalchemy import desc, collate
 from sqlalchemy.exc import SQLAlchemyError
@@ -31,7 +34,7 @@ class PostResource(TokenRequiredResource):
             return response, status.HTTP_400_BAD_REQUEST
         if "title" in request_dict:
             post.title = request_dict["title"]
-        if "sub_title" in request_dict:
+        if "sub_title" in request_dict and request_dict["sub_title"] is not None:
             post.sub_title = request_dict["sub_title"]
         if "slug" in request_dict:
             post_slug = request_dict["slug"]
@@ -50,6 +53,10 @@ class PostResource(TokenRequiredResource):
             post.tags = list(map(int, request_dict["tag_ids"]))
         if "related_ids" in request_dict:
             post.related = list(map(int, request_dict["related_ids"]))
+        if "published" in request_dict:
+            post.published = dp.parse(request_dict["published"])
+        if "draft" in request_dict:
+            post.draft = request_dict["draft"]
         if post.authors.filter(PostAuthor.user_id == g.current_user.id).count() == 0:
             post.authors.append(PostAuthor(user=g.current_user))
         dumped_post, dump_errors = post_schema.dump(post)
@@ -88,7 +95,7 @@ class PostListResource(TokenRequiredResource):
         "search": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "sort": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "title": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
-        "sub_title": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "sub_title": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 1024),
         "slug": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "category_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
         "author_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
@@ -125,15 +132,15 @@ class PostListResource(TokenRequiredResource):
             if column == "category.name":
                 query = (
                     query.join(PostCategory, Post.categories)
-                        .join(Category, PostCategory.category)
-                        .filter(PostCategory.primary.is_(True))
+                    .join(Category, PostCategory.category)
+                    .filter(PostCategory.primary.is_(True))
                 )
                 order_by = Category.name
             elif column == "author.name":
                 query = (
                     query.join(PostAuthor, Post.authors)
-                        .join(User, PostAuthor.user)
-                        .filter(PostAuthor.primary.is_(True))
+                    .join(User, PostAuthor.user)
+                    .filter(PostAuthor.primary.is_(True))
                 )
                 order_by = User.name
             elif column in set(Post.__table__.columns.keys()):
@@ -165,11 +172,12 @@ class PostListResource(TokenRequiredResource):
         try:
             post = Post(
                 title=request_dict["title"],
-                sub_title=request_dict["sub_title"] if "sub_title" in request_dict else "",
                 body=request_dict["body"],
                 slug=request_dict["slug"] if "slug" in request_dict else "",
                 author=g.current_user,
             )
+            if "sub_title" in request_dict and request_dict["sub_title"]:
+                post.sub_title = request_dict["sub_title"]
             if "category_id" in request_dict:
                 post.category = int(request_dict["category_id"])
             if "additional_category_ids" in request_dict:
@@ -178,6 +186,10 @@ class PostListResource(TokenRequiredResource):
                 post.tags = list(map(int, request_dict["tag_ids"]))
             if "related_ids" in request_dict:
                 post.related = list(map(int, request_dict["related_ids"]))
+            if "published" in request_dict:
+                post.published = dp.parse(request_dict["published"])
+            if "draft" in request_dict:
+                post.draft = request_dict["request_dict"]
             post.add(post)
             created_post = Post.query.get(post.id)
             result = post_schema.dump(created_post).data

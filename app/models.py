@@ -4,10 +4,12 @@ from time import time
 
 import bleach
 import jwt
+import pytz
 from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin, login_manager
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from slugify.slugify import slugify
+from sqlalchemy import and_
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -376,6 +378,9 @@ class Post(db.Model, AddUpdateDelete):
     slug = db.Column(db.String(255), index=True)
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)
+    is_draft = db.Column(db.Boolean, default=True, index=True, nullable=False)
+    is_published = db.Column(db.Boolean, default=False, index=True, nullable=False)
+    published_at = db.Column(db.DateTime, index=True, nullable=True)
     created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
     updated_at = db.Column(
         db.TIMESTAMP, index=True, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp()
@@ -428,16 +433,18 @@ class Post(db.Model, AddUpdateDelete):
 
     @author.setter
     def author(self, value):
+        if isinstance(value, User):
+            value = value.id
         current_author = self.authors.filter(PostAuthor.primary.is_(True)).first()
-        new_author = self.authors.filter(PostAuthor.user_id == value.id).first()
+        new_author = self.authors.filter(PostAuthor.user_id == value).first()
         if current_author:
-            if current_author.user_id == value.id:
+            if current_author.user_id == value:
                 return
             current_author.primary = False
         if new_author:
             new_author.primary = True
         else:
-            self.authors.append(PostAuthor(user=value, primary=True))
+            self.authors.append(PostAuthor(user_id=value, primary=True))
 
     @hybrid_property
     def category(self):
@@ -546,6 +553,42 @@ class Post(db.Model, AddUpdateDelete):
             new_image.primary = True
         else:
             self.images.append(PostImage(image_id=value, primary=True))
+
+    @hybrid_property
+    def published(self):
+        return (
+            self.is_draft is False
+            and self.is_published is True
+            and self.published_at is not None
+            and self.published_at.astimezone(pytz.utc) <= datetime.now(pytz.utc)
+        )
+
+    @published.expression
+    def published(cls):
+        return and_(
+            cls.is_draft.is_(False), cls.is_published.is_(True), cls.published_at <= db.func.current_timestamp()
+        )
+
+    @published.setter
+    def published(self, date_time):
+        self.is_draft = False
+        self.is_published = True
+        self.published_at = date_time
+
+    @hybrid_property
+    def draft(self):
+        return self.is_draft is True and self.is_published is False
+
+    @draft.expression
+    def draft(cls):
+        return and_(cls.is_draft.is_(True), cls.is_published.is_(False))
+
+    @draft.setter
+    def draft(self, value):
+        self.is_draft = value
+        self.is_published = not value
+        if value:
+            self.published_at = None
 
     def __repr__(self):
         return "<Post {}>".format(self.title)

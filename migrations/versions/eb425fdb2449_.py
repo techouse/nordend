@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: b9d28889cb22
+Revision ID: eb425fdb2449
 Revises: 
-Create Date: 2019-06-15 15:06:22.342469
+Create Date: 2019-06-16 00:14:46.024843
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b9d28889cb22'
+revision = 'eb425fdb2449'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -33,11 +33,17 @@ def upgrade():
     sa.Column('slug', sa.String(length=255), nullable=True),
     sa.Column('body', sa.Text(), nullable=True),
     sa.Column('body_html', sa.Text(), nullable=True),
+    sa.Column('is_draft', sa.Boolean(), nullable=False),
+    sa.Column('is_published', sa.Boolean(), nullable=False),
+    sa.Column('published_at', sa.DateTime(), nullable=True),
     sa.Column('created_at', sa.TIMESTAMP(), nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_posts_created_at'), 'posts', ['created_at'], unique=False)
+    op.create_index(op.f('ix_posts_is_draft'), 'posts', ['is_draft'], unique=False)
+    op.create_index(op.f('ix_posts_is_published'), 'posts', ['is_published'], unique=False)
+    op.create_index(op.f('ix_posts_published_at'), 'posts', ['published_at'], unique=False)
     op.create_index(op.f('ix_posts_slug'), 'posts', ['slug'], unique=False)
     op.create_index(op.f('ix_posts_sub_title'), 'posts', ['sub_title'], unique=False)
     op.create_index(op.f('ix_posts_title'), 'posts', ['title'], unique=False)
@@ -189,6 +195,9 @@ def downgrade():
     op.drop_index(op.f('ix_posts_title'), table_name='posts')
     op.drop_index(op.f('ix_posts_sub_title'), table_name='posts')
     op.drop_index(op.f('ix_posts_slug'), table_name='posts')
+    op.drop_index(op.f('ix_posts_published_at'), table_name='posts')
+    op.drop_index(op.f('ix_posts_is_published'), table_name='posts')
+    op.drop_index(op.f('ix_posts_is_draft'), table_name='posts')
     op.drop_index(op.f('ix_posts_created_at'), table_name='posts')
     op.drop_table('posts')
     op.drop_table('categories')
