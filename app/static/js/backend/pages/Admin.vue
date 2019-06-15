@@ -3,7 +3,7 @@
         <header class="app-header navbar">
             <button class="navbar-toggler sidebar-toggler d-lg-none mr-auto" type="button"
                     data-toggle="sidebar-show"
-                    @click.prevent="toggleNano"
+                    @click.prevent="toggleNanoXs"
             >
                 <span class="navbar-toggler-icon"/>
             </button>
@@ -143,7 +143,7 @@
 
             ...mapActions("auth", ["autoLogin", "logout"]),
 
-            toggleNano() {
+            toggleNanoXs() {
                 // body
                 const body = document.body
 
@@ -157,6 +157,17 @@
                     body.classList.remove("sidebar-show")
                 } else {
                     body.classList.add("sidebar-show")
+                }
+            },
+
+            toggleNano() {
+                // body
+                const body = document.body
+
+                if (body.classList.contains("sidebar-lg-show")) {
+                    body.classList.remove("sidebar-lg-show")
+                } else {
+                    body.classList.add("sidebar-lg-show")
                 }
             },
 
