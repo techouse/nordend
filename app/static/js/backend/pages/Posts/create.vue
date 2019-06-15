@@ -10,14 +10,21 @@
                         Delete post
                     </el-button>
                     <el-button v-if="!editable && postIsLocked && (currentUser.role.moderate || currentUser.role.admin)"
-                               class="btn btn-sm btn-warning" @click="unlock">
+                               class="btn btn-sm btn-warning" @click="unlock"
+                    >
                         Forcefully unlock post
                     </el-button>
                 </div>
             </template>
             <template v-slot:body>
                 <el-form-item label="Title" prop="title">
-                    <el-input v-model="post.title" :disabled="!editable" type="string" required/>
+                    <el-input v-model="post.title" :disabled="!editable" type="text" maxlength="255"
+                              show-word-limit required/>
+                </el-form-item>
+                <el-form-item label="Sub title" prop="sub_title">
+                    <el-input v-model="post.sub_title" :autosize="{ minRows: 2, maxRows: 4}"
+                              :disabled="!editable" type="textarea" maxlength="1024" show-word-limit
+                    />
                 </el-form-item>
                 <el-row>
                     <el-col :lg="6" :md="24">

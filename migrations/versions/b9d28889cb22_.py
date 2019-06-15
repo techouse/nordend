@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 22c5401bf433
+Revision ID: b9d28889cb22
 Revises: 
-Create Date: 2019-06-10 17:05:14.562930
+Create Date: 2019-06-15 15:06:22.342469
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '22c5401bf433'
+revision = 'b9d28889cb22'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -29,6 +29,7 @@ def upgrade():
     op.create_table('posts',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=255), nullable=True),
+    sa.Column('sub_title', sa.String(length=1024), nullable=True),
     sa.Column('slug', sa.String(length=255), nullable=True),
     sa.Column('body', sa.Text(), nullable=True),
     sa.Column('body_html', sa.Text(), nullable=True),
@@ -38,6 +39,7 @@ def upgrade():
     )
     op.create_index(op.f('ix_posts_created_at'), 'posts', ['created_at'], unique=False)
     op.create_index(op.f('ix_posts_slug'), 'posts', ['slug'], unique=False)
+    op.create_index(op.f('ix_posts_sub_title'), 'posts', ['sub_title'], unique=False)
     op.create_index(op.f('ix_posts_title'), 'posts', ['title'], unique=False)
     op.create_index(op.f('ix_posts_updated_at'), 'posts', ['updated_at'], unique=False)
     op.create_table('roles',
@@ -77,6 +79,15 @@ def upgrade():
     sa.PrimaryKeyConstraint('post_id', 'tag_id')
     )
     op.create_index(op.f('ix_post_tags_created_at'), 'post_tags', ['created_at'], unique=False)
+    op.create_table('related_posts',
+    sa.Column('post_id', sa.Integer(), nullable=False),
+    sa.Column('related_post_id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP(), nullable=False),
+    sa.ForeignKeyConstraint(['post_id'], ['posts.id'], ),
+    sa.ForeignKeyConstraint(['related_post_id'], ['posts.id'], ),
+    sa.PrimaryKeyConstraint('post_id', 'related_post_id')
+    )
+    op.create_index(op.f('ix_related_posts_created_at'), 'related_posts', ['created_at'], unique=False)
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
@@ -164,6 +175,8 @@ def downgrade():
     op.drop_index(op.f('ix_users_name'), table_name='users')
     op.drop_index(op.f('ix_users_email'), table_name='users')
     op.drop_table('users')
+    op.drop_index(op.f('ix_related_posts_created_at'), table_name='related_posts')
+    op.drop_table('related_posts')
     op.drop_index(op.f('ix_post_tags_created_at'), table_name='post_tags')
     op.drop_table('post_tags')
     op.drop_index(op.f('ix_post_categories_primary'), table_name='post_categories')
@@ -174,6 +187,7 @@ def downgrade():
     op.drop_table('roles')
     op.drop_index(op.f('ix_posts_updated_at'), table_name='posts')
     op.drop_index(op.f('ix_posts_title'), table_name='posts')
+    op.drop_index(op.f('ix_posts_sub_title'), table_name='posts')
     op.drop_index(op.f('ix_posts_slug'), table_name='posts')
     op.drop_index(op.f('ix_posts_created_at'), table_name='posts')
     op.drop_table('posts')

@@ -8,6 +8,7 @@ export default class Post {
         this.id = null
         this.slug = null
         this.title = null
+        this.sub_title = null
         this.body = null
         this.body_html = null
         this.author = null
@@ -87,6 +88,7 @@ export default class Post {
         return {
             slug:                    this.slug,
             title:                   this.title,
+            sub_title:               this.sub_title,
             body:                    this.body,
             category_id:             this.category_id,
             additional_category_ids: this.additional_category_ids,

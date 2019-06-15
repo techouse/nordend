@@ -31,6 +31,8 @@ class PostResource(TokenRequiredResource):
             return response, status.HTTP_400_BAD_REQUEST
         if "title" in request_dict:
             post.title = request_dict["title"]
+        if "sub_title" in request_dict:
+            post.title = request_dict["sub_title"]
         if "slug" in request_dict:
             post_slug = request_dict["slug"]
             if Post.is_unique(id=id, category=post.category, slug=post_slug):
@@ -57,9 +59,7 @@ class PostResource(TokenRequiredResource):
         try:
             post.update()
             updated_post = self.get(id)
-            PostBroadcast.updated(
-                post=post_schema.dump(updated_post).data, by_user_id=g.current_user.id
-            )
+            PostBroadcast.updated(post=post_schema.dump(updated_post).data, by_user_id=g.current_user.id)
             return updated_post
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -86,6 +86,7 @@ class PostListResource(TokenRequiredResource):
         "search": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "sort": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "title": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
+        "sub_title": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "slug": fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255),
         "category_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
         "author_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
@@ -102,6 +103,8 @@ class PostListResource(TokenRequiredResource):
             filters.append(Post.title.like("%{filter}%".format(filter=query_args["search"])))
         if "title" in query_args:
             filters.append(Post.title.like("%{filter}%".format(filter=query_args["title"])))
+        if "sub_title" in query_args:
+            filters.append(Post.title.like("%{filter}%".format(filter=query_args["sub_title"])))
         if "slug" in query_args:
             filters.append(Post.slug.like("%{filter}%".format(filter=query_args["slug"])))
         if "category_id" in query_args:
@@ -120,15 +123,15 @@ class PostListResource(TokenRequiredResource):
             if column == "category.name":
                 query = (
                     query.join(PostCategory, Post.categories)
-                    .join(Category, PostCategory.category)
-                    .filter(PostCategory.primary.is_(True))
+                        .join(Category, PostCategory.category)
+                        .filter(PostCategory.primary.is_(True))
                 )
                 order_by = Category.name
             elif column == "author.name":
                 query = (
                     query.join(PostAuthor, Post.authors)
-                    .join(User, PostAuthor.user)
-                    .filter(PostAuthor.primary.is_(True))
+                        .join(User, PostAuthor.user)
+                        .filter(PostAuthor.primary.is_(True))
                 )
                 order_by = User.name
             elif column in set(Post.__table__.columns.keys()):
@@ -164,6 +167,7 @@ class PostListResource(TokenRequiredResource):
         try:
             post = Post(
                 title=request_dict["title"],
+                sub_title=request_dict["sub_title"] if "sub_title" in request_dict else "",
                 body=request_dict["body"],
                 slug=request_dict["slug"] if "slug" in request_dict else "",
                 author=g.current_user,

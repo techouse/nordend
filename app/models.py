@@ -360,10 +360,19 @@ class PostCategory(db.Model, AddUpdateDelete):
         return "<PostCategory {}, {}>".format(self.post.title, self.category.name)
 
 
+related_posts = db.Table(
+    "related_posts",
+    db.Column("post_id", db.Integer, db.ForeignKey("posts.id"), primary_key=True),
+    db.Column("related_post_id", db.Integer, db.ForeignKey("posts.id"), primary_key=True),
+    db.Column("created_at", db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False),
+)
+
+
 class Post(db.Model, AddUpdateDelete):
     __tablename__ = "posts"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), index=True)
+    sub_title = db.Column(db.String(1024), index=True)
     slug = db.Column(db.String(255), index=True)
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)
@@ -376,6 +385,14 @@ class Post(db.Model, AddUpdateDelete):
     categories = db.relationship("PostCategory", lazy="dynamic")
     images = db.relationship("PostImage", lazy="dynamic")
     _tags = db.relationship("PostTag", lazy="dynamic")
+    related = db.relationship(
+        "Post",
+        secondary=related_posts,
+        primaryjoin=id == related_posts.c.post_id,
+        secondaryjoin=id == related_posts.c.related_post_id,
+        backref=db.backref("related_posts", lazy="dynamic"),
+        lazy="dynamic",
+    )
 
     @classmethod
     def is_unique(cls, id, category, slug):
