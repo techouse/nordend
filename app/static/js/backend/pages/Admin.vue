@@ -29,7 +29,9 @@
                              @click="$router.push({name: 'EditUser', params: {userId: currentUser.id}})"
                 >
                     <i class="el-icon-user-solid el-icon--right"/>
-                    {{ currentUser.name || currentUser.email }}
+                    <span class="d-none d-sm-inline">
+                        {{ currentUser.name || currentUser.email }}
+                    </span>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item icon="el-icon-lock" :command="logout">
                             Logout
@@ -94,7 +96,7 @@
                 Flask CMS
                 <span>&copy; 2019 <a href="https://github.com/techouse" target="_blank">Klemen Tušar</a></span>
             </div>
-            <div class="ml-auto">
+            <div class="ml-auto d-none d-md-block">
                 <span>Shamelessly powered by</span>
                 <a href="http://flask.pocoo.org" target="_blank">Flask</a>,
                 <a href="https://vuejs.org">Vue.js</a> and
@@ -149,6 +151,12 @@
                     body.classList.remove("sidebar-lg-show")
                 } else {
                     body.classList.add("sidebar-lg-show")
+                }
+
+                if (body.classList.contains("sidebar-show")) {
+                    body.classList.remove("sidebar-show")
+                } else {
+                    body.classList.add("sidebar-show")
                 }
             },
 
