@@ -385,7 +385,7 @@ class Post(db.Model, AddUpdateDelete):
     categories = db.relationship("PostCategory", lazy="dynamic")
     images = db.relationship("PostImage", lazy="dynamic")
     _tags = db.relationship("PostTag", lazy="dynamic")
-    related = db.relationship(
+    _related = db.relationship(
         "Post",
         secondary=related_posts,
         primaryjoin=id == related_posts.c.post_id,
@@ -504,6 +504,28 @@ class Post(db.Model, AddUpdateDelete):
         if ids_to_append:
             for tag_id in ids_to_append:
                 self._tags.append(PostTag(tag_id=tag_id))
+
+    @hybrid_property
+    def related(self):
+        return self._related
+
+    @related.setter
+    def related(self, related):
+        ids = set()
+        for related_post in related:
+            if isinstance(related_post, Post):
+                ids.add(related_post.id)
+            else:
+                ids.add(related_post)
+        current = set(related_post[0] for related_post in self._related.values("related_post_id"))
+        ids_to_delete = current - ids
+        if ids_to_delete:
+            for related_post_id in ids_to_delete:
+                self._related.remove(Post.query.get(related_post_id))
+        ids_to_append = ids - current
+        if ids_to_append:
+            for related_post_id in ids_to_append:
+                self._related.append(Post.query.get(related_post_id))
 
     @hybrid_property
     def image(self):

@@ -107,6 +107,7 @@
                                             this.$set(this, "post", new Post(data))
                                             this.$set(this, "loading", false)
                                             this.editor.setContent(this.post.body)
+                                            this.$set(this, "relatedPosts", this.post.related)
                                         })
                                         .catch(() => {
                                             this.$set(this, "loading", false)
@@ -157,6 +158,7 @@
                                 })
                             })
                     }
+                    this.$set(this, "relatedPosts", this.post.related)
                     this.editor.setContent(this.post.body)
                 })
                 .catch(() => {
@@ -217,6 +219,7 @@
             this.getPost(to.params.postId)
                 .then(({data}) => {
                     this.$set(this, "post", new Post(data))
+                    this.$set(this, "relatedPosts", this.post.related)
                 })
             next()
         }

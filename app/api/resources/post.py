@@ -32,7 +32,7 @@ class PostResource(TokenRequiredResource):
         if "title" in request_dict:
             post.title = request_dict["title"]
         if "sub_title" in request_dict:
-            post.title = request_dict["sub_title"]
+            post.sub_title = request_dict["sub_title"]
         if "slug" in request_dict:
             post_slug = request_dict["slug"]
             if Post.is_unique(id=id, category=post.category, slug=post_slug):
@@ -48,6 +48,8 @@ class PostResource(TokenRequiredResource):
             post.additional_categories = list(map(int, request_dict["additional_category_ids"]))
         if "tag_ids" in request_dict:
             post.tags = list(map(int, request_dict["tag_ids"]))
+        if "related_ids" in request_dict:
+            post.related = list(map(int, request_dict["related_ids"]))
         if post.authors.filter(PostAuthor.user_id == g.current_user.id).count() == 0:
             post.authors.append(PostAuthor(user=g.current_user))
         dumped_post, dump_errors = post_schema.dump(post)
@@ -160,10 +162,6 @@ class PostListResource(TokenRequiredResource):
         errors = post_schema.validate(request_dict)
         if errors:
             return errors, status.HTTP_400_BAD_REQUEST
-        if "category_id" in request_dict:
-            category = Category.query.get(request_dict["category_id"])
-        else:
-            category = None
         try:
             post = Post(
                 title=request_dict["title"],
@@ -172,8 +170,14 @@ class PostListResource(TokenRequiredResource):
                 slug=request_dict["slug"] if "slug" in request_dict else "",
                 author=g.current_user,
             )
-            if category is not None:
-                post.category = category
+            if "category_id" in request_dict:
+                post.category = int(request_dict["category_id"])
+            if "additional_category_ids" in request_dict:
+                post.additional_categories = list(map(int, request_dict["additional_category_ids"]))
+            if "tag_ids" in request_dict:
+                post.tags = list(map(int, request_dict["tag_ids"]))
+            if "related_ids" in request_dict:
+                post.related = list(map(int, request_dict["related_ids"]))
             post.add(post)
             created_post = Post.query.get(post.id)
             result = post_schema.dump(created_post).data

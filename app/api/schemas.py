@@ -149,7 +149,7 @@ class PostTagSchema(ma.Schema):
         model = PostTag
 
     tag = fields.Nested("TagSchema", only=("id", "name", "slug"))
-    post = fields.Nested("PostSchema", only=("id", "title", "sub_title", "slug", "links"))
+    post = fields.Nested("PostSchema", only=("id", "title", "slug", "links"))
 
 
 class PostSchema(ma.Schema):
@@ -158,7 +158,7 @@ class PostSchema(ma.Schema):
 
     id = fields.Integer(dump_only=True)
     title = fields.String(required=True, validate=lambda x: 0 < len(x) <= 255)
-    sub_title = fields.String()
+    sub_title = fields.String(nullable=True)
     slug = fields.String(dump_only=True)
     body = fields.String(required=True, validate=lambda x: 0 <= len(x) <= 2 ** 16)
     body_html = fields.String(dump_only=True)
@@ -173,7 +173,7 @@ class PostSchema(ma.Schema):
     )
     images = fields.Nested("PostImageSchema", many=True, exclude=("post",))
     tags = fields.Nested("PostTagSchema", many=True, only=("tag",))
-    related_posts = fields.Nested("PostSchema", many=True, only=("id", "title", "sub_title", "slug", "links"))
+    related = fields.Nested("PostSchema", many=True, only=("id", "title", "slug", "links"))
     locked = fields.Method("is_locked", dump_only=True)
     locked_since = fields.Method("get_locked_since", dump_only=True)
     lock_expires = fields.Method("get_lock_expires", dump_only=True)

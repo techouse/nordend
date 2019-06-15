@@ -19,7 +19,8 @@
             <template v-slot:body>
                 <el-form-item label="Title" prop="title">
                     <el-input v-model="post.title" :disabled="!editable" type="text" maxlength="255"
-                              show-word-limit required/>
+                              show-word-limit required
+                    />
                 </el-form-item>
                 <el-form-item label="Sub title" prop="sub_title">
                     <el-input v-model="post.sub_title" :autosize="{ minRows: 2, maxRows: 4}"
@@ -83,6 +84,16 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
+                <el-form-item label="Related posts">
+                    <el-select v-model="post.related_ids" :remote-method="handleRelatedPostsSearch"
+                               :disabled="!editable" :loading="searchingRelatedPosts" placeholder="Related posts"
+                               multiple filterable remote reserve-keyword
+                    >
+                        <el-option v-for="relatedPost in relatedPosts" :key="relatedPost.id" :label="relatedPost.title"
+                                   :value="relatedPost.id"
+                        />
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="Content">
                     <div class="editor">
                         <editor-menu-bar v-if="editable" :editor="editor">
@@ -506,6 +517,7 @@
 
 <script>
     import {mapActions, mapGetters} from "vuex"
+    import debounce                 from "lodash"
     import {
         Editor,
         EditorContent,
@@ -688,7 +700,9 @@
                 tagInputVisible:          false,
                 newTagName:               "",
                 currentCategory:          null,
-                previousCategory:         null
+                previousCategory:         null,
+                searchingRelatedPosts:    false,
+                relatedPosts:             []
             }
         },
 
@@ -748,7 +762,7 @@
         },
 
         methods: {
-            ...mapActions("post", ["createPost", "unlockPost"]),
+            ...mapActions("post", ["createPost", "unlockPost", "getPosts"]),
 
             ...mapActions("category", ["getCategories"]),
 
@@ -822,6 +836,20 @@
                 this.$nextTick(_ => {
                     this.$refs.saveTagInput.$refs.input.focus()
                 })
+            },
+
+            handleRelatedPostsSearch(query) {
+                if (query !== "") {
+                    this.searchingRelatedPosts = true
+
+                    this.getPosts({params: {search: query.trim()}})
+                        .then(({data}) => {
+                            this.$set(this, "relatedPosts", data.results.map(el => new Post(el)))
+                            this.searchingRelatedPosts = false
+                        })
+                } else {
+                    this.$set(this, "relatedPosts", [])
+                }
             },
 
             handleTagConfirm() {

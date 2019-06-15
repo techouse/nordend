@@ -21,6 +21,8 @@ export default class Post {
         this.additional_category_ids = []
         this.tags = []
         this.tag_ids = []
+        this.related = []
+        this.related_ids = []
         this.image = null
         this.images = []
         this.created_at = null
@@ -59,6 +61,11 @@ export default class Post {
             this.tag_ids = this.tags.map(el => el.id)
         }
 
+        if (this.related) {
+            this.related = this.related.map(el => new Post(el))
+            this.related_ids = this.related.map(el => el.id)
+        }
+
         if (this.image) {
             this.image = new Photo(this.image)
         }
@@ -92,7 +99,8 @@ export default class Post {
             body:                    this.body,
             category_id:             this.category_id,
             additional_category_ids: this.additional_category_ids,
-            tag_ids:                 this.tag_ids
+            tag_ids:                 this.tag_ids,
+            related_ids:             this.related_ids
         }
     }
 }
