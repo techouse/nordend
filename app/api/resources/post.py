@@ -100,6 +100,7 @@ class PostListResource(TokenRequiredResource):
         "category_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
         "author_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
         "created_at": fields.DateTime(allow_none=True, format="iso8601"),
+        "excluded_ids": fields.DelimitedList(fields.Integer)
     }
 
     @use_args(get_args)
@@ -122,6 +123,8 @@ class PostListResource(TokenRequiredResource):
             filters.append(PostAuthor.user_id == query_args["author_id"])
         if "created_at" in query_args:
             filters.append(Post.created_at == query_args["created_at"])
+        if "excluded_ids" in query_args:
+            filters.append(Post.id.notin_(query_args["excluded_ids"]))
         if filters:
             query = query.filter(*filters)
 
@@ -132,15 +135,15 @@ class PostListResource(TokenRequiredResource):
             if column == "category.name":
                 query = (
                     query.join(PostCategory, Post.categories)
-                    .join(Category, PostCategory.category)
-                    .filter(PostCategory.primary.is_(True))
+                        .join(Category, PostCategory.category)
+                        .filter(PostCategory.primary.is_(True))
                 )
                 order_by = Category.name
             elif column == "author.name":
                 query = (
                     query.join(PostAuthor, Post.authors)
-                    .join(User, PostAuthor.user)
-                    .filter(PostAuthor.primary.is_(True))
+                        .join(User, PostAuthor.user)
+                        .filter(PostAuthor.primary.is_(True))
                 )
                 order_by = User.name
             elif column in set(Post.__table__.columns.keys()):

@@ -890,7 +890,7 @@
                 if (query !== "") {
                     this.searchingRelatedPosts = true
 
-                    this.getPosts({params: {search: query.trim()}})
+                    this.getPosts({params: {search: query.trim(), excluded_ids: [this.post.id].join(",")}})
                         .then(({data}) => {
                             this.$set(this, "relatedPosts", data.results.map(el => new Post(el)))
                             this.searchingRelatedPosts = false
