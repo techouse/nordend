@@ -169,6 +169,10 @@
                 } else {
                     body.classList.add("sidebar-lg-show")
                 }
+
+                if (body.classList.contains("sidebar-show")) {
+                    body.classList.remove("sidebar-show")
+                }
             },
 
             toggleMini() {
