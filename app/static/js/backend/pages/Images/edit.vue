@@ -216,12 +216,10 @@
 
             handleObjectMoved(props) {
                 console.log("object moved")
-                console.log(props)
             },
 
             handleObjectScaled(props) {
                 console.log("object scaled")
-                console.log(props)
             },
 
             handleObjectActivated(props) {
