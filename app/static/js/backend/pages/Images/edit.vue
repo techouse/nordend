@@ -153,39 +153,43 @@
 
             redo(current, previous) {
                 if (current > previous) {
-                    console.log("undone")
-
                     let latestAction = this.latestAction
                     if (latestAction) {
                         latestAction.committed = false
                         this.$set(this.actionStack, this.actionStack.findIndex(el => el.action.id === this.latestAction.action.id), latestAction)
-                    }
 
-                    if (this.undo === 0) {
-                        if (latestAction.action.type === "cropzone") {
-                            this.$set(this, "aspectRatio", this.image.width / this.image.height)
-                        }
-                    } else {
-                        if (latestAction.action.type === "cropzone") {
-                            this.$set(this, "aspectRatio", latestAction.action.width / latestAction.action.height)
+                        if (this.undo === 0) {
+                            if (latestAction.action.type === "cropzone") {
+                                this.$set(this, "aspectRatio", this.image.width / this.image.height)
+                            }
+                        } else {
+                            if (latestAction.action.type === "cropzone") {
+                                this.$set(this, "aspectRatio", latestAction.action.width / latestAction.action.height)
+                            }
                         }
                     }
+                }
+
+                if (current === 0 && this.undo === 0) {
+                    this.$set(this, "aspectRatio", this.image.width / this.image.height)
                 }
             },
 
             undo(current, previous) {
                 if (current > previous) {
-                    console.log("done")
-
                     let latestAction = this.latestAction
                     if (latestAction) {
                         latestAction.committed = true
                         this.$set(this.actionStack, this.actionStack.findIndex(el => el.action.id === this.latestAction.action.id), latestAction)
-                    }
 
-                    if (latestAction.action.type === "cropzone") {
-                        this.$set(this, "aspectRatio", latestAction.action.width / latestAction.action.height)
+                        if (latestAction.action.type === "cropzone") {
+                            this.$set(this, "aspectRatio", latestAction.action.width / latestAction.action.height)
+                        }
                     }
+                }
+
+                if (current === 0 && this.redo === 0) {
+                    this.$set(this, "aspectRatio", this.image.width / this.image.height)
                 }
             }
         },
@@ -211,29 +215,24 @@
             ...mapActions("image", ["getImage", "createImage", "updateImage", "deleteImage"]),
 
             handleObjectMoved(props) {
-                console.log("handleObjectMoved")
+                console.log("object moved")
                 console.log(props)
             },
 
             handleObjectScaled(props) {
-                console.log("handleObjectScaled")
+                console.log("object scaled")
                 console.log(props)
             },
 
             handleObjectActivated(props) {
-                console.log("handleObjectActivated")
                 this.actionStack.push({action: props, committed: false})
             },
 
             handleRedoStackChanged(length) {
-                console.log("handleRedoStackChanged")
-
                 this.$set(this, "redo", length)
             },
 
             handleUndoStackChanged(length) {
-                console.log("handleUndoStackChanged")
-
                 this.$set(this, "undo", length)
             },
 
