@@ -47,7 +47,7 @@ class ImageResource(TokenRequiredResource):
             image_data = re.sub("^data:image/.+;base64,", "", request_dict["data_url"])
             if image_data:
                 file = BytesIO(b64decode(image_data))
-                filename = request_dict["original_filename"]
+                filename = request_dict.get("original_filename")
                 if not filename:
                     filename = "{}.jpg".format(md5(file.read()).hexdigest())
                 try:
@@ -155,14 +155,27 @@ class ImageListResource(TokenRequiredResource):
         return result
 
     def post(self):
-        if "file" not in request.files:
-            response = {"message": "No file part"}
+        request_dict = request.get_json()
+        if "file" in request.files:
+            file = request.files.get("file")
+            filename = file.filename
+            if filename == "":
+                response = {"message": "No selected file"}
+                return response, status.HTTP_400_BAD_REQUEST
+        elif "data_url" in request_dict and request_dict["data_url"]:
+            image_data = re.sub("^data:image/.+;base64,", "", request_dict["data_url"])
+            if image_data:
+                file = BytesIO(b64decode(image_data))
+                filename = request_dict.get("original_filename")
+                if not filename:
+                    filename = "{}.jpg".format(md5(file.read()).hexdigest())
+            else:
+                response = {"message": "Invalid image_data priovided"}
+                return response, status.HTTP_400_BAD_REQUEST
+        else:
+            response = {"message": "No image provided"}
             return response, status.HTTP_400_BAD_REQUEST
-        file = request.files.get("file")
-        if file.filename == "":
-            response = {"message": "No selected file"}
-            return response, status.HTTP_400_BAD_REQUEST
-        if file and allowed_image_file(file.filename):
+        if file and allowed_image_file(filename):
             try:
                 digest = sha256(file.read()).hexdigest()
                 file.seek(0)

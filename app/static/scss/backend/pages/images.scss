@@ -4,9 +4,13 @@
 @import url("~viewerjs/dist/viewer.min.css");
 
 .card-body, .edit-image-within-editor {
-  &.edit-image {
-    .tui-image-editor-header-buttons {
+  .edit-image {
+    .tui-image-editor-header {
       display: none !important;
+    }
+
+    .tui-image-editor-main {
+      top: 0 !important;
     }
   }
 }

@@ -19,10 +19,10 @@
         </template>
         <template v-slot:footer>
             <el-button type="success" @click="submit">
-                Save
+                Update current image
             </el-button>
-            <el-button type="danger" @click="$router.push({name: 'Images'})">
-                Cancel
+            <el-button type="primary" @click="create">
+                Save as new image
             </el-button>
         </template>
     </card>
@@ -107,7 +107,7 @@
         },
 
         methods: {
-            ...mapActions("image", ["getImage", "updateImage", "deleteImage"]),
+            ...mapActions("image", ["getImage", "createImage", "updateImage", "deleteImage"]),
 
             remove() {
                 this.$confirm(`Are you sure you want to delete ${this.title}?`, "Warning", {
@@ -131,8 +131,12 @@
                     })
             },
 
-            submit() {
+            getImageData() {
                 this.$set(this.image, "data_url", this.$refs[this.refName].invoke("toDataURL", {format: "png"}))
+            },
+
+            submit() {
+                this.getImageData()
 
                 if (this.image.data_url) {
                     this.updateImage(this.image)
@@ -145,6 +149,30 @@
                 } else {
                     this.error("The image data is invalid!")
                 }
+            },
+
+            create() {
+                this.getImageData()
+
+                if (this.image.data_url) {
+                    this.createImage(this.image)
+                        .then(({data}) => {
+                            this.$set(this, "image", new Photo(data))
+                            this.$router.push({name: "EditImage", params: {imageId: this.image.id}})
+                            this.$refs[this.refName].invoke("loadImageFromURL", this.path, this.title)
+
+                            this.success("Successfully saved edited image as new image")
+                        })
+                        .catch((err) => {
+                            if (this.alert.message) {
+                                this.error(`There was an error creating the image: ${this.alert.message}`)
+                            } else {
+                                this.error(`There was an error creating the image: ${err}`)
+                            }
+                        })
+                } else {
+                    this.error("The image data is invalid!")
+                }
             }
         }
     }
@@ -153,6 +181,6 @@
 <style lang="scss" scoped>
     .edit-image {
         width: 100%;
-        height: (1024px + 128px);
+        height: (1024px + 64px);
     }
 </style>

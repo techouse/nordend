@@ -876,6 +876,7 @@
             },
 
             updateImage(image) {
+                // TODO
                 console.log(image)
             },
 
