@@ -1,8 +1,8 @@
 <template>
     <div class="row">
         <div class="col-sm-12">
-            <el-form :ref="formRef" v-loading="loading" :model="model" :rules="rules" :label-width="labelWidth"
-                     class="card"
+            <el-form :id="id" :ref="formRef" v-loading="loading" :model="model" :rules="rules"
+                     :label-width="labelWidth" class="card"
             >
                 <div class="card-header">
                     <slot name="header" />
@@ -23,6 +23,10 @@
         name: "CardForm",
 
         props: {
+            id: {
+                type:    String,
+                default: "card-form"
+            },
             formRef:    {
                 type:    String,
                 default: "form"
@@ -45,7 +49,24 @@
             },
         },
 
+        data() {
+            return {
+                width: 0,
+                height: 0
+            }
+        },
+
+        mounted() {
+            this.handleWindowResize()
+            window.addEventListener("resize", this.handleWindowResize)
+        },
+
         methods: {
+            handleWindowResize() {
+                this.$set(this, "width", document.getElementById(this.id).clientWidth)
+                this.$set(this, "height", document.getElementById(this.id).clientHeight)
+            },
+
             validate(callback) {
                 return this.$refs[this.formRef].validate(callback)
             },

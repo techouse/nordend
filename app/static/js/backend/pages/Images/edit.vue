@@ -1,5 +1,5 @@
 <template>
-    <card>
+    <card :ref="cardRef">
         <template v-slot:header>
             <el-page-header :content="title" @back="goBack"/>
             <div v-if="image.id" class="card-header-actions">
@@ -9,11 +9,16 @@
             </div>
         </template>
         <template v-slot:body>
-            <div class="edit-image">
+            <div ref="edit-image" class="edit-image">
                 <tui-image-editor v-if="image.id"
                                   :ref="refName"
                                   :include-ui="useDefaultUI"
                                   :options="options"
+                                  @objectActivated="handleObjectActivated"
+                                  @objectScaled="handleObjectScaled"
+                                  @objectMoved="handleObjectMoved"
+                                  @redoStackChanged="handleRedoStackChanged"
+                                  @undoStackChanged="handleUndoStackChanged"
                 />
             </div>
         </template>
@@ -55,6 +60,7 @@
 
         data() {
             return {
+                cardRef:      "image-edit-card",
                 refName:      "editor",
                 image:        new Photo(),
                 useDefaultUI: true,
@@ -71,7 +77,12 @@
                     cssMaxWidth:     1024,
                     cssMaxHeight:    1024,
                     usageStatistics: false,
-                }
+                },
+                aspectRatio:  0,
+                editorWidth:  0,
+                actionStack:  [],
+                undo:         0,
+                redo:         0
             }
         },
 
@@ -91,13 +102,103 @@
                 return this.image.sizes.includes(1920)
                        ? `${this.image.public_path}/1920.jpg`
                        : `${this.image.public_path}/original.jpg`
+            },
+            cssMaxWidth() {
+                const width = Math.min(this.editorWidth - 248 - 64, 1024)
+                return width > 0 ? width : 1024
+            },
+            imageHeight() {
+                return Math.floor(this.cssMaxWidth / this.aspectRatio)
+            },
+            latestAction() {
+                return this.actionStack.length > 0 ? this.actionStack[this.actionStack.length - 1] : null
+            }
+        },
+
+        watch: {
+            cssMaxWidth: {
+                handler(current, previous) {
+                    this.$set(this.options, "cssMaxWidth", current)
+                    if (this.$refs[this.refName] !== undefined) {
+                        this.$refs[this.refName].invoke("ui.resizeEditor", {
+                            imageSize: {
+                                newHeight: Math.floor(current / this.aspectRatio),
+                                newWidth:  current
+                            }
+                        })
+                    }
+                },
+                immediate: true
+            },
+
+            aspectRatio(aspectRatio) {
+                if (this.$refs[this.refName] !== undefined) {
+                    this.$refs[this.refName].invoke("ui.resizeEditor", {
+                        imageSize: {
+                            newHeight: Math.floor(this.cssMaxWidth / aspectRatio),
+                            newWidth:  this.cssMaxWidth
+                        }
+                    })
+                }
+            },
+
+            latestAction: {
+                handler(latestAction) {
+                    if (latestAction.committed && latestAction.action.type === "cropzone") {
+                        this.$set(this, "aspectRatio", latestAction.action.width / latestAction.action.height)
+                    }
+                },
+                deep: true
+            },
+
+            redo(current, previous) {
+                if (current > previous) {
+                    console.log("undone")
+
+                    let latestAction = this.latestAction
+                    if (latestAction) {
+                        latestAction.committed = false
+                        this.$set(this.actionStack, this.actionStack.findIndex(el => el.action.id === this.latestAction.action.id), latestAction)
+                    }
+
+                    if (this.undo === 0) {
+                        if (latestAction.action.type === "cropzone") {
+                            this.$set(this, "aspectRatio", this.image.width / this.image.height)
+                        }
+                    } else {
+                        if (latestAction.action.type === "cropzone") {
+                            this.$set(this, "aspectRatio", latestAction.action.width / latestAction.action.height)
+                        }
+                    }
+                }
+            },
+
+            undo(current, previous) {
+                if (current > previous) {
+                    console.log("done")
+
+                    let latestAction = this.latestAction
+                    if (latestAction) {
+                        latestAction.committed = true
+                        this.$set(this.actionStack, this.actionStack.findIndex(el => el.action.id === this.latestAction.action.id), latestAction)
+                    }
+
+                    if (latestAction.action.type === "cropzone") {
+                        this.$set(this, "aspectRatio", latestAction.action.width / latestAction.action.height)
+                    }
+                }
             }
         },
 
         mounted() {
+            this.getEditorWidth()
+            window.addEventListener("resize", this.getEditorWidth)
+
             this.getImage(this.imageId)
                 .then(({data}) => {
                     this.$set(this, "image", new Photo(data))
+
+                    this.$set(this, "aspectRatio", this.image.width / this.image.height)
 
                     this.$set(this.options.includeUI, "loadImage", {
                         path: this.path,
@@ -108,6 +209,37 @@
 
         methods: {
             ...mapActions("image", ["getImage", "createImage", "updateImage", "deleteImage"]),
+
+            handleObjectMoved(props) {
+                console.log("handleObjectMoved")
+                console.log(props)
+            },
+
+            handleObjectScaled(props) {
+                console.log("handleObjectScaled")
+                console.log(props)
+            },
+
+            handleObjectActivated(props) {
+                console.log("handleObjectActivated")
+                this.actionStack.push({action: props, committed: false})
+            },
+
+            handleRedoStackChanged(length) {
+                console.log("handleRedoStackChanged")
+
+                this.$set(this, "redo", length)
+            },
+
+            handleUndoStackChanged(length) {
+                console.log("handleUndoStackChanged")
+
+                this.$set(this, "undo", length)
+            },
+
+            getEditorWidth() {
+                this.$set(this, "editorWidth", this.$refs["edit-image"].clientWidth)
+            },
 
             remove() {
                 this.$confirm(`Are you sure you want to delete ${this.title}?`, "Warning", {
