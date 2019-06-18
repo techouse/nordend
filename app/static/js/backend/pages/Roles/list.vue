@@ -3,13 +3,20 @@
         <template v-slot:header>
             <el-page-header class="no-back" :content="title"/>
             <div class="card-header-actions">
+                <button v-if="multipleSelection.length" class="btn btn-sm btn-outline-secondary"
+                        @click.prevent="toggleSelection()"
+                >
+                    Clear selection
+                </button>
                 <router-link :to="{name: 'CreateRole'}" class="btn btn-sm btn-success">
                     <i class="far fa-graduation-cap"/> Create new role
                 </router-link>
             </div>
         </template>
         <template v-slot:body>
-            <el-table v-loading="loading" :data="roles" class="w-100" @sort-change="orderBy">
+            <el-table :ref="tableRef" v-loading="loading" :data="roles" class="w-100" @sort-change="orderBy"
+                      @selection-change="handleSelectionChange">
+                <el-table-column type="selection" width="40"/>
                 <el-table-column label="#" prop="id" width="60" sortable="custom"/>
                 <el-table-column label="Name" prop="name" sortable="custom"/>
                 <el-table-column label="Default" prop="default" align="center" width="120" sortable="custom">

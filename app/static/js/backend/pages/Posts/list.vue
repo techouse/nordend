@@ -1,27 +1,36 @@
 <template>
     <card>
         <template v-slot:header>
-            <el-page-header class="no-back" :content="title"/>
+            <el-page-header class="no-back" :content="title" />
             <div class="card-header-actions">
+                <button v-if="multipleSelection.length" class="btn btn-sm btn-outline-secondary"
+                        @click.prevent="toggleSelection()"
+                >
+                    Clear selection
+                </button>
                 <router-link :to="{name: 'CreatePost'}" class="btn btn-sm btn-success">
-                    <i class="far fa-pencil"/> Create new post
+                    <i class="far fa-pencil" /> Create new post
                 </router-link>
             </div>
         </template>
         <template v-slot:body>
-            <el-table v-loading="loading" :data="posts" class="w-100" @sort-change="orderBy">
-                <el-table-column label="#" prop="id" width="60" sortable="custom"/>
+            <el-table :ref="tableRef" v-loading="loading" :data="posts" class="w-100" @sort-change="orderBy"
+                      @selection-change="handleSelectionChange"
+            >
+                <el-table-column type="selection" width="40" />
+                <el-table-column label="#" prop="id" width="60" sortable="custom" />
                 <el-table-column label="Title" prop="title" sortable="custom">
                     <template slot-scope="scope">
                         <el-tooltip v-if="scope.row.title.length > maxTitleLength" class="item" effect="dark"
-                                    :content="scope.row.title" placement="top-start">
+                                    :content="scope.row.title" placement="top-start"
+                        >
                             <span>{{ scope.row.title | truncate(maxTitleLength) }}</span>
                         </el-tooltip>
                         <span v-else>{{ scope.row.title }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="Category" prop="category.name" sortable="custom"/>
-                <el-table-column label="Author" prop="author.name" sortable="custom"/>
+                <el-table-column label="Category" prop="category.name" sortable="custom" />
+                <el-table-column label="Author" prop="author.name" sortable="custom" />
                 <el-table-column label="Created" align="center" width="160" prop="created_at" sortable="custom">
                     <template slot-scope="scope">
                         <time :datetime="scope.row.created_at">{{ scope.row.created_at|formatDate }}
@@ -48,31 +57,33 @@
                             <router-link :to="{name: 'EditPost', params: {postId: scope.row.id}}"
                                          class="btn btn-sm btn-outline-secondary"
                             >
-                                <i class="far fa-edit"/>
+                                <i class="far fa-edit" />
                             </router-link>
                             <button class="btn btn-sm btn-outline-danger" @click.prevent="remove(scope.row)">
-                                <i class="far fa-trash-alt"/>
+                                <i class="far fa-trash-alt" />
                             </button>
                         </template>
                         <template v-else>
                             <router-link :to="{name: 'EditPost', params: {postId: scope.row.id}}"
                                          class="btn btn-sm btn-outline-secondary"
                             >
-                                <i class="fas fa-eye"/>
+                                <i class="fas fa-eye" />
                             </router-link>
                             <el-tooltip v-if="currentUser.role.moderate || currentUser.role.admin"
                                         class="item" effect="dark" content="Forcefully unlock"
-                                        placement="right-start">
+                                        placement="right-start"
+                            >
                                 <button class="btn btn-sm btn-outline-primary"
                                         @click.prevent="unlock(scope.row)"
                                 >
-                                    <i class="fas fa-unlock-alt"/>
+                                    <i class="fas fa-unlock-alt" />
                                 </button>
                             </el-tooltip>
                             <el-tooltip v-else class="item" effect="dark" content="Locked"
-                                        placement="right-start">
+                                        placement="right-start"
+                            >
                                 <button class="btn btn-sm btn-ghost-danger" :disabled="true">
-                                    <i class="fas fa-lock-alt"/>
+                                    <i class="fas fa-lock-alt" />
                                 </button>
                             </el-tooltip>
                         </template>
@@ -107,8 +118,8 @@
 
         data() {
             return {
-                title: "Posts",
-                posts: [],
+                title:          "Posts",
+                posts:          [],
                 maxTitleLength: 30
             }
         },

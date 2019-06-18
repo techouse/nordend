@@ -32,15 +32,17 @@
 
         data() {
             return {
-                loading:    false,
-                params:     {
+                tableRef:          "listTable",
+                loading:           false,
+                multipleSelection: [],
+                params:            {
                     search:   this.search,
                     page:     this.page,
                     per_page: this.perPage,
                     sort:     null
                 },
-                pageSizes:  [12, 24, 48, 96],
-                totalCount: 0
+                pageSizes:         [12, 24, 48, 96],
+                totalCount:        0
             }
         },
 
@@ -50,13 +52,13 @@
 
         created() {
             this.$set(this, "loading", true)
-                this.getData()
-                    .then(() => {
-                        this.$set(this, "loading", false)
-                    })
-                    .catch(() => {
-                        this.$set(this, "loading", false)
-                    })
+            this.getData()
+                .then(() => {
+                    this.$set(this, "loading", false)
+                })
+                .catch(() => {
+                    this.$set(this, "loading", false)
+                })
         },
 
         mounted() {
@@ -88,6 +90,20 @@
                 }
 
                 this.getData()
+            },
+
+            toggleSelection(rows) {
+                if (rows && Array.isArray(rows)) {
+                    rows.forEach(row => {
+                        this.$refs[this.tableRef].toggleRowSelection(row)
+                    })
+                } else {
+                    this.$refs[this.tableRef].clearSelection()
+                }
+            },
+
+            handleSelectionChange(val) {
+                this.$set(this, "multipleSelection", val)
             }
         }
     }

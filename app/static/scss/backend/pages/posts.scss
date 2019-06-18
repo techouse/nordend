@@ -26,3 +26,9 @@
   max-height: 280px;
   object-fit: contain;
 }
+
+.el-table {
+  label.el-checkbox {
+    margin: 0;
+  }
+}
