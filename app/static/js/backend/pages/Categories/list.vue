@@ -3,11 +3,19 @@
         <template v-slot:header>
             <el-page-header class="no-back" :content="title"/>
             <div class="card-header-actions">
-                <button v-if="multipleSelection.length" class="btn btn-sm btn-outline-secondary"
-                        @click.prevent="toggleSelection()"
-                >
-                    Clear selection
-                </button>
+                <el-dropdown v-if="multipleSelection.length" @command="handleBulkCommand">
+                    <button class="btn btn-sm btn-outline-secondary">
+                        Bulk actions <i class="el-icon-arrow-down el-icon--right"></i>
+                    </button>
+                    <el-dropdown-menu slot="dropdown" size="mini">
+                        <el-dropdown-item icon="fal fa-trash-alt" :command="bulkRemove">
+                            Delete selection
+                        </el-dropdown-item>
+                        <el-dropdown-item icon="fal fa-snowplow" :command="toggleSelection" divided>
+                            Clear selection
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
                 <router-link :to="{name: 'CreateCategory'}" class="btn btn-sm btn-success">
                     <i class="far fa-tags"/> Create new category
                 </router-link>
@@ -74,7 +82,7 @@
         },
 
         methods: {
-            ...mapActions("category", ["getCategories", "deleteCategory"]),
+            ...mapActions("category", ["getCategories", "deleteCategory", "deleteCategories"]),
 
             getData() {
                 this.$router.replace({name: "Categories", query: this.params})
@@ -94,6 +102,27 @@
 
             edit(category) {
                 this.$router.push({name: "EditCategory", params: {categoryId: category.id}})
+            },
+
+            bulkRemove() {
+                this.$confirm(`Are you sure you want to delete ${this.multipleSelection.length} categories?`, "Warning", {
+                        confirmButtonText: "Yes",
+                        cancelButtonText:  "No",
+                        type:              "warning"
+                    })
+                    .then(() => {
+                        this.deleteCategories(this.multipleSelection.map(category => category.id))
+                            .then(() => {
+                                this.getData()
+                                this.success(`${this.multipleSelection.length} categories successfully deleted`)
+                            })
+                            .catch(() => {
+                                this.error(`There was an error deleting the ${this.multipleSelection.length} categories: ${this.alert.message}`)
+                            })
+                    })
+                    .catch(() => {
+                        this.info(`${this.multipleSelection.length} categories were not deleted.`)
+                    })
             },
 
             remove(category) {

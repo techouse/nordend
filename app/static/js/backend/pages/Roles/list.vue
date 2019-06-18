@@ -3,11 +3,19 @@
         <template v-slot:header>
             <el-page-header class="no-back" :content="title"/>
             <div class="card-header-actions">
-                <button v-if="multipleSelection.length" class="btn btn-sm btn-outline-secondary"
-                        @click.prevent="toggleSelection()"
-                >
-                    Clear selection
-                </button>
+                <el-dropdown v-if="multipleSelection.length" @command="handleBulkCommand">
+                    <button class="btn btn-sm btn-outline-secondary">
+                        Bulk actions <i class="el-icon-arrow-down el-icon--right"></i>
+                    </button>
+                    <el-dropdown-menu slot="dropdown" size="mini">
+                        <el-dropdown-item icon="fal fa-trash-alt" :command="bulkRemove">
+                            Delete selection
+                        </el-dropdown-item>
+                        <el-dropdown-item icon="fal fa-snowplow" :command="toggleSelection" divided>
+                            Clear selection
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
                 <router-link :to="{name: 'CreateRole'}" class="btn btn-sm btn-success">
                     <i class="far fa-graduation-cap"/> Create new role
                 </router-link>
@@ -110,7 +118,7 @@
         },
 
         methods: {
-            ...mapActions("role", ["getRoles", "deleteRole"]),
+            ...mapActions("role", ["getRoles", "deleteRole", "deleteRoles"]),
 
             getData() {
                 this.$router.replace({name: "Roles", query: this.params})
@@ -130,6 +138,27 @@
 
             edit(role) {
                 this.$router.push({name: "EditRole", params: {roleId: role.id}})
+            },
+
+            bulkRemove() {
+                this.$confirm(`Are you sure you want to delete ${this.multipleSelection.length} roles?`, "Warning", {
+                        confirmButtonText: "Yes",
+                        cancelButtonText:  "No",
+                        type:              "warning"
+                    })
+                    .then(() => {
+                        this.deleteRoles(this.multipleSelection.map(role => role.id))
+                            .then(() => {
+                                this.getData()
+                                this.success(`${this.multipleSelection.length} roles successfully deleted`)
+                            })
+                            .catch(() => {
+                                this.error(`There was an error deleting the ${this.multipleSelection.length} roles: ${this.alert.message}`)
+                            })
+                    })
+                    .catch(() => {
+                        this.info(`${this.multipleSelection.length} roles were not deleted.`)
+                    })
             },
 
             remove(role) {

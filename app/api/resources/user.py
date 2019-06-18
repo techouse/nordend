@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 from flask import request
 from sqlalchemy import or_, desc, collate
 from sqlalchemy.exc import SQLAlchemyError
@@ -170,6 +172,26 @@ class UserListResource(TokenRequiredResource):
             db.session.rollback()
             resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
+
+    def delete(self):
+        """ Bulk delete """
+        request_dict = request.get_json()
+        if not request_dict:
+            response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        if "ids" in request_dict and (isinstance(request_dict["ids"], List) or isinstance(request_dict["ids"], Tuple)):
+            ids = list(map(int, request_dict["ids"]))
+            try:
+                for id_ in ids:
+                    user = User.query.get(id_)
+                    if user:
+                        db.session.delete(user)
+                db.session.commit()
+                return {}, status.HTTP_204_NO_CONTENT
+            except SQLAlchemyError as e:
+                db.session.rollback()
+                resp = {"message": str(e)}
+                return resp, status.HTTP_400_BAD_REQUEST
 
 
 class UserPostListResource(TokenRequiredResource):

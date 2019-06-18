@@ -95,6 +95,8 @@ const actions = {
 
     deletePost: (context, id) => destroy(context, `/posts/${id}`),
 
+    deletePosts: (context, ids) => destroy(context, "/posts/", {ids}),
+
     getLatestCreated: ({state, commit}) => new Promise(resolve => {
         const latest = state.createdIds[state.createdIds.length - 1]
         commit("popCreatedIds")

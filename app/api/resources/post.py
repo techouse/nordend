@@ -1,4 +1,4 @@
-from datetime import datetime
+from typing import List, Tuple
 
 from dateutil import parser as dp
 from flask import request, g
@@ -100,7 +100,7 @@ class PostListResource(TokenRequiredResource):
         "category_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
         "author_id": fields.Integer(allow_none=True, validate=lambda x: x > 0),
         "created_at": fields.DateTime(allow_none=True, format="iso8601"),
-        "excluded_ids": fields.DelimitedList(fields.Integer)
+        "excluded_ids": fields.DelimitedList(fields.Integer),
     }
 
     @use_args(get_args)
@@ -135,15 +135,15 @@ class PostListResource(TokenRequiredResource):
             if column == "category.name":
                 query = (
                     query.join(PostCategory, Post.categories)
-                        .join(Category, PostCategory.category)
-                        .filter(PostCategory.primary.is_(True))
+                    .join(Category, PostCategory.category)
+                    .filter(PostCategory.primary.is_(True))
                 )
                 order_by = Category.name
             elif column == "author.name":
                 query = (
                     query.join(PostAuthor, Post.authors)
-                        .join(User, PostAuthor.user)
-                        .filter(PostAuthor.primary.is_(True))
+                    .join(User, PostAuthor.user)
+                    .filter(PostAuthor.primary.is_(True))
                 )
                 order_by = User.name
             elif column in set(Post.__table__.columns.keys()):
@@ -202,3 +202,24 @@ class PostListResource(TokenRequiredResource):
             db.session.rollback()
             resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
+
+    def delete(self):
+        """ Bulk delete """
+        request_dict = request.get_json()
+        if not request_dict:
+            response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        if "ids" in request_dict and (isinstance(request_dict["ids"], List) or isinstance(request_dict["ids"], Tuple)):
+            ids = list(map(int, request_dict["ids"]))
+            try:
+                for id_ in ids:
+                    post = Post.query.get(id_)
+                    if post:
+                        db.session.delete(post)
+                        PostBroadcast.deleted(id_, by_user_id=g.current_user.id)
+                db.session.commit()
+                return {}, status.HTTP_204_NO_CONTENT
+            except SQLAlchemyError as e:
+                db.session.rollback()
+                resp = {"message": str(e)}
+                return resp, status.HTTP_400_BAD_REQUEST

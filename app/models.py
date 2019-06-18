@@ -316,8 +316,8 @@ class PostTag(db.Model, AddUpdateDelete):
     post_id = db.Column(db.Integer, db.ForeignKey("posts.id"), primary_key=True)
     tag_id = db.Column(db.Integer, db.ForeignKey("tags.id"), primary_key=True)
     created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
-    post = db.relationship("Post", backref=db.backref("post_tags", lazy="dynamic"))
-    tag = db.relationship("Tag", backref=db.backref("post_tags", lazy="dynamic"))
+    post = db.relationship("Post", backref=db.backref("post_tags", cascade="all, delete-orphan", lazy="dynamic"))
+    tag = db.relationship("Tag", backref=db.backref("post_tags", cascade="all, delete-orphan", lazy="dynamic"))
 
     def __repr__(self):
         return "<PostTag {}, {}>".format(self.post.title, self.tag.name)
@@ -329,8 +329,8 @@ class PostImage(db.Model, AddUpdateDelete):
     image_id = db.Column(db.Integer, db.ForeignKey("images.id"), primary_key=True)
     primary = db.Column(db.Boolean, default=False, index=True)
     created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
-    post = db.relationship("Post", backref=db.backref("post_images", lazy="dynamic"))
-    image = db.relationship("Image", backref=db.backref("post_images", lazy="dynamic"))
+    post = db.relationship("Post", backref=db.backref("post_images", cascade="all, delete-orphan", lazy="dynamic"))
+    image = db.relationship("Image", backref=db.backref("post_images", cascade="all, delete-orphan", lazy="dynamic"))
 
     def __repr__(self):
         return "<PostImage {}, {}>".format(self.post.title, self.image.original_filename)
@@ -342,8 +342,8 @@ class PostAuthor(db.Model, AddUpdateDelete):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     primary = db.Column(db.Boolean, default=False, index=True)
     created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
-    post = db.relationship("Post", backref=db.backref("post_authors", lazy="dynamic"))
-    user = db.relationship("User", backref=db.backref("post_authors", lazy="dynamic"))
+    post = db.relationship("Post", backref=db.backref("post_authors", cascade="all, delete-orphan", lazy="dynamic"))
+    user = db.relationship("User", backref=db.backref("post_authors", cascade="all, delete-orphan", lazy="dynamic"))
 
     def __repr__(self):
         return "<PostAuthor {}, {}>".format(self.post.title, self.user.name)
@@ -355,8 +355,10 @@ class PostCategory(db.Model, AddUpdateDelete):
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id"), primary_key=True)
     primary = db.Column(db.Boolean, default=False, index=True)
     created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
-    post = db.relationship("Post", backref=db.backref("post_categories", lazy="dynamic"))
-    category = db.relationship("Category", backref=db.backref("post_categories", lazy="dynamic"))
+    post = db.relationship("Post", backref=db.backref("post_categories", cascade="all, delete-orphan", lazy="dynamic"))
+    category = db.relationship(
+        "Category", backref=db.backref("post_categories", cascade="all, delete-orphan", lazy="dynamic")
+    )
 
     def __repr__(self):
         return "<PostCategory {}, {}>".format(self.post.title, self.category.name)
@@ -603,8 +605,8 @@ class ImageTag(db.Model, AddUpdateDelete):
     image_id = db.Column(db.Integer, db.ForeignKey("images.id"), primary_key=True)
     tag_id = db.Column(db.Integer, db.ForeignKey("tags.id"), primary_key=True)
     created_at = db.Column(db.TIMESTAMP, index=True, default=db.func.current_timestamp(), nullable=False)
-    image = db.relationship("Image", backref=db.backref("image_tags", lazy="dynamic"))
-    tag = db.relationship("Tag", backref=db.backref("image_tags", lazy="dynamic"))
+    image = db.relationship("Image", backref=db.backref("image_tags", cascade="all, delete-orphan", lazy="dynamic"))
+    tag = db.relationship("Tag", backref=db.backref("image_tags", cascade="all, delete-orphan", lazy="dynamic"))
 
     def __repr__(self):
         return "<ImageTag {}, {}>".format(self.image.original_filename, self.tag.name)

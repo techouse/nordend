@@ -15,7 +15,9 @@ const actions = {
 
     updateRole: (context, role) => update(context, `/roles/${role.id}`, role),
 
-    deleteRole: (context, id) => destroy(context, `/roles/${id}`)
+    deleteRole: (context, id) => destroy(context, `/roles/${id}`),
+
+    deleteRoles: (context, ids) => destroy(context, "/roles/", {ids}),
 }
 
 export default {

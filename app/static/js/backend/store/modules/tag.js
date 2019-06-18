@@ -15,7 +15,9 @@ const actions = {
 
     updateTag: (context, tag) => update(context, `/tags/${tag.id}`, tag),
 
-    deleteTag: (context, id) => destroy(context, `/tags/${id}`)
+    deleteTag: (context, id) => destroy(context, `/tags/${id}`),
+
+    deleteTags: (context, ids) => destroy(context, "/tags/", {ids}),
 }
 
 export default {

@@ -5,6 +5,7 @@ from hashlib import sha256, md5
 from io import BytesIO
 from os.path import join, dirname, isdir
 from shutil import rmtree
+from typing import List, Tuple
 
 from flask import request, g, current_app
 from sqlalchemy import desc, or_, collate
@@ -216,6 +217,39 @@ class ImageListResource(TokenRequiredResource):
                 resp = {"message": str(e)}
                 return resp, status.HTTP_400_BAD_REQUEST
             except Exception as e:
+                db.session.rollback()
+                resp = {"message": str(e)}
+                return resp, status.HTTP_400_BAD_REQUEST
+
+    def delete(self):
+        """ Bulk delete """
+        request_dict = request.get_json()
+        if not request_dict:
+            response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        if "ids" in request_dict and (isinstance(request_dict["ids"], List) or isinstance(request_dict["ids"], Tuple)):
+            ids = list(map(int, request_dict["ids"]))
+            try:
+                for id_ in ids:
+                    image = Image.query.get(id_)
+                    if image:
+                        date = image.updated_at if image.updated_at is not None else image.created_at
+                        path = join(
+                            join(dirname(current_app.instance_path), "app"),
+                            join(
+                                current_app.config["PUBLIC_IMAGE_PATH"],
+                                str(date.year),
+                                str(date.month),
+                                str(date.day),
+                                image.hash,
+                            ),
+                        )
+                        db.session.delete(image)
+                        if isdir(path):
+                            rmtree(path)
+                db.session.commit()
+                return {}, status.HTTP_204_NO_CONTENT
+            except SQLAlchemyError as e:
                 db.session.rollback()
                 resp = {"message": str(e)}
                 return resp, status.HTTP_400_BAD_REQUEST

@@ -15,7 +15,9 @@ const actions = {
 
     updateCategory: (context, category) => update(context, `/categories/${category.id}`, category),
 
-    deleteCategory: (context, id) => destroy(context, `/categories/${id}`)
+    deleteCategory: (context, id) => destroy(context, `/categories/${id}`),
+
+    deleteCategories: (context, ids) => destroy(context, "/categories/", {ids}),
 }
 
 export default {

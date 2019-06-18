@@ -50,8 +50,8 @@ export const update = (context, url, model) => new Promise((resolve, reject) => 
         })
 })
 
-export const destroy = (context, url) => new Promise((resolve, reject) => {
-    api.delete(url)
+export const destroy = (context, url, data = {}) => new Promise((resolve, reject) => {
+    api.delete(url, {data})
        .then(response => resolve(response))
        .catch(error => {
            try {

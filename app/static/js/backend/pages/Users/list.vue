@@ -3,11 +3,19 @@
         <template v-slot:header>
             <el-page-header class="no-back" :content="title"/>
             <div class="card-header-actions">
-                <button v-if="multipleSelection.length" class="btn btn-sm btn-outline-secondary"
-                        @click.prevent="toggleSelection()"
-                >
-                    Clear selection
-                </button>
+                <el-dropdown v-if="multipleSelection.length" @command="handleBulkCommand">
+                    <button class="btn btn-sm btn-outline-secondary">
+                        Bulk actions <i class="el-icon-arrow-down el-icon--right"></i>
+                    </button>
+                    <el-dropdown-menu slot="dropdown" size="mini">
+                        <el-dropdown-item icon="fal fa-trash-alt" :command="bulkRemove">
+                            Delete selection
+                        </el-dropdown-item>
+                        <el-dropdown-item icon="fal fa-snowplow" :command="toggleSelection" divided>
+                            Clear selection
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
                 <router-link :to="{name: 'CreateUser'}" class="btn btn-sm btn-success">
                     <i class="far fa-user-plus"/> Create new user
                 </router-link>
@@ -89,7 +97,7 @@
         },
 
         methods: {
-            ...mapActions("user", ["getUsers", "deleteUser"]),
+            ...mapActions("user", ["getUsers", "deleteUser", "deleteUsers"]),
 
             getData() {
                 this.$router.replace({name: "Users", query: this.params})
@@ -109,6 +117,27 @@
 
             edit(user) {
                 this.$router.push({name: "EditUser", params: {userId: user.id}})
+            },
+
+            bulkRemove() {
+                this.$confirm(`Are you sure you want to delete ${this.multipleSelection.length} users?`, "Warning", {
+                        confirmButtonText: "Yes",
+                        cancelButtonText:  "No",
+                        type:              "warning"
+                    })
+                    .then(() => {
+                        this.deleteUsers(this.multipleSelection.map(user => user.id))
+                            .then(() => {
+                                this.getData()
+                                this.success(`${this.multipleSelection.length} users successfully deleted`)
+                            })
+                            .catch(() => {
+                                this.error(`There was an error deleting the ${this.multipleSelection.length} users: ${this.alert.message}`)
+                            })
+                    })
+                    .catch(() => {
+                        this.info(`${this.multipleSelection.length} users were not deleted.`)
+                    })
             },
 
             remove(user) {

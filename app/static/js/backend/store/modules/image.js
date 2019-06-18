@@ -15,7 +15,9 @@ const actions = {
 
     updateImage: (context, image) => update(context, `/images/${image.id}`, image),
 
-    deleteImage: (context, id) => destroy(context, `/images/${id}`)
+    deleteImage: (context, id) => destroy(context, `/images/${id}`),
+
+    deleteImages: (context, ids) => destroy(context, "/images/", {ids}),
 }
 
 export default {

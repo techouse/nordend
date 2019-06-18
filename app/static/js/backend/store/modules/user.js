@@ -29,7 +29,9 @@ const actions = {
 
     updateUser: (context, user) => update(context, `/users/${user.id}`, user),
 
-    deleteUser: (context, id) => destroy(context, `/users/${id}`)
+    deleteUser: (context, id) => destroy(context, `/users/${id}`),
+
+    deleteUsers: (context, ids) => destroy(context, "/users/", {ids}),
 }
 
 export default {

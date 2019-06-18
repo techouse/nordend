@@ -104,6 +104,14 @@
 
             handleSelectionChange(val) {
                 this.$set(this, "multipleSelection", val)
+            },
+
+            bulkRemove() {
+                console.error("Not implemented. You must implement bulkRemove in the child component!")
+            },
+
+            handleBulkCommand(command) {
+                command()
             }
         }
     }
