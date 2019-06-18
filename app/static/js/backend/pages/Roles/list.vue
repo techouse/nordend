@@ -141,24 +141,7 @@
             },
 
             bulkRemove() {
-                this.$confirm(`Are you sure you want to delete ${this.multipleSelection.length} roles?`, "Warning", {
-                        confirmButtonText: "Yes",
-                        cancelButtonText:  "No",
-                        type:              "warning"
-                    })
-                    .then(() => {
-                        this.deleteRoles(this.multipleSelection.map(role => role.id))
-                            .then(() => {
-                                this.getData()
-                                this.success(`${this.multipleSelection.length} roles successfully deleted`)
-                            })
-                            .catch(() => {
-                                this.error(`There was an error deleting the ${this.multipleSelection.length} roles: ${this.alert.message}`)
-                            })
-                    })
-                    .catch(() => {
-                        this.info(`${this.multipleSelection.length} roles were not deleted.`)
-                    })
+                this._bulkRemove(this.deleteRoles, "role")
             },
 
             remove(role) {

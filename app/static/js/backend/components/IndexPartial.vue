@@ -110,6 +110,34 @@
                 console.error("Not implemented. You must implement bulkRemove in the child component!")
             },
 
+            _bulkRemove(callback, singularLabel = "record", pluralLabel = null) {
+                if (typeof callback !== "function") {
+                    console.error("Invalid callback function provided!")
+                    return
+                }
+                const count = this.multipleSelection.length
+                const label = count > 1 ? pluralLabel || `${singularLabel}s` : singularLabel
+
+                this.$confirm(`Are you sure you want to delete ${count} ${label}?`, "Warning", {
+                        confirmButtonText: "Yes",
+                        cancelButtonText:  "No",
+                        type:              "warning"
+                    })
+                    .then(() => {
+                        callback(this.multipleSelection.map(el => el.id))
+                            .then(() => {
+                                this.getData()
+                                this.success(`${count} ${label} successfully deleted`)
+                            })
+                            .catch(() => {
+                                this.error(`There was an error deleting the ${count} ${label}: ${this.alert.message}`)
+                            })
+                    })
+                    .catch(() => {
+                        this.info(`${count} ${label} were not deleted.`)
+                    })
+            },
+
             handleBulkCommand(command) {
                 command()
             }

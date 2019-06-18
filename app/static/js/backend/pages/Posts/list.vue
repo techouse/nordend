@@ -220,24 +220,7 @@
             },
 
             bulkRemove() {
-                this.$confirm(`Are you sure you want to delete ${this.multipleSelection.length} posts?`, "Warning", {
-                        confirmButtonText: "Yes",
-                        cancelButtonText:  "No",
-                        type:              "warning"
-                    })
-                    .then(() => {
-                        this.deletePosts(this.multipleSelection.map(post => post.id))
-                            .then(() => {
-                                this.getData()
-                                this.success(`${this.multipleSelection.length} posts successfully deleted`)
-                            })
-                            .catch(() => {
-                                this.error(`There was an error deleting the ${this.multipleSelection.length} posts: ${this.alert.message}`)
-                            })
-                    })
-                    .catch(() => {
-                        this.info(`${this.multipleSelection.length} posts were not deleted.`)
-                    })
+                this._bulkRemove(this.deletePosts, "post")
             },
 
             remove(post) {

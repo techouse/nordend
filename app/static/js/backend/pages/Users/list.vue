@@ -120,24 +120,7 @@
             },
 
             bulkRemove() {
-                this.$confirm(`Are you sure you want to delete ${this.multipleSelection.length} users?`, "Warning", {
-                        confirmButtonText: "Yes",
-                        cancelButtonText:  "No",
-                        type:              "warning"
-                    })
-                    .then(() => {
-                        this.deleteUsers(this.multipleSelection.map(user => user.id))
-                            .then(() => {
-                                this.getData()
-                                this.success(`${this.multipleSelection.length} users successfully deleted`)
-                            })
-                            .catch(() => {
-                                this.error(`There was an error deleting the ${this.multipleSelection.length} users: ${this.alert.message}`)
-                            })
-                    })
-                    .catch(() => {
-                        this.info(`${this.multipleSelection.length} users were not deleted.`)
-                    })
+                this._bulkRemove(this.deleteUsers, "user")
             },
 
             remove(user) {
