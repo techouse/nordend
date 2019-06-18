@@ -64,7 +64,7 @@
                                                         placement="right"
                                             >
                                                 <el-button type="danger" size="mini" icon="el-icon-delete-solid" circle
-                                                           @click="remove(image.id)"
+                                                           @click="remove(image)"
                                                 />
                                             </el-tooltip>
                                         </div>
@@ -216,26 +216,8 @@
                 this.$refs[this.uploadRefName].showModal()
             },
 
-            remove(imageId) {
-                this.$confirm("Are you sure you want to delete this image?", "Warning", {
-                        confirmButtonText: "Yes",
-                        cancelButtonText:  "No",
-                        type:              "warning"
-                    })
-                    .then(() => {
-                              this.deleteImage(imageId)
-                                  .then(() => {
-                                      this.getData()
-                                      this.success("Image successfully deleted")
-                                  })
-                                  .catch(() => {
-                                      this.error("There was an error deleting the image")
-                                  })
-                          }
-                    )
-                    .catch(() => {
-                        this.info("Image not deleted")
-                    })
+            remove(image) {
+                this._remove(this.deleteImage, image, image.title || image.original_filename)
             },
 
             getThumbnailSrc(image) {

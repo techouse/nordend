@@ -145,25 +145,7 @@
             },
 
             remove(role) {
-                this.$confirm(`Are you sure you want to delete ${role.name}?`, "Warning", {
-                        confirmButtonText: "Yes",
-                        cancelButtonText:  "No",
-                        type:              "warning"
-                    })
-                    .then(() => {
-                              this.deleteRole(role.id)
-                                  .then(() => {
-                                      this.getData()
-                                      this.success("Role successfully deleted")
-                                  })
-                                  .catch(() => {
-                                      this.error(`There was an error deleting the role: ${this.alert.message}`)
-                                  })
-                          }
-                    )
-                    .catch(() => {
-                        this.info("Role not deleted")
-                    })
+                this._remove(this.deleteRole, role, role.name)
             },
         },
 

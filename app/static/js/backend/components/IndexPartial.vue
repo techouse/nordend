@@ -138,8 +138,49 @@
                     })
             },
 
+            remove(item = null) {
+                console.error("Not implemented. You must implement remove in the child component!")
+            },
+
+            _remove(callback, model, label = "record") {
+                if (typeof callback !== "function") {
+                    console.error("Invalid callback function provided!")
+                    return
+                }
+
+                if (typeof model !== "object" || model.id === undefined) {
+                    console.error("Invalid model provided!")
+                    return
+                }
+
+                this.$confirm(`Are you sure you want to delete ${label}?`, "Warning", {
+                        confirmButtonText: "Yes",
+                        cancelButtonText:  "No",
+                        type:              "warning"
+                    })
+                    .then(() => {
+                              callback(model.id)
+                                  .then(() => {
+                                      this.getData()
+                                      this.success(`${label} successfully deleted`)
+                                  })
+                                  .catch(() => {
+                                      this.error(`There was an error deleting the ${label}: ${this.alert.message}`)
+                                  })
+                          }
+                    )
+                    .catch(() => {
+                        this.info(`${this.capitalize(label)} not deleted`)
+                    })
+            },
+
             handleBulkCommand(command) {
                 command()
+            },
+
+            capitalize: s => {
+                if (typeof s !== "string") return ""
+                return s.charAt(0).toUpperCase() + s.slice(1)
             }
         }
     }

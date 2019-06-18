@@ -109,25 +109,7 @@
             },
 
             remove(category) {
-                this.$confirm(`Are you sure you want to delete ${category.name}?`, "Warning", {
-                        confirmButtonText: "Yes",
-                        cancelButtonText:  "No",
-                        type:              "warning"
-                    })
-                    .then(() => {
-                              this.deleteCategory(category.id)
-                                  .then(() => {
-                                      this.getData()
-                                      this.success("Category successfully deleted")
-                                  })
-                                  .catch(() => {
-                                      this.error(`There was an error deleting the category: ${this.alert.message}`)
-                                  })
-                          }
-                    )
-                    .catch(() => {
-                        this.info("Category not deleted")
-                    })
+                this._remove(this.deleteCategory, category, category.name)
             },
         },
 

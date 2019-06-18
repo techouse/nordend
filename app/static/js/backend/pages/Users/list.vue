@@ -124,25 +124,7 @@
             },
 
             remove(user) {
-                this.$confirm(`Are you sure you want to delete ${user.name}?`, "Warning", {
-                        confirmButtonText: "Yes",
-                        cancelButtonText:  "No",
-                        type:              "warning"
-                    })
-                    .then(() => {
-                              this.deleteUser(user.id)
-                                  .then(() => {
-                                      this.getData()
-                                      this.success("User successfully deleted")
-                                  })
-                                  .catch(() => {
-                                      this.error(`There was an error deleting the user: ${this.alert.message}`)
-                                  })
-                          }
-                    )
-                    .catch(() => {
-                        this.info("User not deleted")
-                    })
+                this._remove(this.deleteUser, user, user.name)
             }
         },
 

@@ -224,25 +224,7 @@
             },
 
             remove(post) {
-                this.$confirm(`Are you sure you want to delete ${post.title}?`, "Warning", {
-                        confirmButtonText: "Yes",
-                        cancelButtonText:  "No",
-                        type:              "warning"
-                    })
-                    .then(() => {
-                              this.deletePost(post.id)
-                                  .then(() => {
-                                      this.getData()
-                                      this.success("Post successfully deleted")
-                                  })
-                                  .catch(() => {
-                                      this.error(`There was an error deleting the post: ${this.alert.message}`)
-                                  })
-                          }
-                    )
-                    .catch(() => {
-                        this.info("Post not deleted")
-                    })
+                this._remove(this.deletePost, post, post.title)
             },
 
             primary: items => items.find(el => el.primary === true) || items[0]
