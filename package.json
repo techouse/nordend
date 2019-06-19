@@ -24,7 +24,6 @@
     "@fortawesome/fontawesome-pro": "^5.9.0",
     "@toast-ui/vue-image-editor": "^1.0.2",
     "autoprefixer": "^9.6.0",
-    "autoresponsive-vue": "^1.0.22",
     "axios": "^0.18.1",
     "babel-eslint": "^10.0.2",
     "babel-loader": "^8.0.6",
