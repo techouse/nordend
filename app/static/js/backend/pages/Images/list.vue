@@ -166,6 +166,11 @@
             if (this.params.sort && this.params.sort[0] === "-") {
                 this.$set(this, "sortDirection", false)
             }
+
+            if (!this.params.sort) {
+                this.$set(this.params, "sort", "-created_at")
+                this.$set(this, "sortDirection", false)
+            }
         },
 
         methods: {
