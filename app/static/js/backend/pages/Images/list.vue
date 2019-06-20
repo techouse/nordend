@@ -3,6 +3,15 @@
         <template v-slot:header>
             <el-page-header class="no-back" :content="title"/>
             <div class="card-header-actions">
+                <button class="btn btn-pill btn-sm" :class="selectMode ? 'btn-outline-danger' : 'btn-outline-primary'"
+                        @click.prevent="toggleSelect">
+                    <template v-if="selectMode">
+                        <i class="fal fa-times-square"/> Cancel select
+                    </template>
+                    <template v-else>
+                        <i class="fal fa-check-double"/> Toggle select
+                    </template>
+                </button>
                 <button class="btn btn-sm btn-success" @click.prevent="upload">
                     <i class="far fa-camera-retro"/> Upload new image
                 </button>
@@ -42,7 +51,8 @@
                         <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex"
                                 :gutter="20">
                             <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
-                                <el-card :body-style="{ padding: '0', textAlign: 'center' }" class="image-card"
+                                <el-card :body-style="{ padding: '0', textAlign: 'center', position: 'relative' }"
+                                         class="image-card"
                                          shadow="hover"
                                 >
                                     <img :src="getThumbnailSrc(image)"
@@ -50,18 +60,32 @@
                                          :alt="image.original_filename"
                                          class="image-viewer-thumbnail"
                                     >
+                                    <template v-if="selectMode">
+                                        <el-tooltip class="item" effect="dark"
+                                                    :content="imageSelected(image) ? 'Deselect' : 'Select'"
+                                                    placement="top"
+                                                    :style="{position: 'absolute', left: '2px', top: '2px'}"
+                                        >
+                                            <el-button v-if="imageSelected(image)" type="primary" size="mini"
+                                                       icon="fas fa-check" circle @click="deselectImage(image)"
+                                            />
+                                            <el-button v-else type="default" size="mini" icon="el-icon-minus"
+                                                       circle @click="selectImage(image)"
+                                            />
+                                        </el-tooltip>
+                                    </template>
                                     <div style="padding: 14px;">
                                         <span>{{ (image.title || image.original_filename) | truncateMiddle(20) }}</span>
                                         <div class="bottom clearfix">
                                             <el-tooltip class="item" effect="dark" content="Edit in image editor"
-                                                        placement="left"
+                                                        placement="top"
                                             >
                                                 <el-button size="mini" circle @click="edit(image.id)">
                                                     <i class="fas fa-paint-brush"/>
                                                 </el-button>
                                             </el-tooltip>
                                             <el-tooltip class="item" effect="dark" content="Delete"
-                                                        placement="right"
+                                                        placement="top"
                                             >
                                                 <el-button type="danger" size="mini" icon="el-icon-delete-solid" circle
                                                            @click="remove(image)"
@@ -111,13 +135,13 @@
 
         data() {
             return {
-                uploadRefName: "create-image",
-                showRefName:   "show-image",
-                title:         "Images",
-                images:        [],
-                imagesPerRow:  6,
-                viewerOptions: {
-                    "button":     true,
+                uploadRefName:  "create-image",
+                showRefName:    "show-image",
+                title:          "Images",
+                images:         [],
+                imagesPerRow:   6,
+                viewerOptions:  {
+                    "button":     false,
                     "navbar":     false,
                     "title":      true,
                     "toolbar":    true,
@@ -131,7 +155,9 @@
                     "keyboard":   true,
                     "url":        "data-source"
                 },
-                sortDirection: true
+                sortDirection:  true,
+                selectMode:     false,
+                selectedImages: []
             }
         },
 
@@ -247,6 +273,30 @@
                 const direction = order === false ? "-" : ""
                 const prop = this.params.sort ? this.params.sort.replace(/^-|\+/, "") : null
                 this.$set(this.params, "sort", prop ? `${direction}${prop}` : null)
+            },
+
+            toggleSelect() {
+                this.$set(this, "selectMode", !this.selectMode)
+
+                if (!this.selectMode) {
+                    this.$set(this, "selectedImages", [])
+                }
+            },
+
+            selectImage(image) {
+                if (!this.imageSelected(image)) {
+                    this.selectedImages.push(image.id)
+                }
+            },
+
+            deselectImage(image) {
+                if (this.imageSelected(image)) {
+                    this.selectedImages.splice(this.selectedImages.indexOf(image.id), 1)
+                }
+            },
+
+            imageSelected(image) {
+                return this.selectedImages.includes(image.id)
             }
         }
     }
