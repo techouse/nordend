@@ -124,10 +124,12 @@
                         type:              "warning"
                     })
                     .then(() => {
-                        callback(this.multipleSelection.map(el => el.id))
+                        const ids = this.multipleSelection.map(el => el.id)
+                        callback(ids)
                             .then(() => {
                                 this.getData()
                                 this.success(`${count} ${label} successfully deleted`)
+                                this.$set(this, "multipleSelection", this.multipleSelection.filter(el => !ids.includes(el.id)))
                             })
                             .catch(() => {
                                 this.error(`There was an error deleting the ${count} ${label}: ${this.alert.message}`)
