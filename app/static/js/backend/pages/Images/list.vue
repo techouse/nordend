@@ -12,6 +12,19 @@
                         <i class="fal fa-check-double"/> Toggle select
                     </template>
                 </button>
+                <el-dropdown v-if="multipleSelection.length" @command="handleBulkCommand">
+                    <button class="btn btn-sm btn-outline-secondary">
+                        Bulk actions <i class="el-icon-arrow-down el-icon--right"></i>
+                    </button>
+                    <el-dropdown-menu slot="dropdown" size="mini">
+                        <el-dropdown-item icon="fal fa-trash-alt" :command="bulkRemove">
+                            Delete selection
+                        </el-dropdown-item>
+                        <el-dropdown-item icon="fal fa-snowplow" :command="clearSelection" divided>
+                            Clear selection
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
                 <button class="btn btn-sm btn-success" @click.prevent="upload">
                     <i class="far fa-camera-retro"/> Upload new image
                 </button>
@@ -135,12 +148,12 @@
 
         data() {
             return {
-                uploadRefName:  "create-image",
-                showRefName:    "show-image",
-                title:          "Images",
-                images:         [],
-                imagesPerRow:   6,
-                viewerOptions:  {
+                uploadRefName:     "create-image",
+                showRefName:       "show-image",
+                title:             "Images",
+                images:            [],
+                imagesPerRow:      6,
+                viewerOptions:     {
                     "button":     false,
                     "navbar":     false,
                     "title":      true,
@@ -155,9 +168,8 @@
                     "keyboard":   true,
                     "url":        "data-source"
                 },
-                sortDirection:  true,
-                selectMode:     false,
-                selectedImages: []
+                sortDirection:     true,
+                selectMode:        false
             }
         },
 
@@ -200,7 +212,7 @@
         },
 
         methods: {
-            ...mapActions("image", ["getImages", "deleteImage"]),
+            ...mapActions("image", ["getImages", "deleteImage", "deleteImages"]),
 
             getData() {
                 this.$router.replace({name: "Images", query: this.params})
@@ -247,6 +259,10 @@
                 this.$refs[this.uploadRefName].showModal()
             },
 
+            bulkRemove() {
+                this._bulkRemove(this.deleteImages, "image")
+            },
+
             remove(image) {
                 this._remove(this.deleteImage, image, image.title || image.original_filename)
             },
@@ -278,25 +294,29 @@
             toggleSelect() {
                 this.$set(this, "selectMode", !this.selectMode)
 
-                if (!this.selectMode) {
-                    this.$set(this, "selectedImages", [])
+                if (!this.selectMode && this.multipleSelection.length > 0) {
+                    this.clearSelection()
                 }
+            },
+
+            clearSelection() {
+                this.$set(this, "multipleSelection", [])
             },
 
             selectImage(image) {
                 if (!this.imageSelected(image)) {
-                    this.selectedImages.push(image.id)
+                    this.multipleSelection.push(image)
                 }
             },
 
             deselectImage(image) {
                 if (this.imageSelected(image)) {
-                    this.selectedImages.splice(this.selectedImages.indexOf(image.id), 1)
+                    this.multipleSelection.splice(this.multipleSelection.findIndex(img => img.id === image.id), 1)
                 }
             },
 
             imageSelected(image) {
-                return this.selectedImages.includes(image.id)
+                return this.multipleSelection.find(img => img.id === image.id)
             }
         }
     }
