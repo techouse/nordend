@@ -1,33 +1,36 @@
 <template>
     <modal v-if="show" :class="{show: show}" @close="closeModal">
         <template v-slot:title>
-            Upload image
+            Upload images
         </template>
         <template v-slot:body>
-            <el-upload v-loading="loading"
-                       element-loading-text="Uploading image..."
-                       drag
+            <el-upload ref="image_upload"
+                       v-loading="loading"
+                       :element-loading-text="loadingText"
                        class="text-center"
                        action="/api/v1/images/"
                        :show-file-list="false"
                        :on-success="handleImageSuccess"
                        :before-upload="beforeImageUpload"
                        :headers="uploadHeaders"
+                       :limit="uploadLimit"
+                       :on-exceed="handleUploadLimitExceeded"
+                       drag
+                       multiple
             >
-                <img v-if="imageUrl" class="preview-img" :src="previewImageUrl">
-                <div v-else>
+                <div>
                     <i class="el-icon-upload"/>
                     <div class="el-upload__text">
-                        Drop image file here or <em>click to upload</em>
+                        Drop image files here or <em>click to upload</em>
                     </div>
                     <div slot="tip" class="el-upload__tip">
-                        jpg/png/gif/bmp file with a size less than 2MB
+                        jpg/png/gif/bmp files with a size less than 2MB
                     </div>
                 </div>
             </el-upload>
         </template>
         <template v-slot:footer>
-            <button class="btn btn-danger" @click.prevent="closeModal">
+            <button class="btn btn-danger" @click.prevent="closeModal" :disabled="loading">
                 Close
             </button>
         </template>
@@ -49,6 +52,8 @@
         data() {
             return {
                 loading:            false,
+                completedCount:     0,
+                totalImages:        0,
                 photo:              new Photo(),
                 imageUrl:           "",
                 previewImageUrl:    "",
@@ -56,15 +61,24 @@
                 uploadHeaders:      {},
                 minimumImageWidth:  100,
                 minimumImageHeight: 100,
+                uploadLimit:        10,
             }
         },
 
         computed: {
             ...mapGetters("auth", ["token"]),
+
+            loadingText() {
+                if (this.completedCount && this.totalImages) {
+                    return `Uploading image ${this.completedCount + 1} of ${this.totalImages} ...`
+                } else {
+                    return "Uploading ..."
+                }
+            }
         },
 
         methods: {
-            ...mapActions("alert", ["error", "success"]),
+            ...mapActions("alert", ["error", "success", "warning"]),
 
             findClosest(x, arr) {
                 const indexArr = arr.map(k => Math.abs(k - x))
@@ -81,20 +95,19 @@
                 this.$set(this, "imageUrl", "")
             },
 
-            handleImageSuccess(response, file) {
-                this.$set(this, "loading", false)
+            handleImageSuccess(response, file, fileList) {
+                const complete = !fileList.some(file => file.percentage < 100)
+                this.$set(this, "totalImages", fileList.length)
+                this.$set(this, "completedCount", fileList.filter(file => file.percentage === 100).length)
+
                 this.$set(this, "photo", new Photo(response))
-                this.$set(this, "imageUrl", `${this.photo.public_path}/original.jpg`)
-                let closestSize = this.findClosest(360, this.photo.sizes || [])
-                if (!closestSize || closestSize < 360) {
-                    closestSize = "original"
-                }
-                this.$set(this, "previewImageUrl", `${this.photo.public_path}/${closestSize}.jpg`)
-
                 this.success(`Image ${this.photo.original_filename} uploaded successfully!`)
-                this.$emit("success", true)
 
-                this.closeModal()
+                if (complete) {
+                    this.$set(this, "loading", false)
+                    this.$emit("success", true)
+                    this.closeModal()
+                }
             },
 
             beforeImageUpload(file) {
@@ -143,6 +156,12 @@
                         return resolve(true)
                     }
                 })
+            },
+
+            handleUploadLimitExceeded(files, fileList) {
+                this.warning(`Please do not try to upload more than ${this.uploadLimit} images at once!`)
+
+                this.$refs.image_upload.clearFiles()
             }
         }
     }

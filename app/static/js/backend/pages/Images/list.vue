@@ -1,32 +1,41 @@
 <template>
     <card>
         <template v-slot:header>
-            <el-page-header class="no-back" :content="title"/>
+            <el-page-header class="no-back" :content="title" />
             <div class="card-header-actions">
-                <button class="btn btn-pill btn-sm" :class="selectMode ? 'btn-outline-danger' : 'btn-outline-primary'"
-                        @click.prevent="toggleSelect">
-                    <template v-if="selectMode">
-                        <i class="fal fa-times-square"/> Cancel select
-                    </template>
-                    <template v-else>
-                        <i class="fal fa-check-double"/> Toggle select
-                    </template>
-                </button>
-                <el-dropdown v-if="multipleSelection.length" @command="handleBulkCommand">
-                    <button class="btn btn-sm btn-outline-secondary">
-                        Bulk actions <i class="el-icon-arrow-down el-icon--right"></i>
+                <template v-if="images.length">
+                    <button class="btn btn-pill btn-sm"
+                            :class="selectMode ? 'btn-outline-danger' : 'btn-outline-primary'"
+                            @click.prevent="toggleSelect"
+                    >
+                        <template v-if="selectMode">
+                            <i class="fal fa-times-square" /> Cancel select
+                        </template>
+                        <template v-else>
+                            <i class="fal fa-check-double" /> Toggle select
+                        </template>
                     </button>
-                    <el-dropdown-menu slot="dropdown" size="mini">
-                        <el-dropdown-item icon="fal fa-trash-alt" :command="bulkRemove">
-                            Delete selection
-                        </el-dropdown-item>
-                        <el-dropdown-item icon="fal fa-snowplow" :command="clearSelection" divided>
-                            Clear selection
-                        </el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
+                    <button v-if="selectMode" class="btn btn-pill btn-sm btn-outline-info"
+                            @click.prevent="selectAllImages"
+                    >
+                        <i class="fal fa-object-group" /> Select all
+                    </button>
+                    <el-dropdown v-if="multipleSelection.length" @command="handleBulkCommand">
+                        <button class="btn btn-sm btn-outline-secondary">
+                            Bulk actions <i class="el-icon-arrow-down el-icon--right" />
+                        </button>
+                        <el-dropdown-menu slot="dropdown" size="mini">
+                            <el-dropdown-item icon="fal fa-trash-alt" :command="bulkRemove">
+                                Delete selection
+                            </el-dropdown-item>
+                            <el-dropdown-item icon="fal fa-snowplow" :command="clearSelection" divided>
+                                Clear selection
+                            </el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </template>
                 <button class="btn btn-sm btn-success" @click.prevent="upload">
-                    <i class="far fa-camera-retro"/> Upload new image
+                    <i class="far fa-images" /> Upload new images
                 </button>
             </div>
         </template>
@@ -54,7 +63,7 @@
                               clearable
                               @change="searchData"
                     >
-                        <el-button slot="append" icon="el-icon-search"/>
+                        <el-button slot="append" icon="el-icon-search" />
                     </el-input>
                 </el-col>
             </el-row>
@@ -62,7 +71,8 @@
                 <viewer v-if="images.length" :images="viewerImages" :options="viewerOptions" class="w-100">
                     <template slot-scope="scope">
                         <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex"
-                                :gutter="20">
+                                :gutter="20"
+                        >
                             <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
                                 <el-card :body-style="{ padding: '0', textAlign: 'center', position: 'relative' }"
                                          class="image-card"
@@ -94,7 +104,7 @@
                                                         placement="top"
                                             >
                                                 <el-button size="mini" circle @click="edit(image.id)">
-                                                    <i class="fas fa-paint-brush"/>
+                                                    <i class="fas fa-paint-brush" />
                                                 </el-button>
                                             </el-tooltip>
                                             <el-tooltip class="item" effect="dark" content="Delete"
@@ -112,7 +122,7 @@
                     </template>
                 </viewer>
                 <div v-else :style="{width: '100%', textAlign: 'center', opacity: .5}">
-                    No images <i class="fal fa-frown"/>
+                    No images <i class="fal fa-frown" />
                 </div>
             </el-container>
             <div v-if="images.length" class="d-flex justify-content-center mt-2">
@@ -126,7 +136,7 @@
                                @current-change="getDataWithLoading"
                 />
             </div>
-            <create-image :ref="uploadRefName" @success="getDataWithLoading"/>
+            <create-image :ref="uploadRefName" @success="getDataWithLoading" />
         </template>
     </card>
 </template>
@@ -148,12 +158,12 @@
 
         data() {
             return {
-                uploadRefName:     "create-image",
-                showRefName:       "show-image",
-                title:             "Images",
-                images:            [],
-                imagesPerRow:      6,
-                viewerOptions:     {
+                uploadRefName: "create-image",
+                showRefName:   "show-image",
+                title:         "Images",
+                images:        [],
+                imagesPerRow:  6,
+                viewerOptions: {
                     "button":     false,
                     "navbar":     false,
                     "title":      true,
@@ -168,8 +178,8 @@
                     "keyboard":   true,
                     "url":        "data-source"
                 },
-                sortDirection:     true,
-                selectMode:        false
+                sortDirection: true,
+                selectMode:    false
             }
         },
 
@@ -307,6 +317,14 @@
                 if (!this.imageSelected(image)) {
                     this.multipleSelection.push(image)
                 }
+            },
+
+            selectAllImages() {
+                this.images
+                    .filter(img => this.multipleSelection.findIndex(el => el.id !== img.id))
+                    .forEach(img => {
+                        this.multipleSelection.push(img)
+                    })
             },
 
             deselectImage(image) {
