@@ -73,7 +73,7 @@
                 if (this.totalImages > 1) {
                     return `Uploading image ${this.completedCount + 1} of ${this.totalImages} ...`
                 } else {
-                    return "Uploading ..."
+                    return "Uploading image ..."
                 }
             }
         },
