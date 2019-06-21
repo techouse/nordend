@@ -15,6 +15,7 @@
                        :headers="uploadHeaders"
                        :limit="uploadLimit"
                        :on-exceed="handleUploadLimitExceeded"
+                       :on-change="handleChange"
                        drag
                        multiple
             >
@@ -69,7 +70,7 @@
             ...mapGetters("auth", ["token"]),
 
             loadingText() {
-                if (this.completedCount && this.totalImages) {
+                if (this.totalImages > 1) {
                     return `Uploading image ${this.completedCount + 1} of ${this.totalImages} ...`
                 } else {
                     return "Uploading ..."
@@ -97,7 +98,6 @@
 
             handleImageSuccess(response, file, fileList) {
                 const complete = !fileList.some(file => file.percentage < 100)
-                this.$set(this, "totalImages", fileList.length)
                 this.$set(this, "completedCount", fileList.filter(file => file.percentage === 100).length)
 
                 this.$set(this, "photo", new Photo(response))
@@ -156,6 +156,10 @@
                         return resolve(true)
                     }
                 })
+            },
+
+            handleChange(file, fileList) {
+                this.$set(this, "totalImages", fileList.length)
             },
 
             handleUploadLimitExceeded(files, fileList) {
