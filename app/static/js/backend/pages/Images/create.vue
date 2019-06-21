@@ -56,8 +56,6 @@
                 completedCount:     0,
                 totalImages:        0,
                 photo:              new Photo(),
-                imageUrl:           "",
-                previewImageUrl:    "",
                 show:               false,
                 uploadHeaders:      {},
                 minimumImageWidth:  100,
@@ -93,12 +91,15 @@
 
             closeModal() {
                 this.$set(this, "show", false)
-                this.$set(this, "imageUrl", "")
+                this.$set(this, "completedCount", 0)
+                this.$set(this, "totalImages", 0)
+                this.$set(this, "photo", new Photo())
+                this.$set(this, "uploadHeaders", {})
             },
 
             handleImageSuccess(response, file, fileList) {
-                const complete = !fileList.some(file => file.percentage < 100)
-                this.$set(this, "completedCount", fileList.filter(file => file.percentage === 100).length)
+                const complete = !fileList.some(file => file.status === "uploading")
+                this.$set(this, "completedCount", fileList.filter(file => file.status === "success").length)
 
                 this.$set(this, "photo", new Photo(response))
                 this.success(`Image ${this.photo.original_filename} uploaded successfully!`)
