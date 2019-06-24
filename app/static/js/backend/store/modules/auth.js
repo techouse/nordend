@@ -8,7 +8,7 @@ const state = {
     token:                null,
     expiration:           0,
     authRefresher:        null,
-    authRefreshThreshold: 5,
+    authRefreshThreshold: 15,
 }
 
 const getters = {
@@ -189,33 +189,35 @@ const actions = {
 
     refreshToken({state, commit, dispatch}) {
         const refresher = setTimeout(() => {
-                                         api.post("login", {}, {
-                                                auth: {
-                                                    username: state.token,
-                                                    password: ""
-                                                }
-                                            })
-                                            .then(response => {
-                                                const data = response.data
-                                                if (data.token) {
-                                                    const jwtData = JSON.parse(atob(data.token.split(".")[0]))
-                                                    const jwtUser = JSON.parse(atob(data.token.split(".")[1]))
-
-                                                    const authData = {
-                                                        userId:     (jwtUser && "id" in jwtUser) ? Number(jwtUser.id) : null,
-                                                        token:      data.token,
-                                                        expiration: jwtData ? Number(jwtData.exp) * 1000 : 0
+                                         dispatch("csrf/getCsrf", {}, {root: true}).then(() => {
+                                             api.post("login", {}, {
+                                                    auth: {
+                                                        username: state.token,
+                                                        password: ""
                                                     }
+                                                })
+                                                .then(response => {
+                                                    const data = response.data
+                                                    if (data.token) {
+                                                        const jwtData = JSON.parse(atob(data.token.split(".")[0]))
+                                                        const jwtUser = JSON.parse(atob(data.token.split(".")[1]))
 
-                                                    commit("setAuthData", authData)
-                                                    dispatch("refreshToken")
-                                                }
-                                            })
-                                            .catch(() => {
-                                                dispatch("logout")
-                                            })
+                                                        const authData = {
+                                                            userId:     (jwtUser && "id" in jwtUser) ? Number(jwtUser.id) : null,
+                                                            token:      data.token,
+                                                            expiration: jwtData ? Number(jwtData.exp) * 1000 : 0
+                                                        }
+
+                                                        commit("setAuthData", authData)
+                                                        dispatch("refreshToken")
+                                                    }
+                                                })
+                                                .catch(() => {
+                                                    dispatch("logout")
+                                                })
+                                         })
                                      },
-                                     differenceInMilliseconds(subMinutes(parse(state.expiration), state.authRefreshThreshold), new Date()))
+                                     Math.max(differenceInMilliseconds(subMinutes(parse(state.expiration), state.authRefreshThreshold), new Date()), 1))
 
         commit("setAuthRefresher", refresher)
     },
