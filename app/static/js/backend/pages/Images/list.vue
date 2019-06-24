@@ -1,7 +1,7 @@
 <template>
     <card>
         <template v-slot:header>
-            <el-page-header class="no-back" :content="title" />
+            <el-page-header class="no-back" :content="title"/>
             <div class="card-header-actions">
                 <template v-if="images.length">
                     <button class="btn btn-pill btn-sm"
@@ -9,20 +9,20 @@
                             @click.prevent="toggleSelect"
                     >
                         <template v-if="selectMode">
-                            <i class="fal fa-times-square" /> Cancel select
+                            <i class="fal fa-times-square"/> Cancel select
                         </template>
                         <template v-else>
-                            <i class="fal fa-check-double" /> Toggle select
+                            <i class="fal fa-check-double"/> Toggle select
                         </template>
                     </button>
                     <button v-if="selectMode" class="btn btn-pill btn-sm btn-outline-info"
                             @click.prevent="selectAllImages"
                     >
-                        <i class="fal fa-object-group" /> Select all
+                        <i class="fal fa-object-group"/> Select all
                     </button>
                     <el-dropdown v-if="multipleSelection.length" @command="handleBulkCommand">
                         <button class="btn btn-sm btn-outline-secondary">
-                            Bulk actions <i class="el-icon-arrow-down el-icon--right" />
+                            Bulk actions <i class="el-icon-arrow-down el-icon--right"/>
                         </button>
                         <el-dropdown-menu slot="dropdown" size="mini">
                             <el-dropdown-item icon="fal fa-trash-alt" :command="bulkRemove">
@@ -35,27 +35,19 @@
                     </el-dropdown>
                 </template>
                 <button class="btn btn-sm btn-success" @click.prevent="upload">
-                    <i class="far fa-images" /> Upload new images
+                    <i class="far fa-images"/> Upload new images
                 </button>
             </div>
         </template>
         <template v-slot:body>
             <el-row v-if="images.length" :gutter="20">
                 <el-col :span="9" :style="{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}">
-                    <b>Sort by: </b>
-                    <el-select v-model="params.sort" clearable placeholder="Sort by">
-                        <el-option v-for="item in sortByOptions"
-                                   :key="item.value"
-                                   :label="item.label"
-                                   :value="item.value"
-                        />
-                    </el-select>
-                    <span>
-                        <el-switch v-model="sortDirection"
-                                   @change="handleSortDirectionChange"
-                        />
-                        <span>{{ sortDirection ? "Ascending" : "Descending" }}</span>
-                    </span>
+                    <el-menu :default-active="params.sort" mode="horizontal" @select="handleSortSelect">
+                        <el-menu-item v-for="item in sortByOptions" :key="item.value" :index="item.value">
+                            {{ item.label }}
+                            <i class="fal" :class="sortDirection ? 'fa-chevron-up' : 'fa-chevron-down'"/>
+                        </el-menu-item>
+                    </el-menu>
                 </el-col>
                 <el-col :span="6" :offset="9">
                     <el-input v-model="params.search"
@@ -63,7 +55,7 @@
                               clearable
                               @change="searchData"
                     >
-                        <el-button slot="append" icon="el-icon-search" />
+                        <el-button slot="append" icon="el-icon-search"/>
                     </el-input>
                 </el-col>
             </el-row>
@@ -104,7 +96,7 @@
                                                         placement="top"
                                             >
                                                 <el-button size="mini" circle @click="edit(image.id)">
-                                                    <i class="fas fa-paint-brush" />
+                                                    <i class="fas fa-paint-brush"/>
                                                 </el-button>
                                             </el-tooltip>
                                             <el-tooltip class="item" effect="dark" content="Delete"
@@ -122,7 +114,7 @@
                     </template>
                 </viewer>
                 <div v-else :style="{width: '100%', textAlign: 'center', opacity: .5}">
-                    No images <i class="fal fa-frown" />
+                    No images <i class="fal fa-frown"/>
                 </div>
             </el-container>
             <div v-if="images.length" class="d-flex justify-content-center mt-2">
@@ -136,7 +128,7 @@
                                @current-change="getDataWithLoading"
                 />
             </div>
-            <create-image :ref="uploadRefName" @success="getDataWithLoading" />
+            <create-image :ref="uploadRefName" @success="getDataWithLoading"/>
         </template>
     </card>
 </template>
@@ -193,11 +185,13 @@
                 })
             },
             sortByOptions() {
-                return this.sortDirection
-                       ? [{value: "title", label: "Title"},
-                          {value: "created_at", label: "Date uploaded"},]
-                       : [{value: "-title", label: "Title"},
-                          {value: "-created_at", label: "Date uploaded"},]
+                return [
+                    {value: "created_at", label: "Date uploaded"},
+                    {value: "title", label: "Title"},
+                ].map(option => ({
+                    label: option.label,
+                    value: this.sortDirection ? option.value.replace(/^-/, "") : `-${option.value}`
+                }))
             }
         },
 
@@ -293,6 +287,16 @@
                 return image.sizes.includes(1920)
                        ? `${image.public_path}/1920.jpg`
                        : `${image.public_path}/original.jpg`
+            },
+
+            handleSortSelect(key, keyPath) {
+                console.log(key)
+                const currentSort = this.params.sort
+                this.$set(this.params, "sort", key)
+                if (key.replace(/^-/, "") === currentSort.replace(/^-/, "")) {
+                    this.$set(this, "sortDirection", currentSort[0] === "-")
+                    this.handleSortDirectionChange(this.sortDirection)
+                }
             },
 
             handleSortDirectionChange(order) {
