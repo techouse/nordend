@@ -90,22 +90,33 @@
                                         </el-tooltip>
                                     </template>
                                     <div style="padding: 14px;">
-                                        <span>{{ (image.title || image.original_filename) | truncateMiddle(20) }}</span>
+                                        <template v-if="imageTitle(image).length > 20">
+                                            <el-tooltip class="item" effect="dark" :content="imageTitle(image)"
+                                                        placement="top"
+                                            >
+                                                <span>{{ imageTitle(image) | truncateMiddle(20) }}</span>
+                                            </el-tooltip>
+                                        </template>
+                                        <template v-else>
+                                            <span>{{ imageTitle(image) }}</span>
+                                        </template>
                                         <div class="bottom clearfix">
-                                            <el-tooltip class="item" effect="dark" content="Edit in image editor"
-                                                        placement="top"
-                                            >
-                                                <el-button size="mini" circle @click="edit(image.id)">
-                                                    <i class="fas fa-paint-brush"/>
-                                                </el-button>
-                                            </el-tooltip>
-                                            <el-tooltip class="item" effect="dark" content="Delete"
-                                                        placement="top"
-                                            >
-                                                <el-button type="danger" size="mini" icon="el-icon-delete-solid" circle
-                                                           @click="remove(image)"
-                                                />
-                                            </el-tooltip>
+                                            <el-button-group>
+                                                <el-tooltip class="item" effect="dark" content="Edit in image editor"
+                                                            placement="bottom"
+                                                >
+                                                    <el-button size="mini" @click="edit(image.id)">
+                                                        <i class="fas fa-paint-brush"/>
+                                                    </el-button>
+                                                </el-tooltip>
+                                                <el-tooltip class="item" effect="dark" content="Delete"
+                                                            placement="bottom"
+                                                >
+                                                    <el-button type="danger" size="mini" icon="el-icon-delete-solid"
+                                                               @click="remove(image)"
+                                                    />
+                                                </el-tooltip>
+                                            </el-button-group>
                                         </div>
                                     </div>
                                 </el-card>
@@ -339,6 +350,10 @@
 
             imageSelected(image) {
                 return this.multipleSelection.find(img => img.id === image.id)
+            },
+
+            imageTitle(image) {
+                return image.title || image.original_filename || ""
             }
         }
     }
