@@ -187,7 +187,7 @@
             sortByOptions() {
                 return [
                     {value: "created_at", label: "Date uploaded"},
-                    {value: "title", label: "Title"},
+                    {value: "original_filename", label: "Title"},
                 ].map(option => ({
                     label: option.label,
                     value: this.sortDirection ? option.value.replace(/^-/, "") : `-${option.value}`
