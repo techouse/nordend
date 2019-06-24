@@ -87,6 +87,11 @@
             }
         },
 
+        created() {
+            this.$set(this, "remember", true)
+            this.rememberChanged()
+        },
+
         methods: {
             ...mapActions("auth", [
                 "login",
