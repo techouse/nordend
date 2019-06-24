@@ -1,14 +1,39 @@
 <template>
-    <card :ref="cardRef">
+    <card-form :ref="formRef" :form-ref="formRef" :model="image" :rules="rules" :label-width="labelWidth">
         <template v-slot:header>
             <el-page-header :content="title" @back="goBack"/>
             <div v-if="image.id" class="card-header-actions">
-                <button class="btn btn-sm btn-danger" @click.prevent="remove">
+                <el-button class="btn btn-sm btn-danger" @click.prevent="remove">
                     Delete image
-                </button>
+                </el-button>
             </div>
         </template>
         <template v-slot:body>
+            <el-row class="image-tags">
+                <el-col :span="24">
+                    <el-form-item label="Tags">
+                        <el-tag v-for="tag in image.tags"
+                                :key="tag.id"
+                                :closable="true"
+                                :disable-transitions="false"
+                                @close="handleTagRemove(tag)"
+                        >
+                            <i class="fal fa-tag"/> {{ tag.name }}
+                        </el-tag>
+                        <el-input v-if="tagInputVisible"
+                                  ref="saveImageTagInput"
+                                  v-model="newTagName"
+                                  class="input-new-tag"
+                                  size="mini"
+                                  @change="handleTagConfirm"
+                                  @blur="handleTagConfirm"
+                        />
+                        <el-button v-else class="button-new-tag" size="small" @click="showTagInput">
+                            <i class="fal fa-tags"/> Add new tag
+                        </el-button>
+                    </el-form-item>
+                </el-col>
+            </el-row>
             <div ref="edit-image" class="edit-image">
                 <tui-image-editor v-if="image.id"
                                   :ref="refName"
@@ -30,23 +55,24 @@
                 Save as new image
             </el-button>
         </template>
-    </card>
+    </card-form>
 </template>
 
 <script>
     import {ImageEditor}         from "@toast-ui/vue-image-editor"
     import {mapActions}          from "vuex"
     import Photo                 from "../../models/Image"
-    import Card                  from "../../components/Card"
+    import CardForm              from "../../components/CardForm"
     import CreatePartial         from "../../components/CreatePartial"
     import {white as whiteTheme} from "../../components/image_editor/theme"
+    import Tag                   from "../../models/Tag"
 
     export default {
         name: "EditImage",
 
         components: {
             "tui-image-editor": ImageEditor,
-            Card
+            CardForm
         },
 
         extends: CreatePartial,
@@ -60,11 +86,12 @@
 
         data() {
             return {
-                cardRef:      "image-edit-card",
-                refName:      "editor",
-                image:        new Photo(),
-                useDefaultUI: true,
-                options:      {
+                formRef:         "image-edit-form",
+                labelWidth:      "60px",
+                refName:         "editor",
+                image:           new Photo(),
+                useDefaultUI:    true,
+                options:         {
                     includeUI:       {
                         theme:           whiteTheme,
                         loadImage:       {
@@ -78,11 +105,13 @@
                     cssMaxHeight:    1024,
                     usageStatistics: false,
                 },
-                aspectRatio:  0,
-                editorWidth:  0,
-                actionStack:  [],
-                undo:         0,
-                redo:         0
+                aspectRatio:     0,
+                editorWidth:     0,
+                actionStack:     [],
+                undo:            0,
+                redo:            0,
+                tagInputVisible: false,
+                newTagName:      "",
             }
         },
 
@@ -214,6 +243,8 @@
         methods: {
             ...mapActions("image", ["getImage", "createImage", "updateImage", "deleteImage"]),
 
+            ...mapActions("tag", ["getTags", "createTag"]),
+
             handleObjectMoved(props) {
                 console.log("object moved")
             },
@@ -236,6 +267,49 @@
 
             getEditorWidth() {
                 this.$set(this, "editorWidth", this.$refs["edit-image"].clientWidth)
+            },
+
+            handleTagRemove(tag) {
+                if (this.image.tags.length > 0 && this.image.tag_ids.length > 0) {
+                    this.image.tags.splice(this.image.tags.findIndex(el => Number(el.id) === Number(tag.id)), 1)
+                    this.image.tag_ids.splice(this.image.tag_ids.findIndex(el => Number(el) === Number(tag.id)), 1)
+                }
+            },
+
+            handleTagConfirm() {
+                const name = this.newTagName
+                if (name) {
+                    const exists = this.image.tags.some(tag => tag.name.toLowerCase() === name.trim().toLowerCase())
+
+                    if (!exists) {
+                        this.getTags({params: {name}})
+                            .then(({data}) => {
+                                if (data.results.length > 0) {
+                                    const tag = new Tag(data.results.shift())
+                                    this.image.tags.push(tag)
+                                    this.image.tag_ids.push(tag.id)
+                                } else {
+                                    this.createTag({name})
+                                        .then(({data}) => {
+                                            const tag = new Tag(data)
+                                            this.image.tags.push(tag)
+                                            this.image.tag_ids.push(tag.id)
+                                        })
+                                }
+                            })
+                    } else {
+                        this.warning(`A tag with the name ${name} is already associated with this image.`)
+                    }
+                }
+                this.$set(this, "tagInputVisible", false)
+                this.$set(this, "newTagName", "")
+            },
+
+            showTagInput() {
+                this.$set(this, "tagInputVisible", true)
+                this.$nextTick(_ => {
+                    this.$refs.saveImageTagInput.$refs.input.focus()
+                })
             },
 
             remove() {

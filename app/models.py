@@ -627,8 +627,29 @@ class Image(db.Model, AddUpdateDelete):
         db.TIMESTAMP, index=True, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp()
     )
     # relationships
-    tags = db.relationship("ImageTag", lazy="dynamic")
+    _tags = db.relationship("ImageTag", lazy="dynamic")
     posts = db.relationship("PostImage", lazy="dynamic")
+
+    @hybrid_property
+    def tags(self):
+        return self._tags
+
+    @tags.setter
+    def tags(self, tags):
+        ids = set()
+        for tag in tags:
+            if isinstance(tag, Tag):
+                ids.add(tag.id)
+            else:
+                ids.add(tag)
+        current = set(tag[0] for tag in self._tags.values("tag_id"))
+        ids_to_delete = current - ids
+        if ids_to_delete:
+            self._tags.filter(ImageTag.tag_id.in_(list(ids_to_delete))).delete(synchronize_session="fetch")
+        ids_to_append = ids - current
+        if ids_to_append:
+            for tag_id in ids_to_append:
+                self._tags.append(ImageTag(tag_id=tag_id))
 
 
 class Tag(db.Model, AddUpdateDelete):

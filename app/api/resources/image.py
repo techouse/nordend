@@ -44,6 +44,8 @@ class ImageResource(TokenRequiredResource):
             return errors, status.HTTP_400_BAD_REQUEST
         if "title" in request_dict and request_dict["title"]:
             image.title = request_dict["title"]
+        if "tag_ids" in request_dict:
+            image.tags = list(map(int, request_dict["tag_ids"]))
         if "data_url" in request_dict and request_dict["data_url"]:
             image_data = re.sub("^data:image/.+;base64,", "", request_dict["data_url"])
             if image_data:

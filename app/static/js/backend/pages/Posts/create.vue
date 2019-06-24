@@ -74,7 +74,7 @@
                                           v-model="newTagName"
                                           class="input-new-tag"
                                           size="mini"
-                                          @keyup.enter.native="handleTagConfirm"
+                                          @change="handleTagConfirm"
                                           @blur="handleTagConfirm"
                                 />
                                 <el-button v-else class="button-new-tag" size="small" @click="showTagInput">

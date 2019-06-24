@@ -11,7 +11,7 @@ from marshmallow import validate
 from app import redis
 from .broadcast.post import PostBroadcast
 from .validators import valid_permission, valid_password_reset_token
-from ..models import Post, User, Role, Category, Image, Tag, PostCategory, PostAuthor, PostImage, PostTag
+from ..models import Post, User, Role, Category, Image, Tag, PostCategory, PostAuthor, PostImage, PostTag, ImageTag
 from ..redis_keys import locked_posts_redis_key
 
 ma = Marshmallow()
@@ -245,6 +245,14 @@ class PostSchema(ma.Schema):
         return None
 
 
+class ImageTagSchema(ma.Schema):
+    class Meta:
+        model = ImageTag
+
+    tag = fields.Nested("TagSchema", only=("id", "name", "slug"))
+    image = fields.Nested("ImageSchema", only=("id", "original_filename", "public_path", "links"))
+
+
 class ImageSchema(ma.Schema):
     class Meta:
         model = Image
@@ -258,7 +266,7 @@ class ImageSchema(ma.Schema):
     original_filename = fields.String(allow_none=True)
     data_url = fields.String(allow_none=True, load_only=True)
     author_id = fields.Integer(dump_only=True)
-    tags = fields.Nested("TagSchema", many=True, exclude=("posts", "images"))
+    tags = fields.Nested("ImageTagSchema", many=True, only=("tag",))
     created_at = fields.DateTime(format="iso8601")
     updated_at = fields.DateTime(format="iso8601")
     links = ma.Hyperlinks(

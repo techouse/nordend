@@ -1,3 +1,5 @@
+import Tag from "./Tag"
+
 export default class Image {
     constructor(values = {}) {
         this.id = null
@@ -9,6 +11,8 @@ export default class Image {
         this.thumbnail_sizes = []
         this.created_at = null
         this.data_url = null
+        this.tags = []
+        this.tag_ids = []
 
         Object.assign(this, values)
 
@@ -27,6 +31,11 @@ export default class Image {
                              .filter(size => size >= 440) // Minimum size for srcset
                              .sort((a, b) => a - b)
         }
+
+        if (this.tags) {
+            this.tags = this.tags.map(el => new Tag(el.tag))
+            this.tag_ids = this.tags.map(el => el.id)
+        }
     }
 
     mappedForSubmission() {
@@ -34,7 +43,8 @@ export default class Image {
             title:             this.title,
             author_id:         this.author_id,
             original_filename: this.original_filename,
-            data_url:          this.data_url
+            data_url:          this.data_url,
+            tag_ids:           this.tag_ids,
         }
     }
 
