@@ -9,6 +9,9 @@
             </div>
         </template>
         <template v-slot:body>
+            <el-form-item label="Title" prop="title">
+                <el-input v-model="image.title" type="text" maxlength="255" show-word-limit required/>
+            </el-form-item>
             <el-row class="image-tags">
                 <el-col :span="24">
                     <el-form-item label="Tags">
@@ -61,6 +64,7 @@
 <script>
     import {ImageEditor}         from "@toast-ui/vue-image-editor"
     import {mapActions}          from "vuex"
+    import MD5                   from "crypto-js/md5"
     import Photo                 from "../../models/Image"
     import CardForm              from "../../components/CardForm"
     import CreatePartial         from "../../components/CreatePartial"
@@ -87,8 +91,8 @@
         data() {
             return {
                 formRef:         "image-edit-form",
-                labelWidth:      "60px",
                 refName:         "editor",
+                labelWidth:      "80px",
                 image:           new Photo(),
                 useDefaultUI:    true,
                 options:         {
@@ -112,6 +116,7 @@
                 redo:            0,
                 tagInputVisible: false,
                 newTagName:      "",
+                imageDataUrl:    ""
             }
         },
 
@@ -237,6 +242,11 @@
                         path: this.path,
                         name: this.title
                     })
+
+                    // wait 500ms before grabbing the initial image data url
+                    setTimeout(() => {
+                        this.$set(this, "imageDataUrl", MD5(this.getImageData()).toString())
+                    }, 500)
                 })
         },
 
@@ -335,32 +345,35 @@
             },
 
             getImageData() {
-                this.$set(this.image, "data_url", this.$refs[this.refName].invoke("toDataURL", {format: "png"}))
+                return this.$refs[this.refName].invoke("toDataURL", {format: "png"})
             },
 
             submit() {
-                this.getImageData()
-
-                if (this.image.data_url) {
-                    this.updateImage(this.image)
-                        .then(() => {
-                            this.success("Image successfully updated")
-                        })
-                        .catch(() => {
-                            this.error(`There was an error updating the image: ${this.alert.message}`)
-                        })
-                } else {
-                    this.error("The image data is invalid!")
+                const currentImageDataUrl = this.getImageData()
+                if (MD5(currentImageDataUrl).toString() !== this.imageDataUrl) {
+                    this.$set(this.image, "data_url", currentImageDataUrl)
                 }
+
+                this.updateImage(this.image)
+                    .then(() => {
+                        this.$set(this, "imageDataUrl", MD5(currentImageDataUrl).toString())
+                        this.$set(this.image, "data_url", null)
+                        this.success("Image successfully updated")
+                    })
+                    .catch(() => {
+                        this.error(`There was an error updating the image: ${this.alert.message}`)
+                    })
             },
 
             create() {
-                this.getImageData()
+                const currentImageDataUrl = this.getImageData()
+                this.$set(this.image, "data_url", currentImageDataUrl)
 
                 if (this.image.data_url) {
                     this.createImage(this.image)
                         .then(({data}) => {
                             this.$set(this, "image", new Photo(data))
+                            this.$set(this, "imageDataUrl", MD5(currentImageDataUrl).toString())
                             this.$router.push({name: "EditImage", params: {imageId: this.image.id}})
                             this.$refs[this.refName].invoke("loadImageFromURL", this.path, this.title)
 
@@ -385,5 +398,11 @@
     .edit-image {
         width: 100%;
         height: (1024px + 64px);
+    }
+
+    .el-form-item__content {
+        & > div:first-child {
+            width: calc(100% - 80px);
+        }
     }
 </style>
