@@ -53,7 +53,7 @@ class PostResource(TokenRequiredResource):
             post.tags = list(map(int, request_dict["tag_ids"]))
         if "related_ids" in request_dict:
             post.related = list(map(int, request_dict["related_ids"]))
-        if "published" in request_dict:
+        if "published" in request_dict and request_dict["published"] is not None:
             post.published = dp.parse(request_dict["published"])
         if "draft" in request_dict:
             post.draft = request_dict["draft"]
