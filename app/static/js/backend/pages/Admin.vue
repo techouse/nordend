@@ -98,7 +98,7 @@
             <div class="ml-auto d-none d-md-block">
                 <span>Shamelessly powered by</span>
                 <a href="http://flask.pocoo.org" target="_blank">Flask</a> and
-                <a href="https://vuejs.org">Vue.js</a>.
+                <a href="https://vuejs.org" target="_blank">Vue.js</a>.
             </div>
         </footer>
     </div>
