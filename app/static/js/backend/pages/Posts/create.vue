@@ -102,6 +102,7 @@
                                             placeholder="Select publish date and time"
                                             :picker-options="publishPickerOptions"
                                             :disabled="post.draft"
+                                            :format="`${dateFormat} ${timeFormat}`"
                             />
                         </el-form-item>
                     </el-col>
@@ -755,6 +756,8 @@
         },
 
         computed: {
+            ...mapGetters("locale", ["dateFormat", "timeFormat"]),
+
             ...mapGetters("alert", ["alert"]),
 
             ...mapGetters("user", ["currentUser"]),
