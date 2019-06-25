@@ -22,25 +22,24 @@ Vue.filter("truncate", (text = "", length = 30, clamp = "...") => {
         last   = tcText.length - 1
 
     while (last > 0 && tcText[last] !== " " && tcText[last] !== clamp[0]) {
-        last -= 1
+        --last
     }
 
-    // Fix for case when text dont have any `space`
     last = last || length - clamp.length
     tcText = tcText.slice(0, last)
 
     return tcText + clamp
 })
 
-Vue.filter("truncateMiddle", (fullStr, strLen, separator = "...") => {
-    if (fullStr.length <= strLen) {
-        return fullStr
+Vue.filter("truncateMiddle", (text, length = 30, clamp = "...") => {
+    if (text.length <= length) {
+        return text
     }
 
-    const sepLen = separator.length
-    const charsToShow = strLen - sepLen
+    const sepLen = clamp.length
+    const charsToShow = length - sepLen
     const frontChars = Math.ceil(charsToShow / 2)
     const backChars = Math.floor(charsToShow / 2)
 
-    return fullStr.substr(0, frontChars) + separator + fullStr.substr(fullStr.length - backChars)
+    return text.substr(0, frontChars) + clamp + text.substr(text.length - backChars)
 })

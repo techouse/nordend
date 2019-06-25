@@ -91,8 +91,8 @@
                                :total="totalCount"
                                layout="prev, pager, next, sizes"
                                background
-                               @size-change="getData"
-                               @current-change="getData"
+                               @size-change="updateData"
+                               @current-change="updateData"
                 />
             </div>
         </template>

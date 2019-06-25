@@ -52,13 +52,7 @@
 
         created() {
             this.$set(this, "loading", true)
-            this.getData()
-                .then(() => {
-                    this.$set(this, "loading", false)
-                })
-                .catch(() => {
-                    this.$set(this, "loading", false)
-                })
+            this.updateData()
         },
 
         mounted() {
@@ -75,10 +69,22 @@
                 console.warn("Implement getData in a child component!")
             },
 
+            updateData() {
+                this.$set(this, "loading", true)
+
+                this.getData()
+                    .then(() => {
+                        this.$set(this, "loading", false)
+                    })
+                    .catch(() => {
+                        this.$set(this, "loading", false)
+                    })
+            },
+
             searchData() {
                 this.$set(this.params, "page", 1)
 
-                this.getData()
+                this.updateData()
             },
 
             orderBy({prop, order}) {
@@ -89,7 +95,7 @@
                     this.$set(this.params, "sort", null)
                 }
 
-                this.getData()
+                this.updateData()
             },
 
             toggleSelection(rows) {
@@ -127,7 +133,7 @@
                         const ids = this.multipleSelection.map(el => el.id)
                         callback(ids)
                             .then(() => {
-                                this.getData()
+                                this.updateData()
                                 this.success(`${count} ${label} successfully deleted`)
                                 this.$set(this, "multipleSelection", this.multipleSelection.filter(el => !ids.includes(el.id)))
                             })
@@ -163,7 +169,7 @@
                     .then(() => {
                               callback(model.id)
                                   .then(() => {
-                                      this.getData()
+                                      this.updateData()
                                       this.success(`${label} successfully deleted`)
                                   })
                                   .catch(() => {

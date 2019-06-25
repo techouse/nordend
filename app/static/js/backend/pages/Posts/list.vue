@@ -121,8 +121,8 @@
                                :total="totalCount"
                                layout="prev, pager, next, sizes"
                                background
-                               @size-change="getData"
-                               @current-change="getData"
+                               @size-change="updateData"
+                               @current-change="updateData"
                 />
             </div>
         </template>
@@ -159,21 +159,21 @@
                 /**
                  * Update the posts table when a new post is created
                  */
-                this.getData()
+                this.updateData()
             },
 
             updated() {
                 /**
                  * Update the posts table when a post gets updated
                  */
-                this.getData()
+                this.updateData()
             },
 
             deleted() {
                 /**
                  * Update the posts table when a post gets deleted
                  */
-                this.getData()
+                this.updateData()
             },
 
             notifyAboutForcedUnlock(forcedUnlock) {

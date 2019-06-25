@@ -135,11 +135,11 @@
                                :total="totalCount"
                                layout="prev, pager, next, sizes"
                                background
-                               @size-change="getDataWithLoading"
-                               @current-change="getDataWithLoading"
+                               @size-change="updateData"
+                               @current-change="updateData"
                 />
             </div>
-            <create-image :ref="uploadRefName" @success="getDataWithLoading"/>
+            <create-image :ref="uploadRefName" @success="updateData"/>
         </template>
     </card>
 </template>
@@ -243,17 +243,6 @@
                             reject()
                         })
                 })
-            },
-
-            getDataWithLoading() {
-                this.$set(this, "loading", true)
-                this.getData()
-                    .then(() => {
-                        this.$set(this, "loading", false)
-                    })
-                    .catch(() => {
-                        this.$set(this, "loading", false)
-                    })
             },
 
             arrayChunk(array, chunk_size) {
