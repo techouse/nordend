@@ -38,7 +38,7 @@
                 </el-table-column>
                 <el-table-column label="Created" align="center" width="160" prop="created_at" sortable="custom">
                     <template slot-scope="scope">
-                        <time :datetime="scope.row.created_at">{{ scope.row.created_at|formatDate }}
+                        <time :datetime="scope.row.created_at">{{ scope.row.created_at|localeDateString }}
                         </time>
                     </template>
                 </el-table-column>

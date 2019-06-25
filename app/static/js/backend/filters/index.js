@@ -1,7 +1,17 @@
-import Vue             from "vue"
+import Vue from "vue"
 import {format, parse} from "date-fns"
 
 Vue.filter("formatDate", (value, formatString = "YYYY-MM-DD HH:mm:ss") => format(parse(value), formatString))
+
+Vue.filter("localeDateString", value => parse(value).toLocaleDateString(navigator.language, {
+    year:   "numeric",
+    month:  "2-digit",
+    day:    "2-digit",
+    hour:   "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
+}).replace(/,/g, ""))
 
 Vue.filter("truncate", (text = "", length = 30, clamp = "...") => {
     if (text.length <= length) {
@@ -9,7 +19,7 @@ Vue.filter("truncate", (text = "", length = 30, clamp = "...") => {
     }
 
     let tcText = text.slice(0, length - clamp.length),
-        last = tcText.length - 1
+        last   = tcText.length - 1
 
     while (last > 0 && tcText[last] !== " " && tcText[last] !== clamp[0]) {
         last -= 1

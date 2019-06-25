@@ -52,19 +52,19 @@
                 <el-table-column label="Publish date" align="center" width="160" prop="published_at" sortable="custom">
                     <template slot-scope="scope">
                         <time v-if="scope.row.published_at" :datetime="scope.row.published_at">
-                            {{ scope.row.published_at|formatDate }}
+                            {{ scope.row.published_at|localeDateString }}
                         </time>
                         <span v-else>n/a</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="Created" align="center" width="160" prop="created_at" sortable="custom">
                     <template slot-scope="scope">
-                        <time :datetime="scope.row.created_at">{{ scope.row.created_at|formatDate }}</time>
+                        <time :datetime="scope.row.created_at">{{ scope.row.created_at|localeDateString }}</time>
                     </template>
                 </el-table-column>
                 <el-table-column label="Updated" align="center" width="160" prop="updated_at" sortable="custom">
                     <template slot-scope="scope">
-                        <time :datetime="scope.row.updated_at">{{ scope.row.updated_at|formatDate }}</time>
+                        <time :datetime="scope.row.updated_at">{{ scope.row.updated_at|localeDateString }}</time>
                     </template>
                 </el-table-column>
                 <el-table-column align="right">
