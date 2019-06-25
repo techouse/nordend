@@ -107,11 +107,10 @@
                     </el-col>
                     <el-col :span="6">
                         <el-form-item label="Draft" prop="draft">
-                            <el-tooltip v-if="!post.draft" class="item" effect="dark" placement="left"
+                            <el-tooltip :disabled="post.draft" class="item" effect="dark" placement="left"
                                         content="NOTE: Setting the post to draft will unpublish it!">
-                                <el-switch v-model="post.draft" active-text="Yes" inactive-text="No" />
+                                <el-switch v-model="post.draft" active-text="Yes" inactive-text="No"/>
                             </el-tooltip>
-                            <el-switch v-else v-model="post.draft" active-text="Yes" inactive-text="No" />
                         </el-form-item>
                     </el-col>
                 </el-row>
