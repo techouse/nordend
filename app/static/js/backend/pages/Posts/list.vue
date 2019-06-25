@@ -39,16 +39,32 @@
                 </el-table-column>
                 <el-table-column label="Category" prop="category.name" sortable="custom"/>
                 <el-table-column label="Author" prop="author.name" sortable="custom"/>
+                <el-table-column label="Published" align="center" width="120" prop="published" sortable="custom">
+                    <template slot-scope="scope">
+                        <el-tooltip :content="scope.row.published ? 'Unpublish' : 'Publish'" placement="top">
+                            <el-switch v-model="scope.row.published"
+                                       active-color="#13ce66"
+                                       inactive-color="#ff4949"
+                                       @change="togglePublish(scope.row)"/>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column label="Publish date" align="center" width="160" prop="published_at" sortable="custom">
+                    <template slot-scope="scope">
+                        <time v-if="scope.row.published_at" :datetime="scope.row.published_at">
+                            {{ scope.row.published_at|formatDate }}
+                        </time>
+                        <span v-else>n/a</span>
+                    </template>
+                </el-table-column>
                 <el-table-column label="Created" align="center" width="160" prop="created_at" sortable="custom">
                     <template slot-scope="scope">
-                        <time :datetime="scope.row.created_at">{{ scope.row.created_at|formatDate }}
-                        </time>
+                        <time :datetime="scope.row.created_at">{{ scope.row.created_at|formatDate }}</time>
                     </template>
                 </el-table-column>
                 <el-table-column label="Updated" align="center" width="160" prop="updated_at" sortable="custom">
                     <template slot-scope="scope">
-                        <time :datetime="scope.row.updated_at">{{ scope.row.updated_at|formatDate }}
-                        </time>
+                        <time :datetime="scope.row.updated_at">{{ scope.row.updated_at|formatDate }}</time>
                     </template>
                 </el-table-column>
                 <el-table-column align="right">
@@ -183,7 +199,7 @@
         },
 
         methods: {
-            ...mapActions("post", ["getPosts", "deletePost", "deletePosts", "unlockPost", "listLockedPosts", "clearForcedUnlockNotification"]),
+            ...mapActions("post", ["getPosts", "updatePost", "deletePost", "deletePosts", "unlockPost", "listLockedPosts", "clearForcedUnlockNotification"]),
 
             getData() {
                 this.$router.replace({name: "Posts", query: this.params})
@@ -203,6 +219,37 @@
 
             edit(post) {
                 this.$router.push({name: "EditPost", params: {postId: post.id}})
+            },
+
+            togglePublish(post) {
+                let verb = post.published ? "publish" : "unpublish"
+                this.$confirm(`Are you sure you want to ${verb} ${post.title}?`, "Warning", {
+                        confirmButtonText: "Yes",
+                        cancelButtonText:  "No",
+                        type:              "warning"
+                    })
+                    .then(() => {
+                        if (post.published) {
+                            post.draft = false
+                            post.published_at = new Date()
+                        } else {
+                            post.draft = true
+                            post.published_at = null
+                        }
+
+                        this.updatePost(post)
+                            .then(({data}) => {
+                                this.$set(this.posts, this.posts.findIndex(p => p.id === data.id), new Post(data))
+                                this.success(`${post.title} successfully ${verb}ed`)
+                            })
+                            .catch(() => {
+                                this.error(`There was an error updating the post: ${this.alert.message}`)
+                            })
+                    })
+                    .catch(() => {
+                        post.published = !post.published
+                        this.info(`${post.title} not ${verb}ed`)
+                    })
             },
 
             unlock(post) {
