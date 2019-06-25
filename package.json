@@ -3,8 +3,8 @@
   "author": "Klemen Tušar",
   "license": "MIT",
   "name": "flask-cms",
-  "version": "0.5.4",
-  "description": "",
+  "version": "0.5.5",
+  "description": "A simple CMS built on top of Flask and VueJS",
   "scripts": {
     "dev": "npm run development",
     "development": "cross-env NODE_ENV=development webpack --progress --hide-modules --config=webpack.config.js",
