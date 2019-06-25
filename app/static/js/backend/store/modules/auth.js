@@ -217,7 +217,7 @@ const actions = {
                                                 })
                                          })
                                      },
-                                     Math.max(differenceInMilliseconds(subMinutes(parse(state.expiration), state.authRefreshThreshold), new Date()), 1))
+                                     Math.max(differenceInMilliseconds(subMinutes(parse(state.expiration), state.authRefreshThreshold), new Date()), 1000))
 
         commit("setAuthRefresher", refresher)
     },
