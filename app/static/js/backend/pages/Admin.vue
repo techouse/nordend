@@ -93,14 +93,12 @@
         </div>
         <footer class="app-footer">
             <div>
-                Flask CMS
-                <span>&copy; 2019 <a href="https://github.com/techouse" target="_blank">Klemen Tušar</a></span>
+                <span>&copy;2018–{{ currentYear }} <a href="https://github.com/techouse" target="_blank">Klemen Tušar</a></span>
             </div>
             <div class="ml-auto d-none d-md-block">
                 <span>Shamelessly powered by</span>
-                <a href="http://flask.pocoo.org" target="_blank">Flask</a>,
-                <a href="https://vuejs.org">Vue.js</a> and
-                <a href="https://getbootstrap.com" target="_blank">Bootstrap</a>.
+                <a href="http://flask.pocoo.org" target="_blank">Flask</a> and
+                <a href="https://vuejs.org">Vue.js</a>.
             </div>
         </footer>
     </div>
@@ -108,6 +106,7 @@
 
 <script>
     import {mapActions, mapGetters} from "vuex"
+    import {getYear}                from "date-fns"
     import User                     from "../models/User"
 
     export default {
@@ -120,6 +119,10 @@
 
             breadcrumbs() {
                 return this.$route.matched.filter(route => route.meta && route.meta.breadcrumb)
+            },
+
+            currentYear() {
+                return getYear(new Date())
             }
         },
 
