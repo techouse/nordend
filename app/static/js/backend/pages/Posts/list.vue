@@ -41,7 +41,7 @@
                 <el-table-column label="Author" prop="author.name" sortable="custom"/>
                 <el-table-column label="Published" align="center" width="120" prop="published" sortable="custom">
                     <template slot-scope="scope">
-                        <el-tooltip :content="scope.row.published ? 'Unpublish' : 'Publish'" placement="top">
+                        <el-tooltip :content="scope.row.published ? 'Unpublish' : 'Publish'" placement="right">
                             <el-switch v-model="scope.row.published"
                                        active-color="#13ce66"
                                        inactive-color="#ff4949"
