@@ -511,7 +511,7 @@
                         </editor-menu-bubble>
 
                         <editor-content v-show="!sourceCodeEditorIsActive" class="editor__content"
-                                        :editor="editor"
+                                        :editor="editor" :style="{minHeight: '400px'}"
                         />
 
                         <source-code v-if="sourceCodeEditorIsActive"
@@ -974,11 +974,3 @@
         },
     }
 </script>
-
-<style lang="scss" scoped>
-    .editor {
-        .editor__content {
-            min-height: 400px;
-        }
-    }
-</style>
