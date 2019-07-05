@@ -974,3 +974,11 @@
         },
     }
 </script>
+
+<style lang="scss" scoped>
+    .editor {
+        .editor__content {
+            min-height: 400px;
+        }
+    }
+</style>
