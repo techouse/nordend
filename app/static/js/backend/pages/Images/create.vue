@@ -1,37 +1,104 @@
 <template>
-    <modal v-if="show" :class="{show: show}" @close="closeModal">
+    <modal v-if="show" :class="{show: show}" :modal-class="modalClass" @close="closeModal">
         <template v-slot:title>
-            Upload images
+            {{ activeTab === "file" ? 'Upload' : 'Select' }} {{ multiple ? 'images' : 'image' }}
         </template>
         <template v-slot:body>
-            <el-upload ref="image_upload"
-                       v-loading="loading"
-                       :element-loading-text="loadingText"
-                       class="text-center"
-                       action="/api/v1/images/"
-                       :show-file-list="false"
-                       :on-success="handleImageSuccess"
-                       :before-upload="beforeImageUpload"
-                       :headers="uploadHeaders"
-                       :limit="uploadLimit"
-                       :on-exceed="handleUploadLimitExceeded"
-                       :on-change="handleChange"
-                       drag
-                       multiple
-            >
-                <div>
-                    <i class="el-icon-upload"/>
-                    <div class="el-upload__text">
-                        Drop image files here or <em>click to upload</em>
+            <template v-if="gallery">
+                <el-tabs v-model="activeTab">
+                    <el-tab-pane label="File" name="file">
+                        <el-upload ref="image_upload"
+                                   v-loading="loading"
+                                   :element-loading-text="loadingText"
+                                   class="text-center"
+                                   action="/api/v1/images/"
+                                   :show-file-list="false"
+                                   :on-success="handleImageSuccess"
+                                   :before-upload="beforeImageUpload"
+                                   :headers="uploadHeaders"
+                                   :limit="uploadLimit"
+                                   :on-exceed="handleUploadLimitExceeded"
+                                   :on-change="handleChange"
+                                   drag
+                                   :multiple="multiple"
+                        >
+                            <div>
+                                <i class="el-icon-upload"/>
+                                <div class="el-upload__text">
+                                    Drop image {{ multiple ? 'files' : 'file' }} here or <em>click to upload</em>
+                                </div>
+                                <div slot="tip" class="el-upload__tip">
+                                    jpg/png/gif/bmp files with a size less than 2MB
+                                </div>
+                            </div>
+                        </el-upload>
+                    </el-tab-pane>
+                    <el-tab-pane label="Gallery" name="gallery">
+                        <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex"
+                                v-loading="loading" :gutter="20"
+                        >
+                            <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
+                                <div @click.prevent="handleImageGallerySelect(image)">
+                                    <el-card :body-style="{ padding: '0', textAlign: 'center' }"
+                                             :class="{selected: photo.id === image.id}" class="image-card"
+                                             shadow="hover"
+                                    >
+                                        <img :src="getThumbnailSrc(image)" class="image-list-thumbnail">
+                                        <div style="padding: 14px;">
+                                            <span>{{ (image.title || image.original_filename) | truncateMiddle(20) }}</span>
+                                        </div>
+                                    </el-card>
+                                </div>
+                            </el-col>
+                        </el-row>
+                        <div class="d-flex justify-content-center mt-2">
+                            <el-pagination :current-page.sync="params.page"
+                                           :page-sizes="pageSizes"
+                                           :page-size.sync="params.per_page"
+                                           :total="totalCount"
+                                           layout="prev, pager, next, sizes"
+                                           background
+                                           @size-change="getData"
+                                           @current-change="getData"
+                            />
+                        </div>
+                    </el-tab-pane>
+                </el-tabs>
+            </template>
+            <template v-else>
+                <el-upload ref="image_upload"
+                           v-loading="loading"
+                           :element-loading-text="loadingText"
+                           class="text-center"
+                           action="/api/v1/images/"
+                           :show-file-list="false"
+                           :on-success="handleImageSuccess"
+                           :before-upload="beforeImageUpload"
+                           :headers="uploadHeaders"
+                           :limit="uploadLimit"
+                           :on-exceed="handleUploadLimitExceeded"
+                           :on-change="handleChange"
+                           drag
+                           :multiple="multiple"
+                >
+                    <div>
+                        <i class="el-icon-upload"/>
+                        <div class="el-upload__text">
+                            Drop image {{ multiple ? 'files' : 'file' }} here or <em>click to upload</em>
+                        </div>
+                        <div slot="tip" class="el-upload__tip">
+                            jpg/png/gif/bmp files with a size less than 2MB
+                        </div>
                     </div>
-                    <div slot="tip" class="el-upload__tip">
-                        jpg/png/gif/bmp files with a size less than 2MB
-                    </div>
-                </div>
-            </el-upload>
+                </el-upload>
+            </template>
         </template>
         <template v-slot:footer>
-            <button class="btn btn-danger" @click.prevent="closeModal" :disabled="loading">
+            <button v-if="activeTab === 'gallery'" class="btn btn-success" @click.prevent="selectImage"
+                    :disabled="loading">
+                Select
+            </button>
+            <button v-else class="btn btn-danger" @click.prevent="closeModal" :disabled="loading">
                 Close
             </button>
         </template>
@@ -50,6 +117,17 @@
             "modal": Modal
         },
 
+        props: {
+            multiple: {
+                type:    Boolean,
+                default: true
+            },
+            gallery:  {
+                type:    Boolean,
+                default: false
+            }
+        },
+
         data() {
             return {
                 loading:            false,
@@ -61,11 +139,28 @@
                 minimumImageWidth:  100,
                 minimumImageHeight: 100,
                 uploadLimit:        10,
+
+                imageUrl:     "",
+                activeTab:    "file",
+                imagesPerRow: 6,
+                images:       [],
+                params:       {
+                    search:   this.search,
+                    page:     this.page,
+                    per_page: this.per_page,
+                    sort:     null
+                },
+                pageSizes:    [12, 24, 48, 96],
+                totalCount:   0,
             }
         },
 
         computed: {
             ...mapGetters("auth", ["token"]),
+
+            modalClass() {
+                return this.activeTab === "gallery" ? "modal-xl" : ""
+            },
 
             loadingText() {
                 if (this.totalImages > 1) {
@@ -76,8 +171,52 @@
             }
         },
 
+        mounted() {
+            this.$set(this.params, "search", null)
+            this.$set(this.params, "page", 1)
+            this.$set(this.params, "per_page", 12)
+            this.$set(this.params, "sort", null)
+
+            this.getData()
+        },
+
         methods: {
             ...mapActions("alert", ["error", "success", "warning"]),
+
+            ...mapActions("image", ["getImages"]),
+
+            arrayChunk(array, chunk_size) {
+                return array.reduce(
+                    (segments, _, index) =>
+                        index % chunk_size === 0
+                        ? [...segments, array.slice(index, index + chunk_size)]
+                        : segments,
+                    []
+                )
+            },
+
+            getThumbnailSrc(image) {
+                if (image.thumbnail_sizes.length > 0) {
+                    for (let size of [280, 220]) {
+                        if (image.thumbnail_sizes.includes(size)) {
+                            return `${image.public_path}/${size}.jpg`
+                        }
+                    }
+                }
+
+                return `${image.public_path}/original.jpg`
+            },
+
+            getData() {
+                this.$set(this, "loading", true)
+
+                this.getImages({params: this.params})
+                    .then(({data}) => {
+                        this.$set(this, "images", data.results.map(image => new Photo(image)))
+                        this.$set(this, "totalCount", data.count)
+                        this.$set(this, "loading", false)
+                    })
+            },
 
             findClosest(x, arr) {
                 const indexArr = arr.map(k => Math.abs(k - x))
@@ -106,7 +245,7 @@
 
                 if (complete) {
                     this.$set(this, "loading", false)
-                    this.$emit("success", true)
+                    this.$emit("success", this.photo)
                     this.closeModal()
                 }
             },
@@ -159,6 +298,16 @@
                 })
             },
 
+            handleImageGallerySelect(image) {
+                this.$set(this, "photo", image)
+                this.$set(this, "imageUrl", `${this.photo.public_path}/original.jpg`)
+            },
+
+            selectImage() {
+                this.$emit("success", this.photo)
+                this.closeModal()
+            },
+
             handleChange(file, fileList) {
                 this.$set(this, "totalImages", fileList.length)
             },
@@ -171,3 +320,19 @@
         }
     }
 </script>
+
+<style lang="scss" scoped>
+    .modal {
+        .image-card {
+            &:hover {
+                cursor: pointer;
+            }
+
+            &.selected {
+                outline: none;
+                border-color: #409eff;
+                box-shadow: 0 0 10px #409eff;
+            }
+        }
+    }
+</style>

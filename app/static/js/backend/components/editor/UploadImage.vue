@@ -1,10 +1,10 @@
 <template>
     <modal v-if="show" :class="{show: show}" :modal-class="modalClass" @close="closeModal">
         <template v-slot:title>
-            Upload image
+            {{ activeTab === "gallery" ? 'Select' : 'Upload' }} image
         </template>
         <template v-slot:body>
-            <el-tabs v-model="activeTab" @tab-click="handleTabChange">
+            <el-tabs v-model="activeTab">
                 <el-tab-pane label="Gallery" name="gallery">
                     <el-row v-for="(imageRow, rowIndex) in arrayChunk(images, imagesPerRow)" :key="rowIndex"
                             v-loading="loading" :gutter="20"
@@ -191,10 +191,6 @@
                 this.$set(this, "show", false)
                 this.$set(this, "activeTab", "file")
                 this.$set(this, "imageUrl", "")
-            },
-
-            handleTabChange(tab, event) {
-                // console.log(tab, event)
             },
 
             handleImageGallerySelect(image) {

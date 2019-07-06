@@ -57,6 +57,8 @@ class PostResource(TokenRequiredResource):
             post.published = dp.parse(request_dict["published"])
         if "draft" in request_dict:
             post.draft = request_dict["draft"]
+        if "image_id" in request_dict:
+            post.image = request_dict["image_id"]
         if post.authors.filter(PostAuthor.user_id == g.current_user.id).count() == 0:
             post.authors.append(PostAuthor(user=g.current_user))
         dumped_post, dump_errors = post_schema.dump(post)

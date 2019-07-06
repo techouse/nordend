@@ -17,510 +17,540 @@
                 </div>
             </template>
             <template v-slot:body>
-                <el-form-item label="Title" prop="title">
-                    <el-input v-model="post.title" :disabled="!editable" type="text" maxlength="255"
-                              show-word-limit required
-                    />
-                </el-form-item>
-                <el-form-item label="Sub title" prop="sub_title">
-                    <el-input v-model="post.sub_title" :autosize="{ minRows: 2, maxRows: 4}"
-                              :disabled="!editable" type="textarea" maxlength="1024" show-word-limit
-                    />
-                </el-form-item>
-                <el-row>
-                    <el-col :lg="6" :md="24">
-                        <el-form-item label="Main category" prop="category_id">
-                            <el-select v-model="post.category_id" :disabled="!editable"
-                                       placeholder="Main post category"
-                                       filterable required
-                                       @change="handleMainCategoryChanged"
-                            >
-                                <el-option v-for="category in categoriesWithoutAdditional"
-                                           :key="category.id"
-                                           :label="category.name"
-                                           :value="category.id"
-                                />
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :lg="18" :md="24">
-                        <el-form-item label="Extra categories">
-                            <el-select v-model="post.additional_category_ids" :disabled="!editable"
-                                       placeholder="Additional post categories" multiple filterable
-                            >
-                                <el-option v-for="category in categoriesWithoutPrimary"
-                                           :key="category.id"
-                                           :label="category.name"
-                                           :value="category.id"
-                                />
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row class="post-tags">
-                    <el-col :span="24">
-                        <el-form-item label="Tags">
-                            <el-tag v-for="tag in post.tags"
-                                    :key="tag.id"
-                                    :closable="editable"
-                                    :disable-transitions="false"
-                                    @close="handleTagRemove(tag)"
-                            >
-                                <i class="fal fa-tag"/> {{ tag.name }}
-                            </el-tag>
-                            <template v-if="editable">
-                                <el-input v-if="tagInputVisible"
-                                          ref="saveTagInput"
-                                          v-model="newTagName"
-                                          class="input-new-tag"
-                                          size="mini"
-                                          @change="handleTagConfirm"
-                                          @blur="handleTagConfirm"
-                                />
-                                <el-button v-else class="button-new-tag" size="small" @click="showTagInput">
-                                    <i class="fal fa-tags"/> Add new tag
-                                </el-button>
-                            </template>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-form-item label="Related posts">
-                    <el-select v-model="post.related_ids" :remote-method="handleRelatedPostsSearch"
-                               :disabled="!editable" :loading="searchingRelatedPosts" placeholder="Related posts"
-                               multiple filterable remote reserve-keyword
-                    >
-                        <el-option v-for="relatedPost in relatedPosts" :key="relatedPost.id" :label="relatedPost.title"
-                                   :value="relatedPost.id"
-                        />
-                    </el-select>
-                </el-form-item>
-                <el-row>
-                    <el-col :span="18">
-                        <el-form-item label="Published">
-                            <el-date-picker v-model="post.published_at"
-                                            type="datetime"
-                                            placeholder="Select publish date and time"
-                                            :picker-options="publishPickerOptions"
-                                            :disabled="post.draft"
-                                            :format="`${dateFormat} ${timeFormat}`"
+                <el-row :gutter="10">
+                    <el-col :lg="24" :xl="16">
+                        <el-form-item label="Title" prop="title">
+                            <el-input v-model="post.title" :disabled="!editable" type="text" maxlength="255"
+                                      show-word-limit required
                             />
                         </el-form-item>
+                        <el-form-item label="Sub title" prop="sub_title">
+                            <el-input v-model="post.sub_title" :autosize="{ minRows: 2, maxRows: 4}"
+                                      :disabled="!editable" type="textarea" maxlength="1024" show-word-limit
+                            />
+                        </el-form-item>
+                        <el-row>
+                            <el-col :lg="6" :md="24">
+                                <el-form-item label="Main category" prop="category_id">
+                                    <el-select v-model="post.category_id" :disabled="!editable"
+                                               placeholder="Main post category"
+                                               filterable required
+                                               @change="handleMainCategoryChanged"
+                                    >
+                                        <el-option v-for="category in categoriesWithoutAdditional"
+                                                   :key="category.id"
+                                                   :label="category.name"
+                                                   :value="category.id"
+                                        />
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :lg="18" :md="24">
+                                <el-form-item label="Extra categories">
+                                    <el-select v-model="post.additional_category_ids" :disabled="!editable"
+                                               placeholder="Additional post categories" multiple filterable
+                                    >
+                                        <el-option v-for="category in categoriesWithoutPrimary"
+                                                   :key="category.id"
+                                                   :label="category.name"
+                                                   :value="category.id"
+                                        />
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="post-tags">
+                            <el-col :span="24">
+                                <el-form-item label="Tags">
+                                    <el-tag v-for="tag in post.tags"
+                                            :key="tag.id"
+                                            :closable="editable"
+                                            :disable-transitions="false"
+                                            @close="handleTagRemove(tag)"
+                                    >
+                                        <i class="fal fa-tag"/> {{ tag.name }}
+                                    </el-tag>
+                                    <template v-if="editable">
+                                        <el-input v-if="tagInputVisible"
+                                                  ref="saveTagInput"
+                                                  v-model="newTagName"
+                                                  class="input-new-tag"
+                                                  size="mini"
+                                                  @change="handleTagConfirm"
+                                                  @blur="handleTagConfirm"
+                                        />
+                                        <el-button v-else class="button-new-tag" size="small" @click="showTagInput">
+                                            <i class="fal fa-tags"/> Add new tag
+                                        </el-button>
+                                    </template>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-form-item label="Related posts">
+                            <el-select v-model="post.related_ids" :remote-method="handleRelatedPostsSearch"
+                                       :disabled="!editable" :loading="searchingRelatedPosts"
+                                       placeholder="Related posts"
+                                       multiple filterable remote reserve-keyword
+                            >
+                                <el-option v-for="relatedPost in relatedPosts" :key="relatedPost.id"
+                                           :label="relatedPost.title"
+                                           :value="relatedPost.id"
+                                />
+                            </el-select>
+                        </el-form-item>
+                        <el-row>
+                            <el-col :span="18">
+                                <el-form-item label="Published">
+                                    <el-date-picker v-model="post.published_at"
+                                                    type="datetime"
+                                                    placeholder="Select publish date and time"
+                                                    :picker-options="publishPickerOptions"
+                                                    :disabled="post.draft"
+                                                    :format="`${dateFormat} ${timeFormat}`"
+                                    />
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="Draft" prop="draft">
+                                    <el-tooltip :disabled="post.draft" class="item" effect="dark" placement="left"
+                                                content="NOTE: Setting the post to draft will unpublish it!">
+                                        <el-switch v-model="post.draft" active-text="Yes" inactive-text="No"/>
+                                    </el-tooltip>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-form-item label="Content">
+                            <div class="editor">
+                                <editor-menu-bar v-if="editable" :editor="editor">
+                                    <div slot-scope="{ commands, isActive }" class="menubar">
+                                        <el-button-group>
+                                            <el-tooltip class="item" effect="dark" content="Undo" placement="top-start">
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           @click="commands.undo"
+                                                >
+                                                    <i class="far fa-undo"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Redo" placement="top-start">
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           @click="commands.redo"
+                                                >
+                                                    <i class="far fa-redo"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Bold" placement="top-start">
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           :class="{ 'is-active': isActive.bold() }"
+                                                           @click="commands.bold"
+                                                >
+                                                    <i class="far fa-bold"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Italic"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           :class="{ 'is-active': isActive.italic() }"
+                                                           @click="commands.italic"
+                                                >
+                                                    <i class="far fa-italic"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Strikethrough"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           :class="{ 'is-active': isActive.strike() }"
+                                                           @click="commands.strike"
+                                                >
+                                                    <i class="far fa-strikethrough"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Underline"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           :class="{ 'is-active': isActive.underline() }"
+                                                           @click="commands.underline"
+                                                >
+                                                    <i class="far fa-underline"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Code" placement="top-start">
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           :class="{ 'is-active': isActive.code() }"
+                                                           @click="commands.code"
+                                                >
+                                                    <i class="far fa-code"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Paragraph"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           :class="{ 'is-active': isActive.paragraph() }"
+                                                           @click="commands.paragraph"
+                                                >
+                                                    <i class="far fa-paragraph"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Heading 1"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           :class="{ 'is-active': isActive.heading({ level: 1 }) }"
+                                                           @click="commands.heading({ level: 1 })"
+                                                >
+                                                    <i class="far fa-h1"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Heading 2"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           :class="{ 'is-active': isActive.heading({ level: 2 }) }"
+                                                           @click="commands.heading({ level: 2 })"
+                                                >
+                                                    <i class="far fa-h2"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Heading 3"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           title="Heading 3"
+                                                           :class="{ 'is-active': isActive.heading({ level: 3 }) }"
+                                                           @click="commands.heading({ level: 3 })"
+                                                >
+                                                    <i class="far fa-h3"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Unordered list"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           :class="{ 'is-active': isActive.bullet_list() }"
+                                                           @click="commands.bullet_list"
+                                                >
+                                                    <i class="far fa-list-ul"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Ordered list"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           :class="{ 'is-active': isActive.ordered_list() }"
+                                                           @click="commands.ordered_list"
+                                                >
+                                                    <i class="far fa-list-ol"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Blockquote"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           :class="{ 'is-active': isActive.blockquote() }"
+                                                           @click="commands.blockquote"
+                                                >
+                                                    <i class="far fa-quote-right"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Code block"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           :class="{ 'is-active': isActive.code_block() }"
+                                                           @click="commands.code_block"
+                                                >
+                                                    <i class="far fa-laptop-code"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Horizontal ruler"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           @click="commands.horizontal_rule"
+                                                >
+                                                    <i class="far fa-minus"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Insert image"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           @click="openUploadImageModal(commands.picture)"
+                                                >
+                                                    <i class="fas fa-image"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Insert YouTube video"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           @click="openEmbedYouTubeModal(commands.youtube)"
+                                                >
+                                                    <i class="fab fa-youtube"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Insert Vimeo video"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           @click="openEmbedVimeoModal(commands.vimeo)"
+                                                >
+                                                    <i class="fab fa-vimeo"/>
+                                                </el-button>
+                                            </el-tooltip>
+
+                                            <el-tooltip class="item" effect="dark" content="Create table"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" :disabled="sourceCodeEditorIsActive"
+                                                           @click="commands.createTable({rowsCount: 3, colsCount: 3, withHeaderRow: false })"
+                                                >
+                                                    <i class="fal fa-table"/>
+                                                </el-button>
+                                            </el-tooltip>
+                                            <el-tooltip class="item" effect="dark"
+                                                        content="Toggle HTML source code editor"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           :type="sourceCodeEditorIsActive ? 'primary' : 'default'"
+                                                           @click="toggleSourceCodeEditor"
+                                                >
+                                                    <i class="fas fa-hammer"/>
+                                                </el-button>
+                                            </el-tooltip>
+                                        </el-button-group>
+
+                                        <el-button-group v-if="sourceCodeEditorIsActive">
+                                            <el-tooltip class="item" effect="dark" content="Prettify HTML source code"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini"
+                                                           @click="prettifySourceCode"
+                                                >
+                                                    <i class="fas fa-ambulance"/>
+                                                </el-button>
+                                            </el-tooltip>
+                                        </el-button-group>
+
+                                        <el-button-group v-if="isActive.table()">
+                                            <el-tooltip class="item" effect="dark" content="Delete table"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" @click="commands.deleteTable">
+                                                    <i class="fal fa-table"/>
+                                                    <i class="fas fa-times-circle text-danger"
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
+                                                </el-button>
+                                            </el-tooltip>
+                                            <el-tooltip class="item" effect="dark" content="Insert column before"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" @click="commands.addColumnBefore">
+                                                    <i class="fal fa-th-list"/>
+                                                    <i class="fas fa-plus-circle text-success"
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
+                                                </el-button>
+                                            </el-tooltip>
+                                            <el-tooltip class="item" effect="dark" content="Insert column after"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" @click="commands.addColumnAfter">
+                                                    <i class="fal fa-th-list fa-flip-horizontal"/>
+                                                    <i class="fas fa-plus-circle text-success"
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
+                                                </el-button>
+                                            </el-tooltip>
+                                            <el-tooltip class="item" effect="dark" content="Delete column"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" @click="commands.deleteColumn">
+                                                    <i class="fal fa-th-list"/>
+                                                    <i class="fas fa-times-circle text-danger"
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
+                                                </el-button>
+                                            </el-tooltip>
+                                            <el-tooltip class="item" effect="dark" content="Insert row before"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" @click="commands.addRowBefore">
+                                                    <i class="fal fa-th-list fa-rotate-90"/>
+                                                    <i class="fas fa-plus-circle text-success"
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
+                                                </el-button>
+                                            </el-tooltip>
+                                            <el-tooltip class="item" effect="dark" content="Insert row after"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" @click="commands.addRowAfter">
+                                                    <i class="fal fa-th-list fa-rotate-270"/>
+                                                    <i class="fas fa-plus-circle text-success"
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
+                                                </el-button>
+                                            </el-tooltip>
+                                            <el-tooltip class="item" effect="dark" content="Delete row"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" @click="commands.deleteRow">
+                                                    <i class="fal fa-th-list fa-rotate-90"/>
+                                                    <i class="fas fa-times-circle text-danger"
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
+                                                </el-button>
+                                            </el-tooltip>
+                                            <el-tooltip class="item" effect="dark" content="Merge cells"
+                                                        placement="top-start"
+                                            >
+                                                <el-button size="mini" @click="commands.toggleCellMerge">
+                                                    <i class="fas fa-arrow-alt-circle-right text-primary"
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
+                                                    <i class="fal fa-columns"/>
+                                                    <i class="fas fa-arrow-alt-circle-left text-primary"
+                                                       :style="{fontSize: '.66rem'}"
+                                                    />
+                                                </el-button>
+                                            </el-tooltip>
+                                        </el-button-group>
+                                    </div>
+                                </editor-menu-bar>
+
+                                <editor-menu-bubble v-if="editable" :editor="editor">
+                                    <div slot-scope="{ commands, isActive, getMarkAttrs, menu }"
+                                         class="menububble"
+                                         :class="{ 'is-active': menu.isActive || linkMenuIsActive, 'bg-transparent': bubbleMenuExcludedTypes.includes(selectedType) }"
+                                         :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
+                                    >
+                                        <template/>
+                                        <form v-if="linkMenuIsActive" class="menububble__form"
+                                              @submit.prevent="setLinkUrl(commands.link, linkUrl)"
+                                        >
+                                            <input ref="linkInput" v-model="linkUrl" class="menububble__input"
+                                                   type="text" placeholder="https://" @keydown.esc="hideLinkMenu"
+                                            >
+                                            <button class="menububble__button" type="button"
+                                                    @click.prevent="setLinkUrl(commands.link, null)"
+                                            >
+                                                <i class="far fa-times-circle"/>
+                                            </button>
+                                        </form>
+
+                                        <template v-else>
+                                            <template v-if="selectedType === 'text'">
+                                                <button class="menububble__button"
+                                                        :class="{ 'is-active': isActive.bold() }"
+                                                        @click.prevent="commands.bold"
+                                                >
+                                                    <i class="far fa-bold"/>
+                                                </button>
+
+                                                <button class="menububble__button"
+                                                        :class="{ 'is-active': isActive.italic() }"
+                                                        @click.prevent="commands.italic"
+                                                >
+                                                    <i class="far fa-italic"/>
+                                                </button>
+
+                                                <button class="menububble__button"
+                                                        :class="{ 'is-active': isActive.strike() }"
+                                                        @click.prevent="commands.strike"
+                                                >
+                                                    <i class="far fa-strikethrough"/>
+                                                </button>
+
+                                                <button class="menububble__button"
+                                                        :class="{ 'is-active': isActive.underline() }"
+                                                        @click.prevent="commands.underline"
+                                                >
+                                                    <i class="far fa-underline"/>
+                                                </button>
+
+                                                <button class="menububble__button"
+                                                        :class="{ 'is-active': isActive.code() }"
+                                                        @click.prevent="commands.code"
+                                                >
+                                                    <i class="far fa-code"/>
+                                                </button>
+                                            </template>
+
+                                            <button v-if="!bubbleMenuExcludedTypes.includes(selectedType)"
+                                                    class="menububble__button"
+                                                    :class="{ 'is-active': isActive.link() }"
+                                                    @click.prevent="showLinkMenu(getMarkAttrs('link'))"
+                                            >
+                                                <i class="far fa-link"/>
+                                                <span v-if="isActive.link()" :style="{textIndent: '.5rem'}">
+                                            Update Link
+                                        </span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </editor-menu-bubble>
+
+                                <editor-content v-show="!sourceCodeEditorIsActive" class="editor__content"
+                                                :editor="editor" :style="{minHeight: '400px'}"
+                                />
+
+                                <source-code v-if="sourceCodeEditorIsActive"
+                                             ref="source-code"
+                                             v-model="post.body"
+                                             @onUpdate="editor.setContent(post.body)"
+                                />
+                            </div>
+                        </el-form-item>
                     </el-col>
-                    <el-col :span="6">
-                        <el-form-item label="Draft" prop="draft">
-                            <el-tooltip :disabled="post.draft" class="item" effect="dark" placement="left"
-                                        content="NOTE: Setting the post to draft will unpublish it!">
-                                <el-switch v-model="post.draft" active-text="Yes" inactive-text="No"/>
-                            </el-tooltip>
+                    <el-col :lg="24" :xl="8">
+                        <el-form-item label="Main image">
+                            <div v-if="post.image">
+                                <el-image :src="getThumbnailSrc(post.image)"
+                                          :style="{width: '160px', height: '160px'}"
+                                          :alt="post.image.title || post.image.original_filename"
+                                          fit="contain">
+                                    <div slot="placeholder" class="image-slot">
+                                        Loading<span class="dot">...</span>
+                                    </div>
+                                    <div slot="error" class="image-slot">
+                                        <i class="el-icon-picture-outline"></i>
+                                    </div>
+                                </el-image>
+                            </div>
+                            <button class="btn btn-sm btn-success" @click.prevent="uploadMainImage">
+                                <i class="far fa-images"/> {{ post.image ? 'Change' : 'Upload' }} main image
+                            </button>
+                        </el-form-item>
+
+                        <el-form-item label="Gallery">
+                            TODO gallery :P
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-form-item label="Content">
-                    <div class="editor">
-                        <editor-menu-bar v-if="editable" :editor="editor">
-                            <div slot-scope="{ commands, isActive }" class="menubar">
-                                <el-button-group>
-                                    <el-tooltip class="item" effect="dark" content="Undo" placement="top-start">
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   @click="commands.undo"
-                                        >
-                                            <i class="far fa-undo"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Redo" placement="top-start">
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   @click="commands.redo"
-                                        >
-                                            <i class="far fa-redo"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Bold" placement="top-start">
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   :class="{ 'is-active': isActive.bold() }"
-                                                   @click="commands.bold"
-                                        >
-                                            <i class="far fa-bold"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Italic"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   :class="{ 'is-active': isActive.italic() }"
-                                                   @click="commands.italic"
-                                        >
-                                            <i class="far fa-italic"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Strikethrough"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   :class="{ 'is-active': isActive.strike() }"
-                                                   @click="commands.strike"
-                                        >
-                                            <i class="far fa-strikethrough"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Underline"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   :class="{ 'is-active': isActive.underline() }"
-                                                   @click="commands.underline"
-                                        >
-                                            <i class="far fa-underline"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Code" placement="top-start">
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   :class="{ 'is-active': isActive.code() }"
-                                                   @click="commands.code"
-                                        >
-                                            <i class="far fa-code"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Paragraph"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   :class="{ 'is-active': isActive.paragraph() }"
-                                                   @click="commands.paragraph"
-                                        >
-                                            <i class="far fa-paragraph"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Heading 1"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   :class="{ 'is-active': isActive.heading({ level: 1 }) }"
-                                                   @click="commands.heading({ level: 1 })"
-                                        >
-                                            <i class="far fa-h1"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Heading 2"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   :class="{ 'is-active': isActive.heading({ level: 2 }) }"
-                                                   @click="commands.heading({ level: 2 })"
-                                        >
-                                            <i class="far fa-h2"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Heading 3"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   title="Heading 3"
-                                                   :class="{ 'is-active': isActive.heading({ level: 3 }) }"
-                                                   @click="commands.heading({ level: 3 })"
-                                        >
-                                            <i class="far fa-h3"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Unordered list"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   :class="{ 'is-active': isActive.bullet_list() }"
-                                                   @click="commands.bullet_list"
-                                        >
-                                            <i class="far fa-list-ul"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Ordered list"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   :class="{ 'is-active': isActive.ordered_list() }"
-                                                   @click="commands.ordered_list"
-                                        >
-                                            <i class="far fa-list-ol"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Blockquote"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   :class="{ 'is-active': isActive.blockquote() }"
-                                                   @click="commands.blockquote"
-                                        >
-                                            <i class="far fa-quote-right"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Code block"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   :class="{ 'is-active': isActive.code_block() }"
-                                                   @click="commands.code_block"
-                                        >
-                                            <i class="far fa-laptop-code"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Horizontal ruler"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   @click="commands.horizontal_rule"
-                                        >
-                                            <i class="far fa-minus"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Insert image"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   @click="openUploadImageModal(commands.picture)"
-                                        >
-                                            <i class="fas fa-image"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Insert YouTube video"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   @click="openEmbedYouTubeModal(commands.youtube)"
-                                        >
-                                            <i class="fab fa-youtube"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Insert Vimeo video"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   @click="openEmbedVimeoModal(commands.vimeo)"
-                                        >
-                                            <i class="fab fa-vimeo"/>
-                                        </el-button>
-                                    </el-tooltip>
-
-                                    <el-tooltip class="item" effect="dark" content="Create table"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" :disabled="sourceCodeEditorIsActive"
-                                                   @click="commands.createTable({rowsCount: 3, colsCount: 3, withHeaderRow: false })"
-                                        >
-                                            <i class="fal fa-table"/>
-                                        </el-button>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark"
-                                                content="Toggle HTML source code editor"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini"
-                                                   :type="sourceCodeEditorIsActive ? 'primary' : 'default'"
-                                                   @click="toggleSourceCodeEditor"
-                                        >
-                                            <i class="fas fa-hammer"/>
-                                        </el-button>
-                                    </el-tooltip>
-                                </el-button-group>
-
-                                <el-button-group v-if="sourceCodeEditorIsActive">
-                                    <el-tooltip class="item" effect="dark" content="Prettify HTML source code"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini"
-                                                   @click="prettifySourceCode"
-                                        >
-                                            <i class="fas fa-ambulance"/>
-                                        </el-button>
-                                    </el-tooltip>
-                                </el-button-group>
-
-                                <el-button-group v-if="isActive.table()">
-                                    <el-tooltip class="item" effect="dark" content="Delete table"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" @click="commands.deleteTable">
-                                            <i class="fal fa-table"/>
-                                            <i class="fas fa-times-circle text-danger"
-                                               :style="{fontSize: '.66rem'}"
-                                            />
-                                        </el-button>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="Insert column before"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" @click="commands.addColumnBefore">
-                                            <i class="fal fa-th-list"/>
-                                            <i class="fas fa-plus-circle text-success"
-                                               :style="{fontSize: '.66rem'}"
-                                            />
-                                        </el-button>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="Insert column after"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" @click="commands.addColumnAfter">
-                                            <i class="fal fa-th-list fa-flip-horizontal"/>
-                                            <i class="fas fa-plus-circle text-success"
-                                               :style="{fontSize: '.66rem'}"
-                                            />
-                                        </el-button>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="Delete column"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" @click="commands.deleteColumn">
-                                            <i class="fal fa-th-list"/>
-                                            <i class="fas fa-times-circle text-danger"
-                                               :style="{fontSize: '.66rem'}"
-                                            />
-                                        </el-button>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="Insert row before"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" @click="commands.addRowBefore">
-                                            <i class="fal fa-th-list fa-rotate-90"/>
-                                            <i class="fas fa-plus-circle text-success"
-                                               :style="{fontSize: '.66rem'}"
-                                            />
-                                        </el-button>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="Insert row after"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" @click="commands.addRowAfter">
-                                            <i class="fal fa-th-list fa-rotate-270"/>
-                                            <i class="fas fa-plus-circle text-success"
-                                               :style="{fontSize: '.66rem'}"
-                                            />
-                                        </el-button>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="Delete row"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" @click="commands.deleteRow">
-                                            <i class="fal fa-th-list fa-rotate-90"/>
-                                            <i class="fas fa-times-circle text-danger"
-                                               :style="{fontSize: '.66rem'}"
-                                            />
-                                        </el-button>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="Merge cells"
-                                                placement="top-start"
-                                    >
-                                        <el-button size="mini" @click="commands.toggleCellMerge">
-                                            <i class="fas fa-arrow-alt-circle-right text-primary"
-                                               :style="{fontSize: '.66rem'}"
-                                            />
-                                            <i class="fal fa-columns"/>
-                                            <i class="fas fa-arrow-alt-circle-left text-primary"
-                                               :style="{fontSize: '.66rem'}"
-                                            />
-                                        </el-button>
-                                    </el-tooltip>
-                                </el-button-group>
-                            </div>
-                        </editor-menu-bar>
-
-                        <editor-menu-bubble v-if="editable" :editor="editor">
-                            <div slot-scope="{ commands, isActive, getMarkAttrs, menu }"
-                                 class="menububble"
-                                 :class="{ 'is-active': menu.isActive || linkMenuIsActive, 'bg-transparent': bubbleMenuExcludedTypes.includes(selectedType) }"
-                                 :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
-                            >
-                                <template/>
-                                <form v-if="linkMenuIsActive" class="menububble__form"
-                                      @submit.prevent="setLinkUrl(commands.link, linkUrl)"
-                                >
-                                    <input ref="linkInput" v-model="linkUrl" class="menububble__input"
-                                           type="text" placeholder="https://" @keydown.esc="hideLinkMenu"
-                                    >
-                                    <button class="menububble__button" type="button"
-                                            @click.prevent="setLinkUrl(commands.link, null)"
-                                    >
-                                        <i class="far fa-times-circle"/>
-                                    </button>
-                                </form>
-
-                                <template v-else>
-                                    <template v-if="selectedType === 'text'">
-                                        <button class="menububble__button"
-                                                :class="{ 'is-active': isActive.bold() }"
-                                                @click.prevent="commands.bold"
-                                        >
-                                            <i class="far fa-bold"/>
-                                        </button>
-
-                                        <button class="menububble__button"
-                                                :class="{ 'is-active': isActive.italic() }"
-                                                @click.prevent="commands.italic"
-                                        >
-                                            <i class="far fa-italic"/>
-                                        </button>
-
-                                        <button class="menububble__button"
-                                                :class="{ 'is-active': isActive.strike() }"
-                                                @click.prevent="commands.strike"
-                                        >
-                                            <i class="far fa-strikethrough"/>
-                                        </button>
-
-                                        <button class="menububble__button"
-                                                :class="{ 'is-active': isActive.underline() }"
-                                                @click.prevent="commands.underline"
-                                        >
-                                            <i class="far fa-underline"/>
-                                        </button>
-
-                                        <button class="menububble__button"
-                                                :class="{ 'is-active': isActive.code() }"
-                                                @click.prevent="commands.code"
-                                        >
-                                            <i class="far fa-code"/>
-                                        </button>
-                                    </template>
-
-                                    <button v-if="!bubbleMenuExcludedTypes.includes(selectedType)"
-                                            class="menububble__button"
-                                            :class="{ 'is-active': isActive.link() }"
-                                            @click.prevent="showLinkMenu(getMarkAttrs('link'))"
-                                    >
-                                        <i class="far fa-link"/>
-                                        <span v-if="isActive.link()" :style="{textIndent: '.5rem'}">
-                                            Update Link
-                                        </span>
-                                    </button>
-                                </template>
-                            </div>
-                        </editor-menu-bubble>
-
-                        <editor-content v-show="!sourceCodeEditorIsActive" class="editor__content"
-                                        :editor="editor" :style="{minHeight: '400px'}"
-                        />
-
-                        <source-code v-if="sourceCodeEditorIsActive"
-                                     ref="source-code"
-                                     v-model="post.body"
-                                     @onUpdate="editor.setContent(post.body)"
-                        />
-                    </div>
-                </el-form-item>
             </template>
             <template v-slot:footer>
                 <el-button type="success" :disabled="!editable" @click="submit">
@@ -533,6 +563,7 @@
         <embed-youtube-modal ref="embed-youtube-modal" :post-id="post.id" @onConfirm="addCommand"/>
         <embed-vimeo-modal ref="embed-vimeo-modal" :post-id="post.id" @onConfirm="addCommand"/>
         <edit-image-modal v-if="imageEditorVisible" :image="imageEditorImage" @onConfirm="updateImage"/>
+        <create-main-image :ref="createMainImageRef" :gallery="true" :multiple="false" @success="updateMainImage"/>
     </div>
 </template>
 
@@ -578,6 +609,7 @@
     import CreatePartial            from "../../components/CreatePartial"
     import Post                     from "../../models/Post"
     import Category                 from "../../models/Category"
+    import CreateMainImage          from "../Images/create"
     import {addDays, addWeeks}      from "date-fns"
     // Code highlighting
     import css                      from "highlight.js/lib/languages/css"
@@ -607,7 +639,8 @@
             "embed-youtube-modal": EmbedYouTubeModal,
             "embed-vimeo-modal":   EmbedVimeoModal,
             "edit-image-modal":    EditImageModal,
-            "source-code":         SourceCode
+            "source-code":         SourceCode,
+            CreateMainImage,
         },
 
         extends: CreatePartial,
@@ -622,6 +655,7 @@
         data() {
             return {
                 formRef:                  "create-post-form",
+                createMainImageRef:       "create-main-image",
                 post:                     new Post(),
                 categories:               [],
                 rules:                    {
@@ -881,6 +915,26 @@
             updateImage(image) {
                 // TODO
                 console.log(image)
+            },
+
+            uploadMainImage() {
+                this.$refs[this.createMainImageRef].showModal()
+            },
+
+            updateMainImage(image) {
+                this.$set(this.post, "image", image)
+            },
+
+            getThumbnailSrc(image) {
+                if (image.thumbnail_sizes.length > 0) {
+                    for (let size of [280, 220]) {
+                        if (image.thumbnail_sizes.includes(size)) {
+                            return `${image.public_path}/${size}.jpg`
+                        }
+                    }
+                }
+
+                return `${image.public_path}/original.jpg`
             },
 
             showTagInput() {

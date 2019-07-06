@@ -109,6 +109,7 @@ export default class Post {
             tag_ids:                 this.tag_ids,
             related_ids:             this.related_ids,
             draft:                   this.draft,
+            image_id:                this.image ? this.image.id : null,
             published:               this.published_at instanceof Date ? this.published_at.toISOString() : null
         }
     }

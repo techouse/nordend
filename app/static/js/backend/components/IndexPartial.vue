@@ -69,7 +69,7 @@
                 console.warn("Implement getData in a child component!")
             },
 
-            updateData() {
+            updateData(image) {
                 this.$set(this, "loading", true)
 
                 this.getData()
