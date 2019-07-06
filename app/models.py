@@ -557,7 +557,7 @@ class Post(db.Model, AddUpdateDelete):
 
     @hybrid_property
     def images(self):
-        return self._images.filter(PostImage.primary.isnot(True))
+        return self._images.filter(PostImage.primary.isnot(True)).order_by(PostImage.created_at)
 
     @images.setter
     def images(self, images):
