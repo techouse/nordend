@@ -267,6 +267,7 @@ class ImageSchema(ma.Schema):
     data_url = fields.String(allow_none=True, load_only=True)
     author_id = fields.Integer(dump_only=True)
     tags = fields.Nested("ImageTagSchema", many=True, only=("tag",))
+    posts = fields.Nested("PostImageSchema", many=True, exclude=("image",))
     created_at = fields.DateTime(format="iso8601")
     updated_at = fields.DateTime(format="iso8601")
     links = ma.Hyperlinks(

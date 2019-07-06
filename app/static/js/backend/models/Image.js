@@ -1,4 +1,5 @@
-import Tag from "./Tag"
+import Tag  from "./Tag"
+import Post from "./Post"
 
 export default class Image {
     constructor(values = {}) {
@@ -13,6 +14,8 @@ export default class Image {
         this.data_url = null
         this.tags = []
         this.tag_ids = []
+        this.posts = []
+        this.post_ids = []
 
         Object.assign(this, values)
 
@@ -35,6 +38,11 @@ export default class Image {
         if (this.tags) {
             this.tags = this.tags.map(el => new Tag(el.tag))
             this.tag_ids = this.tags.map(el => el.id)
+        }
+
+        if (this.posts) {
+            this.posts = this.posts.map(el => new Post(el.post))
+            this.post_ids = this.posts.map(el => el.id)
         }
     }
 

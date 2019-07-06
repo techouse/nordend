@@ -255,8 +255,3 @@ class ImageListResource(TokenRequiredResource):
                 db.session.rollback()
                 resp = {"message": str(e)}
                 return resp, status.HTTP_400_BAD_REQUEST
-
-
-class ImagePostListResource(TokenRequiredResource):
-    # TODO finish me
-    pass
