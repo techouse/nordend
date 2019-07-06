@@ -27,6 +27,15 @@
   object-fit: contain;
 }
 
+.main-image-viewer-thumbnail {
+  width: 100%;
+  object-fit: contain;
+
+  &:hover {
+    cursor: zoom-in;
+  }
+}
+
 .el-table {
   label.el-checkbox {
     margin: 0;

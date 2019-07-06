@@ -542,27 +542,26 @@ class Post(db.Model, AddUpdateDelete):
         return image.image if image else None
 
     @image.setter
-    def image(self, value):
-        if isinstance(value, Image):
-            value = value.id
+    def image(self, value=None):
         current_image = self.images.filter(PostImage.primary.is_(True)).first()
-        new_image = self.images.filter(PostImage.image_id == value).first()
+        if value is None and current_image:
+            current_image.delete(current_image)
+            return
+        elif value and isinstance(value, Image):
+            value = value.id
         if current_image:
             if current_image.image_id == value:
                 return
-            current_image.primary = False
-        if new_image:
-            new_image.primary = True
-        else:
-            self.images.append(PostImage(image_id=value, primary=True))
+            current_image.delete(current_image)
+        self.images.append(PostImage(image_id=value, primary=True))
 
     @hybrid_property
     def published(self):
         return (
-            self.is_draft is False
-            and self.is_published is True
-            and self.published_at is not None
-            and self.published_at.astimezone(pytz.utc) <= datetime.now(pytz.utc)
+                self.is_draft is False
+                and self.is_published is True
+                and self.published_at is not None
+                and self.published_at.astimezone(pytz.utc) <= datetime.now(pytz.utc)
         )
 
     @published.expression

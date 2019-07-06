@@ -113,7 +113,8 @@
                             <el-col :span="6">
                                 <el-form-item label="Draft" prop="draft">
                                     <el-tooltip :disabled="post.draft" class="item" effect="dark" placement="left"
-                                                content="NOTE: Setting the post to draft will unpublish it!">
+                                                content="NOTE: Setting the post to draft will unpublish it!"
+                                    >
                                         <el-switch v-model="post.draft" active-text="Yes" inactive-text="No"/>
                                     </el-tooltip>
                                 </el-form-item>
@@ -507,8 +508,8 @@
                                             >
                                                 <i class="far fa-link"/>
                                                 <span v-if="isActive.link()" :style="{textIndent: '.5rem'}">
-                                            Update Link
-                                        </span>
+                                                    Update Link
+                                                </span>
                                             </button>
                                         </template>
                                     </div>
@@ -528,25 +529,29 @@
                     </el-col>
                     <el-col :lg="24" :xl="8">
                         <el-form-item label="Main image">
-                            <div v-if="post.image">
-                                <el-image :src="getThumbnailSrc(post.image)"
-                                          :style="{width: '160px', height: '160px'}"
-                                          :alt="post.image.title || post.image.original_filename"
-                                          fit="contain">
-                                    <div slot="placeholder" class="image-slot">
-                                        Loading<span class="dot">...</span>
-                                    </div>
-                                    <div slot="error" class="image-slot">
-                                        <i class="el-icon-picture-outline"></i>
-                                    </div>
-                                </el-image>
-                            </div>
-                            <button class="btn btn-sm btn-success" @click.prevent="uploadMainImage">
+                            <viewer v-if="post.image" :images="viewerImages" :options="viewerOptions"
+                                    :style="{width: '166px'}" class="mb-2">
+                                <el-card class="box-card">
+                                    <img :src="getThumbnailSrc(post.image)"
+                                         :data-source="getLargestImageSrc(post.image)"
+                                         :alt="post.image.title || post.image.original_filename"
+                                         class="main-image-viewer-thumbnail"
+                                    >
+                                    <el-button v-if="editable" class="mainImageDeleteBtn" size="mini" type="danger"
+                                               icon="el-icon-close" circle
+                                               :style="{position: 'absolute', left: '2px', top: '2px'}"
+                                               @click="updateMainImage(null)"
+                                    />
+                                </el-card>
+                            </viewer>
+                            <button v-if="editable" class="btn btn-sm btn-success" :class="{'d-block': post.image}"
+                                    @click.prevent="uploadMainImage"
+                            >
                                 <i class="far fa-images"/> {{ post.image ? 'Change' : 'Upload' }} main image
                             </button>
                         </el-form-item>
 
-                        <el-form-item label="Gallery">
+                        <el-form-item label="Gallery images">
                             TODO gallery :P
                         </el-form-item>
                     </el-col>
@@ -785,7 +790,22 @@
                             }
                         }
                     ]
-                }
+                },
+                viewerOptions:            {
+                    "button":     false,
+                    "navbar":     false,
+                    "title":      true,
+                    "toolbar":    true,
+                    "tooltip":    true,
+                    "movable":    true,
+                    "zoomable":   true,
+                    "rotatable":  false,
+                    "scalable":   false,
+                    "transition": true,
+                    "fullscreen": true,
+                    "keyboard":   true,
+                    "url":        "data-source"
+                },
             }
         },
 
@@ -822,7 +842,15 @@
 
             categoriesWithoutPrimary() {
                 return this.categories.filter(category => category.id !== this.post.category_id)
-            }
+            },
+
+            viewerImages() {
+                // FIXME once gallery done
+                return [{
+                    thumbnail: this.getThumbnailSrc(this.post.image),
+                    source:    this.getLargestImageSrc(this.post.image)
+                }]
+            },
         },
 
         watch: {
@@ -923,6 +951,12 @@
 
             updateMainImage(image) {
                 this.$set(this.post, "image", image)
+            },
+
+            getLargestImageSrc(image) {
+                return image.sizes.includes(1920)
+                       ? `${image.public_path}/1920.jpg`
+                       : `${image.public_path}/original.jpg`
             },
 
             getThumbnailSrc(image) {
