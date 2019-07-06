@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div>
         <card-form :ref="formRef" :form-ref="formRef" :loading="loading" :model="post" :rules="rules"
                    :label-width="labelWidth"
@@ -530,29 +530,63 @@
                     <el-col :lg="24" :xl="8">
                         <el-form-item label="Main image">
                             <viewer v-if="post.image" :images="viewerImages" :options="viewerOptions"
-                                    :style="{width: '166px'}" class="mb-2">
-                                <el-card class="box-card">
-                                    <img :src="getThumbnailSrc(post.image)"
-                                         :data-source="getLargestImageSrc(post.image)"
-                                         :alt="post.image.title || post.image.original_filename"
-                                         class="main-image-viewer-thumbnail"
-                                    >
-                                    <el-button v-if="editable" class="mainImageDeleteBtn" size="mini" type="danger"
-                                               icon="el-icon-close" circle
-                                               :style="{position: 'absolute', left: '2px', top: '2px'}"
-                                               @click="updateMainImage(null)"
-                                    />
-                                </el-card>
-                            </viewer>
-                            <button v-if="editable" class="btn btn-sm btn-success" :class="{'d-block': post.image}"
-                                    @click.prevent="uploadMainImage"
+                                    :style="{width: '166px'}" class="mb-2"
                             >
-                                <i class="far fa-images"/> {{ post.image ? 'Change' : 'Upload' }} main image
+                                <template slot-scope="scope">
+                                    <el-card class="image-card" shadow="hover"
+                                             :body-style="{ padding: '0', textAlign: 'center', position: 'relative' }">
+                                        <img :src="getThumbnailSrc(post.image)"
+                                             :data-source="getLargestImageSrc(post.image)"
+                                             :alt="post.image.title || post.image.original_filename"
+                                             class="image-viewer-thumbnail"
+                                        >
+                                        <el-button v-if="editable" size="mini" type="danger" icon="el-icon-close" circle
+                                                   :style="{position: 'absolute', left: '2px', top: '2px'}"
+                                                   @click="updateMainImage(null)"
+                                        />
+                                    </el-card>
+                                </template>
+                            </viewer>
+                            <button v-if="editable" class="btn btn-pill btn-sm btn-outline-primary"
+                                    :class="{'d-block': post.image}" @click.prevent="uploadMainImage"
+                            >
+                                <i class="far fa-image"/> {{ post.image ? 'Change' : 'Upload' }} main image
                             </button>
                         </el-form-item>
 
                         <el-form-item label="Gallery images">
-                            TODO gallery :P
+                            <viewer v-if="post.images.length" :images="viewerImages" :options="viewerOptions"
+                                    class="w-100 mb-2"
+                            >
+                                <template slot-scope="scope">
+                                    <el-row v-for="(imageRow, rowIndex) in arrayChunk(post.images, imagesPerRow)"
+                                            :key="rowIndex"
+                                            :gutter="20"
+                                    >
+                                        <el-col v-for="image in imageRow" :key="image.id" :span="24/imagesPerRow">
+                                            <el-card class="image-card" shadow="hover"
+                                                     :body-style="{ padding: '0', textAlign: 'center', position: 'relative' }"
+                                            >
+                                                <img :src="getThumbnailSrc(image)"
+                                                     :data-source="getLargestImageSrc(image)"
+                                                     :alt="image.original_filename"
+                                                     class="image-viewer-thumbnail"
+                                                >
+                                                <el-button v-if="editable" size="mini" type="danger"
+                                                           icon="el-icon-close" circle
+                                                           :style="{position: 'absolute', left: '2px', top: '2px'}"
+                                                           @click="removeGalleryImage(image)"
+                                                />
+                                            </el-card>
+                                        </el-col>
+                                    </el-row>
+                                </template>
+                            </viewer>
+                            <button v-if="editable" class="btn btn-pill btn-sm btn-outline-primary"
+                                    @click.prevent="uploadGalleryImages"
+                            >
+                                <i class="far fa-images"/> Upload gallery images
+                            </button>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -568,7 +602,8 @@
         <embed-youtube-modal ref="embed-youtube-modal" :post-id="post.id" @onConfirm="addCommand"/>
         <embed-vimeo-modal ref="embed-vimeo-modal" :post-id="post.id" @onConfirm="addCommand"/>
         <edit-image-modal v-if="imageEditorVisible" :image="imageEditorImage" @onConfirm="updateImage"/>
-        <create-main-image :ref="createMainImageRef" :gallery="true" :multiple="false" @success="updateMainImage"/>
+        <create-image :ref="createMainImageRef" :gallery="true" :multiple="false" @success="updateMainImage"/>
+        <create-image :ref="createGalleryImagesRef" :gallery="true" :multiple="true" @success="updateGalleryImages"/>
     </div>
 </template>
 
@@ -614,8 +649,9 @@
     import CreatePartial            from "../../components/CreatePartial"
     import Post                     from "../../models/Post"
     import Category                 from "../../models/Category"
-    import CreateMainImage          from "../Images/create"
+    import CreateImage              from "../Images/create"
     import {addDays, addWeeks}      from "date-fns"
+    import {uniqBy}                 from "lodash"
     // Code highlighting
     import css                      from "highlight.js/lib/languages/css"
     import http                     from "highlight.js/lib/languages/http"
@@ -645,7 +681,7 @@
             "embed-vimeo-modal":   EmbedVimeoModal,
             "edit-image-modal":    EditImageModal,
             "source-code":         SourceCode,
-            CreateMainImage,
+            CreateImage,
         },
 
         extends: CreatePartial,
@@ -661,6 +697,7 @@
             return {
                 formRef:                  "create-post-form",
                 createMainImageRef:       "create-main-image",
+                createGalleryImagesRef:   "create-gallery-images",
                 post:                     new Post(),
                 categories:               [],
                 rules:                    {
@@ -806,6 +843,7 @@
                     "keyboard":   true,
                     "url":        "data-source"
                 },
+                imagesPerRow:             6,
             }
         },
 
@@ -845,11 +883,11 @@
             },
 
             viewerImages() {
-                // FIXME once gallery done
-                return [{
-                    thumbnail: this.getThumbnailSrc(this.post.image),
-                    source:    this.getLargestImageSrc(this.post.image)
-                }]
+                return [this.post.image].concat(this.post.images)
+                                        .map(image => ({
+                                            thumbnail: this.getThumbnailSrc(image),
+                                            source:    this.getLargestImageSrc(image)
+                                        }))
             },
         },
 
@@ -880,6 +918,16 @@
             ...mapActions("category", ["getCategories"]),
 
             ...mapActions("tag", ["getTags", "createTag"]),
+
+            arrayChunk(array, chunk_size) {
+                return array.reduce(
+                    (segments, _, index) =>
+                        index % chunk_size === 0
+                        ? [...segments, array.slice(index, index + chunk_size)]
+                        : segments,
+                    []
+                )
+            },
 
             showLinkMenu(attrs) {
                 this.$set(this, "linkUrl", attrs.href)
@@ -942,11 +990,23 @@
 
             updateImage(image) {
                 // TODO
-                console.log(image)
+                console.log("TODO", image)
             },
 
             uploadMainImage() {
                 this.$refs[this.createMainImageRef].showModal()
+            },
+
+            uploadGalleryImages() {
+                this.$refs[this.createGalleryImagesRef].showModal()
+            },
+
+            updateGalleryImages(images) {
+                this.$set(this.post, "images", uniqBy(this.post.images.concat(images), "id"))
+            },
+
+            removeGalleryImage(image) {
+                this.post.images.splice(this.post.images.findIndex(el => el.id === image.id), 1)
             },
 
             updateMainImage(image) {

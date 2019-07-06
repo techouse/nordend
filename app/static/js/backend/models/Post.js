@@ -73,6 +73,10 @@ export default class Post {
             this.image = new Photo(this.image)
         }
 
+        if (this.images) {
+            this.images = this.images.map(el => new Photo(el.image))
+        }
+
         if (this.published_at) {
             this.published_at = new Date(this.published_at)
         }
@@ -110,6 +114,7 @@ export default class Post {
             related_ids:             this.related_ids,
             draft:                   this.draft,
             image_id:                this.image ? this.image.id : null,
+            image_ids:               this.images.length ? this.images.map(image => image.id) : [],
             published:               this.published_at instanceof Date ? this.published_at.toISOString() : null
         }
     }

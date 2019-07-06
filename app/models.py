@@ -390,7 +390,7 @@ class Post(db.Model, AddUpdateDelete):
     # relationships
     authors = db.relationship("PostAuthor", lazy="dynamic")
     categories = db.relationship("PostCategory", lazy="dynamic")
-    images = db.relationship("PostImage", lazy="dynamic")
+    _images = db.relationship("PostImage", lazy="dynamic")
     _tags = db.relationship("PostTag", lazy="dynamic")
     _related = db.relationship(
         "Post",
@@ -485,8 +485,8 @@ class Post(db.Model, AddUpdateDelete):
         )
         ids_to_delete = current - ids
         if ids_to_delete:
-            self.categories.filter(PostCategory.primary.isnot(True)).filter(
-                PostCategory.category_id.in_(list(ids_to_delete))
+            self.categories.filter(
+                PostCategory.primary.isnot(True), PostCategory.category_id.in_(list(ids_to_delete))
             ).delete(synchronize_session="fetch")
         ids_to_append = ids - current
         if ids_to_append:
@@ -538,13 +538,13 @@ class Post(db.Model, AddUpdateDelete):
 
     @hybrid_property
     def image(self):
-        image = self.images.filter(PostImage.primary.is_(True)).first()
+        image = self._images.filter(PostImage.primary.is_(True)).first()
         return image.image if image else None
 
     @image.setter
     def image(self, value=None):
-        current_image = self.images.filter(PostImage.primary.is_(True)).first()
-        if value is None and current_image:
+        current_image = self._images.filter(PostImage.primary.is_(True)).first()
+        if value is None or not value and current_image:
             current_image.delete(current_image)
             return
         elif value and isinstance(value, Image):
@@ -556,12 +556,35 @@ class Post(db.Model, AddUpdateDelete):
         self.images.append(PostImage(image_id=value, primary=True))
 
     @hybrid_property
+    def images(self):
+        return self._images.filter(PostImage.primary.isnot(True))
+
+    @images.setter
+    def images(self, images):
+        ids = set()
+        for image in images:
+            if isinstance(image, Image):
+                ids.add(image.id)
+            else:
+                ids.add(image)
+        current = set(image[0] for image in self._images.filter(PostImage.primary.isnot(True)).values("image_id"))
+        ids_to_delete = current - ids
+        if ids_to_delete:
+            self._images.filter(PostImage.primary.isnot(True), PostImage.image_id.in_(list(ids_to_delete))).delete(
+                synchronize_session="fetch"
+            )
+        ids_to_append = ids - current
+        if ids_to_append:
+            for image_id in ids_to_append:
+                self._images.append(PostImage(image_id=image_id, primary=False))
+
+    @hybrid_property
     def published(self):
         return (
-                self.is_draft is False
-                and self.is_published is True
-                and self.published_at is not None
-                and self.published_at.astimezone(pytz.utc) <= datetime.now(pytz.utc)
+            self.is_draft is False
+            and self.is_published is True
+            and self.published_at is not None
+            and self.published_at.astimezone(pytz.utc) <= datetime.now(pytz.utc)
         )
 
     @published.expression

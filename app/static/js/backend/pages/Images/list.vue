@@ -188,12 +188,10 @@
 
         computed: {
             viewerImages() {
-                return this.images.map(image => {
-                    return {
-                        thumbnail: this.getThumbnailSrc(image),
-                        source:    this.getLargestImageSrc(image)
-                    }
-                })
+                return this.images.map(image => ({
+                    thumbnail: this.getThumbnailSrc(image),
+                    source:    this.getLargestImageSrc(image)
+                }))
             },
             sortByOptions() {
                 return [

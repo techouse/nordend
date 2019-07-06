@@ -59,6 +59,8 @@ class PostResource(TokenRequiredResource):
             post.draft = request_dict["draft"]
         if "image_id" in request_dict:
             post.image = request_dict["image_id"]
+        if "image_ids" in request_dict:
+            post.images = list(map(int, request_dict["image_ids"]))
         if post.authors.filter(PostAuthor.user_id == g.current_user.id).count() == 0:
             post.authors.append(PostAuthor(user=g.current_user))
         dumped_post, dump_errors = post_schema.dump(post)
@@ -195,6 +197,10 @@ class PostListResource(TokenRequiredResource):
                 post.published = dp.parse(request_dict["published"])
             if "draft" in request_dict:
                 post.draft = request_dict["request_dict"]
+            if "image_id" in request_dict:
+                post.image = request_dict["image_id"]
+            if "image_ids" in request_dict:
+                post.images = list(map(int, request_dict["image_ids"]))
             post.add(post)
             created_post = Post.query.get(post.id)
             result = post_schema.dump(created_post).data

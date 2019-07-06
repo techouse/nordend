@@ -1,7 +1,7 @@
 <template>
     <modal v-if="show" :class="{show: show}" :modal-class="modalClass" @close="closeModal">
         <template v-slot:title>
-            {{ activeTab === "file" ? 'Upload' : 'Select' }} {{ multiple ? 'images' : 'image' }}
+            {{ activeTab === "file" ? 'Upload' : 'Select' }} {{ multiple && activeTab === "file" ? 'images' : 'image' }}
         </template>
         <template v-slot:body>
             <template v-if="gallery">
@@ -109,6 +109,7 @@
     import {mapActions, mapGetters} from "vuex"
     import Modal                    from "../../components/Modal"
     import Photo                    from "../../models/Image"
+    import {uniqBy}                 from "lodash"
 
     export default {
         name: "CreateImage",
@@ -245,7 +246,10 @@
 
                 if (complete) {
                     this.$set(this, "loading", false)
-                    this.$emit("success", this.photo)
+                    this.$emit("success", this.multiple ? uniqBy(fileList.filter(file => file.status === "success")
+                                                                         .map(file => new Photo(file.response)),
+                                                                 "id")
+                                                        : this.photo)
                     this.closeModal()
                 }
             },
@@ -323,15 +327,23 @@
 
 <style lang="scss" scoped>
     .modal {
-        .image-card {
-            &:hover {
-                cursor: pointer;
+        .el-row {
+            margin-bottom: 20px;
+
+            .image-card {
+                &:hover {
+                    cursor: pointer;
+                }
+
+                &.selected {
+                    outline: none;
+                    border-color: #409eff;
+                    box-shadow: 0 0 10px #409eff;
+                }
             }
 
-            &.selected {
-                outline: none;
-                border-color: #409eff;
-                box-shadow: 0 0 10px #409eff;
+            &:last-of-type {
+                margin-bottom: 0;
             }
         }
     }
