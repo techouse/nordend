@@ -38,8 +38,8 @@
             return {
                 formRef: "rest-password-request-form",
                 form:    {
-                    email:          null,
-                    recaptchaToken: null
+                    email:           null,
+                    recaptcha_token: null
                 },
                 rules:   {
                     email: [
@@ -55,7 +55,7 @@
                 grecaptcha.ready(() => {
                     grecaptcha.execute(window.reCAPTCHASiteKey, {action: "reset_password_request"})
                               .then(token => {
-                                  this.$set(this.form, "recaptchaToken", token)
+                                  this.$set(this.form, "recaptcha_token", token)
                               })
                 })
             }

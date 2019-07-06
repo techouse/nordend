@@ -29,7 +29,7 @@ def verify_user_password(email_or_token, password):
         g.token_used = g.current_user is None
         return g.current_user is not None
     csrf.protect()
-    if request.recaptcha_is_valid is False:
+    if request.recaptcha_valid is False:
         return False
     user = User.query.filter_by(email=email_or_token).first()
     if not user:
@@ -96,11 +96,15 @@ class ResetPasswordResource(Resource):
         response = {"message": "OK"}
         return response, status.HTTP_200_OK
 
+    @verify_recaptcha
     def patch(self):
         csrf.protect()
         request_dict = request.get_json()
         if not request_dict:
             response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        if request.recaptcha_valid is False:
+            response = {"message": "Invalid reCAPTCHA"}
             return response, status.HTTP_400_BAD_REQUEST
         reset_password_schema = ResetPasswordSchema()
         errors = reset_password_schema.validate(request_dict)
@@ -114,11 +118,15 @@ class ResetPasswordResource(Resource):
 
 
 class ResetPasswordRequestResource(Resource):
+    @verify_recaptcha
     def post(self):
         csrf.protect()
         request_dict = request.get_json()
         if not request_dict:
             response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        if request.recaptcha_valid is False:
+            response = {"message": "Invalid reCAPTCHA"}
             return response, status.HTTP_400_BAD_REQUEST
         reset_password_request_schema = ResetPasswordRequestSchema()
         errors = reset_password_request_schema.validate(request_dict)
@@ -140,11 +148,15 @@ class RegistrationResource(Resource):
         response = {"message": "OK"}
         return response, status.HTTP_200_OK
 
+    @verify_recaptcha
     def post(self):
         csrf.protect()
         request_dict = request.get_json()
         if not request_dict:
             response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        if request.recaptcha_valid is False:
+            response = {"message": "Invalid reCAPTCHA"}
             return response, status.HTTP_400_BAD_REQUEST
         registration_schema = RegistrationSchema()
         errors = registration_schema.validate(request_dict)

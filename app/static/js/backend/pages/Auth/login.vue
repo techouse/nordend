@@ -73,10 +73,10 @@
 
         data() {
             return {
-                email:          null,
-                password:       null,
-                remember:       false,
-                recaptchaToken: null
+                email:           null,
+                password:        null,
+                remember:        false,
+                recaptcha_token: null
             }
         },
 
@@ -98,7 +98,7 @@
                 grecaptcha.ready(() => {
                     grecaptcha.execute(window.reCAPTCHASiteKey, {action: "login"})
                               .then(token => {
-                                  this.$set(this, "recaptchaToken", token)
+                                  this.$set(this, "recaptcha_token", token)
                               })
                 })
             }
@@ -118,7 +118,7 @@
 
             submit() {
                 if (this.email && this.password) {
-                    this.login({email: this.email, password: this.password, recaptcha_token: this.recaptchaToken})
+                    this.login({email: this.email, password: this.password, recaptcha_token: this.recaptcha_token})
                         .then(({userId}) => {
                             this.getUser(userId)
                                 .then(({data}) => {

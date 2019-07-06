@@ -26,35 +26,28 @@ def admin_required(f):
 def verify_recaptcha(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        request.recaptcha_is_valid = None
+        request.recaptcha_valid = None
 
         if (
             request.method == "POST"
             and current_app.config["RECAPTCHA_SITE_KEY"]
             and current_app.config["RECAPTCHA_SECRET_KEY"]
         ):
-            data = request.get_json()
-            if data:
-                recaptcha_token = data.get("recaptcha_token")
-                if recaptcha_token:
-                    r = requests.post(
-                        "https://www.google.com/recaptcha/api/siteverify",
-                        data={
-                            "secret": current_app.config["RECAPTCHA_SECRET_KEY"],
-                            "response": recaptcha_token,
-                            "remoteip": request.access_route[0],
-                        },
-                    )
-                    result = r.json()
-
-                    if result["success"]:
-                        request.recaptcha_is_valid = True
-                    else:
-                        request.recaptcha_is_valid = False
-                else:
-                    request.recaptcha_is_valid = False
+            data = request.get_json() if request.get_json() else request.data
+            recaptcha_token = data.get("recaptcha_token")
+            if recaptcha_token:
+                r = requests.post(
+                    "https://www.google.com/recaptcha/api/siteverify",
+                    data={
+                        "secret": current_app.config["RECAPTCHA_SECRET_KEY"],
+                        "response": recaptcha_token,
+                        "remoteip": request.access_route[0],
+                    },
+                )
+                result = r.json()
+                request.recaptcha_valid = result.get("success") or False
             else:
-                request.recaptcha_is_valid = False
+                request.recaptcha_valid = False
 
         return f(*args, **kwargs)
 

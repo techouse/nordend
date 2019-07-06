@@ -57,7 +57,7 @@
                     token:           this.token,
                     password:        null,
                     password_repeat: null,
-                    recaptchaToken:  null
+                    recaptcha_token: null
                 },
                 rules:   {
                     password:        [
@@ -102,7 +102,7 @@
                 grecaptcha.ready(() => {
                     grecaptcha.execute(window.reCAPTCHASiteKey, {action: "reset_password"})
                               .then(token => {
-                                  this.$set(this.form, "recaptchaToken", token)
+                                  this.$set(this.form, "recaptcha_token", token)
                               })
                 })
             }

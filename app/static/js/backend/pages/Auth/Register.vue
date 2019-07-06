@@ -73,7 +73,7 @@
                     email:           null,
                     password:        null,
                     password_repeat: null,
-                    recaptchaToken:  null
+                    recaptcha_token: null
                 },
                 rules:   {
                     name:            [
@@ -137,7 +137,7 @@
                 grecaptcha.ready(() => {
                     grecaptcha.execute(window.reCAPTCHASiteKey, {action: "register"})
                               .then(token => {
-                                  this.$set(this.form, "recaptchaToken", token)
+                                  this.$set(this.form, "recaptcha_token", token)
                               })
                 })
             }
