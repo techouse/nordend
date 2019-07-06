@@ -12,11 +12,17 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dist/css/backend.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/admin/admin.png') }}">
 
-    <script>window.csrfToken="{{ csrf_token() }}";</script>
+    <script>window.csrfToken = "{{ csrf_token() }}"</script>
+    {% if config['RECAPTCHA_SITE_KEY'] and config['RECAPTCHA_SECRET_KEY'] %}
+        <script src="https://www.google.com/recaptcha/api.js?render={{ config['RECAPTCHA_SITE_KEY'] }}"></script>
+        <script>window.reCAPTCHASiteKey = "{{ config['RECAPTCHA_SITE_KEY'] }}"</script>
+    {% else %}
+        <script>window.reCAPTCHASiteKey = null</script>
+    {% endif %}
     <script defer src="{{ url_for('static', filename='dist/js/backend.js') }}"></script>
     {% block head_includes %}{% endblock %}
 </head>
 <body class="header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
-    <div id="app"></div>
+<div id="app"></div>
 </body>
 </html>

@@ -56,7 +56,8 @@
                 form:    {
                     token:           this.token,
                     password:        null,
-                    password_repeat: null
+                    password_repeat: null,
+                    recaptchaToken:  null
                 },
                 rules:   {
                     password:        [
@@ -93,6 +94,17 @@
                         }
                     ],
                 }
+            }
+        },
+
+        mounted() {
+            if (window.reCAPTCHASiteKey) {
+                grecaptcha.ready(() => {
+                    grecaptcha.execute(window.reCAPTCHASiteKey, {action: "reset_password"})
+                              .then(token => {
+                                  this.$set(this.form, "recaptchaToken", token)
+                              })
+                })
             }
         },
 

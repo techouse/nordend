@@ -12,7 +12,7 @@
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">
-                                        <i class="icon-user" />
+                                        <i class="icon-user"/>
                                     </span>
                                 </div>
                                 <input v-model="email" class="form-control" type="email" placeholder="E-mail">
@@ -20,7 +20,7 @@
                             <div class="input-group mb-4">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">
-                                        <i class="icon-lock" />
+                                        <i class="icon-lock"/>
                                     </span>
                                 </div>
                                 <input v-model="password" class="form-control" type="password"
@@ -73,9 +73,10 @@
 
         data() {
             return {
-                email:    null,
-                password: null,
-                remember: false
+                email:          null,
+                password:       null,
+                remember:       false,
+                recaptchaToken: null
             }
         },
 
@@ -92,6 +93,17 @@
             this.rememberChanged()
         },
 
+        mounted() {
+            if (window.reCAPTCHASiteKey) {
+                grecaptcha.ready(() => {
+                    grecaptcha.execute(window.reCAPTCHASiteKey, {action: "login"})
+                              .then(token => {
+                                  this.$set(this, "recaptchaToken", token)
+                              })
+                })
+            }
+        },
+
         methods: {
             ...mapActions("auth", [
                 "login",
@@ -106,7 +118,7 @@
 
             submit() {
                 if (this.email && this.password) {
-                    this.login({email: this.email, password: this.password})
+                    this.login({email: this.email, password: this.password, recaptcha_token: this.recaptchaToken})
                         .then(({userId}) => {
                             this.getUser(userId)
                                 .then(({data}) => {

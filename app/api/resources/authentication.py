@@ -12,6 +12,7 @@ from ..schemas import (
     RegistrationConfirmationSchema,
 )
 from ... import status, csrf, db
+from ...decorators import verify_recaptcha
 from ...models import User
 
 basic_auth = HTTPBasicAuth()
@@ -19,6 +20,7 @@ token_auth = HTTPTokenAuth()
 
 
 @basic_auth.verify_password
+@verify_recaptcha
 def verify_user_password(email_or_token, password):
     if email_or_token == "":
         return False
@@ -27,6 +29,8 @@ def verify_user_password(email_or_token, password):
         g.token_used = g.current_user is None
         return g.current_user is not None
     csrf.protect()
+    if request.recaptcha_is_valid is False:
+        return False
     user = User.query.filter_by(email=email_or_token).first()
     if not user:
         return False

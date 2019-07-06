@@ -9,9 +9,10 @@ module.exports = {
         'plugin:vue/recommended'
     ],
     globals:       {
-        '$':         true,
-        'require':   true,
-        'Vue':       true
+        '$':          true,
+        'require':    true,
+        'Vue':        true,
+        'grecaptcha': true
     },
     env:           {
         browser: true

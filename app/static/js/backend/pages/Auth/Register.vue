@@ -72,7 +72,8 @@
                     name:            null,
                     email:           null,
                     password:        null,
-                    password_repeat: null
+                    password_repeat: null,
+                    recaptchaToken:  null
                 },
                 rules:   {
                     name:            [
@@ -128,6 +129,17 @@
         created() {
             if (this.csrfToken !== window.csrfToken) {
                 this.logout()
+            }
+        },
+
+        mounted() {
+            if (window.reCAPTCHASiteKey) {
+                grecaptcha.ready(() => {
+                    grecaptcha.execute(window.reCAPTCHASiteKey, {action: "register"})
+                              .then(token => {
+                                  this.$set(this.form, "recaptchaToken", token)
+                              })
+                })
             }
         },
 

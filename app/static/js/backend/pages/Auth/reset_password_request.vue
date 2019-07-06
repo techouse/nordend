@@ -38,7 +38,8 @@
             return {
                 formRef: "rest-password-request-form",
                 form:    {
-                    email: null
+                    email:          null,
+                    recaptchaToken: null
                 },
                 rules:   {
                     email: [
@@ -46,6 +47,17 @@
                         {type: "email", message: "Please input correct email address", trigger: ["blur"]}
                     ]
                 }
+            }
+        },
+
+        mounted() {
+            if (window.reCAPTCHASiteKey) {
+                grecaptcha.ready(() => {
+                    grecaptcha.execute(window.reCAPTCHASiteKey, {action: "reset_password_request"})
+                              .then(token => {
+                                  this.$set(this.form, "recaptchaToken", token)
+                              })
+                })
             }
         },
 

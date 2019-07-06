@@ -15,6 +15,8 @@ class Config(object):
     LANGUAGES = ["en", "de", "it", "sl"]
     # Security settings
     SECRET_KEY = os.environ.get("SECRET_KEY") or "im-not-lazy-im-just-very-relaxed"
+    RECAPTCHA_SITE_KEY = os.environ.get("RECAPTCHA_SITE_KEY") or None
+    RECAPTCHA_SECRET_KEY = os.environ.get("RECAPTCHA_SECRET_KEY") or None
     WTF_CSRF_TIME_LIMIT = int(os.environ.get("WTF_CSRF_TIME_LIMIT")) or 3600
     JWT_TOKEN_EXPIRATION_TIME = int(os.environ.get("JWT_TOKEN_EXPIRATION_TIME")) or 3600
     PUBLIC_REGISTRATION_ENABLED = str2bool(os.environ.get("PUBLIC_REGISTRATION_ENABLED")) or False

@@ -2,8 +2,8 @@ import logging
 import os
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
-import eventlet
-eventlet.monkey_patch()
+from gevent import monkey
+monkey.patch_all()
 
 from flask import Flask, request, current_app
 from flask_babel import Babel, lazy_gettext as _l
