@@ -262,14 +262,18 @@ class UserOtpResource(TokenRequiredResource):
         if not totp:
             response = {"message": "Invalid input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
-        if redis.exists(user_otp_secret_key.format(id=user.id)) and user.verify_totp(totp):
-            user.otp_secret = redis.get(user_otp_secret_key.format(id=user.id))
-            user.update()
-            redis.delete(user_otp_secret_key.format(id=user.id))
-            response = {"message": "2 Factor Authentication successfully enabled!"}
-            return response, status.HTTP_200_OK
-        else:
-            response = {"message": "One time password invalid!"}
+        try:
+            if redis.exists(user_otp_secret_key.format(id=user.id)) and user.verify_totp(totp):
+                user.otp_secret = redis.get(user_otp_secret_key.format(id=user.id))
+                user.update()
+                redis.delete(user_otp_secret_key.format(id=user.id))
+                response = {"message": "2 Factor Authentication successfully enabled!"}
+                return response, status.HTTP_200_OK
+            else:
+                response = {"message": "One time password invalid!"}
+                return response, status.HTTP_400_BAD_REQUEST
+        except ValueError as err:
+            response = {"message": str(err)}
             return response, status.HTTP_400_BAD_REQUEST
 
     def delete(self, id):
