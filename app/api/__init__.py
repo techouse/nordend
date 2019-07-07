@@ -14,7 +14,7 @@ from .resources.authentication import (
 from .resources.category import CategoryListResource, CategoryResource, CategoryPostListResource
 from .resources.post import PostListResource, PostResource
 from .resources.role import RoleListResource, RoleResource, RoleUserListResource
-from .resources.user import UserListResource, UserResource, UserPostListResource
+from .resources.user import UserListResource, UserResource, UserPostListResource, UserOtpResource
 
 api_bp = Blueprint("api", __name__, url_prefix="/api/v1")
 api = Api(api_bp)
@@ -33,6 +33,7 @@ api.add_resource(RoleUserListResource, "/roles/<int:id>/users/", endpoint="role_
 api.add_resource(UserListResource, "/users/", endpoint="users")
 api.add_resource(UserResource, "/users/<int:id>", endpoint="user")
 api.add_resource(UserPostListResource, "/users/<int:id>/posts/", endpoint="user_posts")
+api.add_resource(UserOtpResource, "/users/<int:id>/otp", endpoint="user_otp")
 
 api.add_resource(CategoryListResource, "/categories/", endpoint="categories")
 api.add_resource(CategoryResource, "/categories/<int:id>", endpoint="category")

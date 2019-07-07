@@ -6,11 +6,13 @@ from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields, validate
 from webargs.flaskparser import use_args
 
+from ...redis_keys import user_otp_secret_key
+from ...decorators import verify_recaptcha
 from .authentication import TokenRequiredResource
 from .post import post_schema
 from ..helpers import PaginationHelper
 from ..schemas import UserSchema
-from ... import db, status
+from ... import db, status, redis
 from ...models import User, Post, Role
 
 user_schema = UserSchema()
@@ -225,3 +227,59 @@ class UserPostListResource(TokenRequiredResource):
         )
         result = pagination_helper.paginate_query()
         return result
+
+
+class UserOtpResource(TokenRequiredResource):
+    def get(self, id):
+        user = User.query.get_or_404(id)
+        if user.otp_enabled:
+            response = {
+                "message": (
+                    "User already has an one time password (OTP)! "
+                    "Generation of a new one is not allowed! "
+                    "Please disable the currently active OTP before requesting a new one!"
+                )
+            }
+            return response, status.HTTP_409_CONFLICT
+        totp = user.generate_totp()
+        redis.set(user_otp_secret_key.format(id=user.id), totp["secret"], ex=600)
+        return totp, status.HTTP_201_CREATED
+
+    def put(self, id):
+        return self.patch(id)
+
+    @verify_recaptcha
+    def patch(self, id):
+        user = User.query.get_or_404(id)
+        request_dict = request.get_json()
+        if not request_dict:
+            response = {"message": "No input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        if request.recaptcha_valid is False:
+            response = {"message": "Invalid reCAPTCHA"}
+            return response, status.HTTP_400_BAD_REQUEST
+        totp = request_dict.get("totp")
+        if not totp:
+            response = {"message": "Invalid input data provided"}
+            return response, status.HTTP_400_BAD_REQUEST
+        if redis.exists(user_otp_secret_key.format(id=user.id)) and user.verify_totp(totp):
+            user.otp_secret = redis.get(user_otp_secret_key.format(id=user.id))
+            user.update()
+            redis.delete(user_otp_secret_key.format(id=user.id))
+            response = {"message": "2 Factor Authentication successfully enabled!"}
+            return response, status.HTTP_200_OK
+        else:
+            response = {"message": "One time password invalid!"}
+            return response, status.HTTP_400_BAD_REQUEST
+
+    def delete(self, id):
+        user = User.query.get_or_404(id)
+        if user.otp_enabled:
+            user.otp_secret = None
+            user.update()
+            redis.delete(user_otp_secret_key.format(id=user.id))
+            response = {"message": "2 Factor Authentication successfully disabled!"}
+            return response, status.HTTP_200_OK
+        else:
+            response = {"message": "2 Factor Authentication not enabled for this user!"}
+            return response, status.HTTP_400_BAD_REQUEST

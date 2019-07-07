@@ -1,11 +1,11 @@
 <template>
     <card>
         <template v-slot:header>
-            <el-page-header class="no-back" :content="title"/>
+            <el-page-header class="no-back" :content="title" />
             <div class="card-header-actions">
                 <el-dropdown v-if="multipleSelection.length" @command="handleBulkCommand">
                     <button class="btn btn-sm btn-outline-secondary">
-                        Bulk actions <i class="el-icon-arrow-down el-icon--right"></i>
+                        Bulk actions <i class="el-icon-arrow-down el-icon--right" />
                     </button>
                     <el-dropdown-menu slot="dropdown" size="mini">
                         <el-dropdown-item icon="fal fa-trash-alt" :command="bulkRemove">
@@ -17,23 +17,33 @@
                     </el-dropdown-menu>
                 </el-dropdown>
                 <router-link :to="{name: 'CreateUser'}" class="btn btn-sm btn-success">
-                    <i class="far fa-user-plus"/> Create new user
+                    <i class="far fa-user-plus" /> Create new user
                 </router-link>
             </div>
         </template>
         <template v-slot:body>
             <el-table :ref="tableRef" v-loading="loading" :data="users" class="w-100" @sort-change="orderBy"
-                      @selection-change="handleSelectionChange">
+                      @selection-change="handleSelectionChange"
+            >
                 <el-table-column type="selection" width="40" />
-                <el-table-column label="#" prop="id" width="60" sortable="custom"/>
-                <el-table-column label="Name" prop="name" sortable="custom"/>
-                <el-table-column label="E-mail" prop="email" sortable="custom"/>
+                <el-table-column label="#" prop="id" width="60" sortable="custom" />
+                <el-table-column label="Name" prop="name" sortable="custom" />
+                <el-table-column label="E-mail" prop="email" sortable="custom" />
                 <el-table-column label="Role" prop="role.name" sort-by="role_id" align="center" width="120"
-                                 sortable="custom"/>
+                                 sortable="custom"
+                />
                 <el-table-column label="Confirmed" align="center" width="130" prop="confirmed" sortable="custom">
                     <template slot-scope="scope">
-                        <i v-if="scope.row.confirmed" class="fas fa-check text-success"/>
-                        <i v-else class="fas fa-times text-danger"/>
+                        <i v-if="scope.row.confirmed" class="fas fa-check text-success" />
+                        <i v-else class="fas fa-times text-danger" />
+                    </template>
+                </el-table-column>
+                <el-table-column label="2FA" prop="otp_enabled" sort-by="role_id" align="center" sortable="custom"
+                                 width="80"
+                >
+                    <template slot-scope="scope">
+                        <i v-if="scope.row.otp_enabled" class="fas fa-check text-success" />
+                        <i v-else class="fas fa-times text-danger" />
                     </template>
                 </el-table-column>
                 <el-table-column label="Created" align="center" width="160" prop="created_at" sortable="custom">
@@ -55,10 +65,10 @@
                         <router-link :to="{name: 'EditUser', params: {userId: scope.row.id}}"
                                      class="btn btn-sm btn-outline-secondary"
                         >
-                            <i class="far fa-user-edit"/>
+                            <i class="far fa-user-edit" />
                         </router-link>
                         <button class="btn btn-sm btn-outline-danger" @click="remove(scope.row)">
-                            <i class="far fa-trash-alt"/>
+                            <i class="far fa-trash-alt" />
                         </button>
                     </template>
                 </el-table-column>

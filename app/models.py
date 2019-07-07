@@ -4,6 +4,7 @@ from time import time
 
 import bleach
 import jwt
+import pyotp
 import pytz
 from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin, login_manager
@@ -13,7 +14,8 @@ from sqlalchemy import and_
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from . import db, login
+from .redis_keys import user_otp_secret_key
+from . import db, login, redis
 from .bleach_settings import allowed_tags, allowed_styles, allowed_attributes
 
 
@@ -147,6 +149,7 @@ class User(UserMixin, db.Model, AddUpdateDelete):
     email = db.Column(db.String(120), nullable=False, index=True, unique=True)
     role_id = db.Column(db.Integer, db.ForeignKey("roles.id"))
     password_hash = db.Column(db.String(128))
+    otp_secret = db.Column(db.String(16), index=True)
     confirmed = db.Column(db.Boolean, default=False)
     name = db.Column(db.String(64), nullable=False, index=True)
     location = db.Column(db.String(64))
@@ -168,7 +171,7 @@ class User(UserMixin, db.Model, AddUpdateDelete):
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = self.gravatar_hash()
 
-    @property
+    @hybrid_property
     def password(self):
         raise AttributeError("Password is not a readable attribute")
 
@@ -178,6 +181,28 @@ class User(UserMixin, db.Model, AddUpdateDelete):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    @hybrid_property
+    def otp_enabled(self):
+        return bool(self.otp_secret)
+
+    def generate_totp(self):
+        secret = pyotp.random_base32()
+        return {
+            "secret": secret,
+            "uri": pyotp.totp.TOTP(secret).provisioning_uri(self.email, issuer_name=current_app.config["APP_NAME"]),
+        }
+
+    def verify_totp(self, token):
+        secret = None
+        if self.otp_secret:
+            secret = self.otp_secret
+        elif redis.exists(user_otp_secret_key.format(id=self.id)):
+            secret = redis.get(user_otp_secret_key.format(id=self.id))
+        if not secret:
+            raise ValueError("OTP secret not set!")
+        totp = pyotp.TOTP(secret)
+        return totp.verify(token)
 
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(

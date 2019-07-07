@@ -32,6 +32,12 @@ const actions = {
     deleteUser: (context, id) => destroy(context, `/users/${id}`),
 
     deleteUsers: (context, ids) => destroy(context, "/users/", {ids}),
+
+    generateOtp: (context, user) => get(context, `/users/${user.id}/otp`),
+
+    enableOtp: (context, {user, otp}) => update(context, `/users/${user.id}/otp`, otp),
+
+    disableOtp: (context, user) => destroy(context, `/users/${user.id}/otp`),
 }
 
 export default {

@@ -1,5 +1,6 @@
 <template>
-    <card-form :ref="formRef" :form-ref="formRef" :loading="loading" :model="user" :rules="rules" :label-width="labelWidth">
+    <card-form :ref="formRef" :form-ref="formRef" :loading="loading" :model="user" :rules="rules"
+               :label-width="labelWidth">
         <template v-slot:header>
             <el-page-header :content="title" @back="goBack"/>
             <div v-if="user.id" class="card-header-actions">
@@ -38,6 +39,14 @@
                                    required
                         />
                     </el-form-item>
+                    <el-form-item label="2 Factor Auth">
+                        <el-button v-if="user.otp_enabled" type="danger" plain round @click="disableOtp">
+                            Disable 2FA
+                        </el-button>
+                        <el-button v-else type="success" plain round @click="enableOtp">
+                            Enable 2FA
+                        </el-button>
+                    </el-form-item>
                 </div>
                 <div class="col-sm-6">
                     <el-form-item label="Name" prop="name">
@@ -54,6 +63,7 @@
                     </el-form-item>
                 </div>
             </div>
+            <enable-otp :ref="generateOtpRef" :user="user" @success="handleOtpEnabled"/>
         </template>
         <template v-slot:footer>
             <el-button type="success" @click="submit">
@@ -67,19 +77,25 @@
     import CreatePartial from "../../components/CreatePartial"
     import User          from "../../models/User"
     import Role          from "../../models/Role"
+    import EnableOtp     from "./OTP/enable"
     import {mapActions}  from "vuex"
 
     export default {
         name: "CreateUser",
 
+        components: {
+            EnableOtp
+        },
+
         extends: CreatePartial,
 
         data() {
             return {
-                formRef: "create-user-form",
-                user:    new User(),
-                roles:   [],
-                rules:   {
+                formRef:        "create-user-form",
+                generateOtpRef: "generate-otp",
+                user:           new User(),
+                roles:          [],
+                rules:          {
                     email:           [
                         {required: true, message: "Please enter email address", trigger: "blur"},
                         {type: "email", message: "Please enter a valid email address", trigger: "blur"},
@@ -156,7 +172,40 @@
         methods: {
             ...mapActions("user", ["createUser"]),
 
+            ...mapActions("user", {
+                disableOtpAction: "disableOtp"
+            }),
+
             ...mapActions("role", ["getRoles"]),
+
+            enableOtp() {
+                this.$refs[this.generateOtpRef].showModal()
+            },
+
+            disableOtp() {
+                this.$confirm("Are you sure you want to disable 2 Factor Authentication?", "Warning", {
+                        confirmButtonText: "Yes",
+                        cancelButtonText:  "No",
+                        type:              "warning"
+                    })
+                    .then(() => {
+                        this.disableOtpAction(this.user)
+                            .then(({data}) => {
+                                this.$set(this.user, "otp_enabled", false)
+                                this.success("2 Factor Authentication successfully disabled!")
+                            })
+                            .catch(error => {
+                                this.error(`There was an disabling enabling 2 Factor Authentication: ${this.alert.message}`)
+                            })
+                    })
+                    .catch(() => {
+                        this.info("2 Factor Authentication not disabled!")
+                    })
+            },
+
+            handleOtpEnabled() {
+                this.$set(this.user, "otp_enabled", true)
+            },
 
             submit() {
                 this.$refs[this.formRef].validate((valid) => {

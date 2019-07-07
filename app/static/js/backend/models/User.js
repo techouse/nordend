@@ -14,6 +14,7 @@ export default class User {
         this.updated_at = null
         this.role = null
         this.role_id = null
+        this.otp_enabled = false
 
         Object.assign(this, values)
 

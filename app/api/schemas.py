@@ -81,6 +81,7 @@ class UserSchema(ma.Schema):
     id = fields.Integer(dump_only=True)
     email = fields.Email(required=True, validate=validate.Email())
     password = fields.String(load_only=True, validate=lambda x: 8 <= len(x) <= 128)
+    otp_enabled = fields.Bool(dump_only=True)
     confirmed = fields.Boolean(required=True)
     name = fields.String(required=True, validate=lambda x: 3 <= len(x) <= 255)
     location = fields.String(allow_none=True, validate=lambda x: 0 <= len(x) <= 255)
