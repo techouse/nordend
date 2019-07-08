@@ -138,7 +138,7 @@ const routerOptions = [
                 }
             },
             {
-                path:      ":postId/",
+                path:      ":postId(\\d+)/",
                 component: EditPost,
                 props:     true,
                 name:      "EditPost",
@@ -150,7 +150,6 @@ const routerOptions = [
             {
                 path:      "new/",
                 component: CreatePost,
-                props:     true,
                 name:      "CreatePost",
                 meta:      {
                     requiresAuth:  true,
@@ -184,7 +183,7 @@ const routerOptions = [
                 }
             },
             {
-                path:      ":userId/",
+                path:      ":userId(\\d+)/",
                 component: EditUser,
                 props:     true,
                 name:      "EditUser",
@@ -196,7 +195,6 @@ const routerOptions = [
             {
                 path:      "new/",
                 component: CreateUser,
-                props:     true,
                 name:      "CreateUser",
                 meta:      {
                     requiresAuth:  true,
@@ -229,7 +227,7 @@ const routerOptions = [
                 }
             },
             {
-                path:      ":categoryId/",
+                path:      ":categoryId(\\d+)/",
                 component: EditCategory,
                 props:     true,
                 name:      "EditCategory",
@@ -241,7 +239,6 @@ const routerOptions = [
             {
                 path:      "new/",
                 component: CreateCategory,
-                props:     true,
                 name:      "CreateCategory",
                 meta:      {
                     requiresAuth:  true,
@@ -275,7 +272,7 @@ const routerOptions = [
                 }
             },
             {
-                path:      ":roleId/",
+                path:      ":roleId(\\d+)/",
                 component: EditRole,
                 props:     true,
                 name:      "EditRole",
@@ -288,7 +285,6 @@ const routerOptions = [
             {
                 path:      "new/",
                 component: CreateRole,
-                props:     true,
                 name:      "CreateRole",
                 meta:      {
                     requiresAuth:  true,
@@ -321,7 +317,7 @@ const routerOptions = [
                 }
             },
             {
-                path:      ":imageId/",
+                path:      ":imageId(\\d+)/",
                 component: EditImage,
                 props:     true,
                 name:      "EditImage",

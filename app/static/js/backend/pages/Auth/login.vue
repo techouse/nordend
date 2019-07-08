@@ -10,7 +10,7 @@
                                       :max="6" :min="6" :maxlength="6" required show-word-limit
                             >
                                 <template slot="prepend">
-                                    <i class="fal fa-key" />
+                                    <i class="fal fa-key"/>
                                 </template>
                             </el-input>
                         </el-form-item>
@@ -33,7 +33,7 @@
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">
-                                        <i class="icon-user" />
+                                        <i class="icon-user"/>
                                     </span>
                                 </div>
                                 <input v-model="email" class="form-control" type="email" placeholder="E-mail" required>
@@ -41,7 +41,7 @@
                             <div class="input-group mb-4">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">
-                                        <i class="icon-lock" />
+                                        <i class="icon-lock"/>
                                     </span>
                                 </div>
                                 <input v-model="password" class="form-control" type="password"
@@ -97,7 +97,7 @@
 
         data() {
             return {
-                user:            new User(),
+                currentUser:     new User(),
                 email:           null,
                 password:        null,
                 remember:        false,
@@ -175,9 +175,9 @@
                         .then(({userId}) => {
                             this.getUser(userId)
                                 .then(({data}) => {
-                                    this.$set(this, "user", new User(data))
+                                    this.$set(this, "currentUser", new User(data))
 
-                                    this.setCurrentUser(this.user)
+                                    this.setCurrentUser(this.currentUser)
 
                                     this.$router.push({name: "Dashboard"})
                                 })

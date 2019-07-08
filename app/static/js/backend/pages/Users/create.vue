@@ -39,7 +39,7 @@
                                    required
                         />
                     </el-form-item>
-                    <el-form-item label="2 Factor Auth">
+                    <el-form-item v-if="user.id" label="2 Factor Auth">
                         <el-button v-if="user.otp_enabled" type="danger" plain round @click="disableOtp">
                             Disable 2FA
                         </el-button>
