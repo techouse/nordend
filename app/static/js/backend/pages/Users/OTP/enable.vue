@@ -21,7 +21,7 @@
             <el-form ref="form" :model="form" :rules="rules" label-width="120px">
                 <el-form-item label="Verification" prop="totp">
                     <el-input id="totp_input" v-model="form.totp" placeholder="Please enter 6-digit one time password"
-                              :max="6" :min="6" :disabled="!form.codeSafelyStored" maxlength="6" required
+                              :max="6" :min="6" :disabled="!form.codeSafelyStored" :maxlength="6" required
                               show-word-limit
                     />
                 </el-form-item>

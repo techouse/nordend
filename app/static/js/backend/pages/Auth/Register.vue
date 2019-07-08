@@ -9,33 +9,33 @@
                             Create your account
                         </p>
                         <el-form-item class="input-group mb-3" prop="name">
-                            <el-input v-model="form.name" type="text" placeholder="Name">
+                            <el-input v-model="form.name" type="text" placeholder="Name" required>
                                 <template slot="prepend">
                                     <i class="icon-user"/>
                                 </template>
                             </el-input>
                         </el-form-item>
                         <el-form-item class="input-group mb-3" prop="email">
-                            <el-input v-model="form.email" placeholder="E-mail">
+                            <el-input v-model="form.email" type="email" placeholder="E-mail" required>
                                 <template slot="prepend">@</template>
                             </el-input>
                         </el-form-item>
                         <el-form-item class="input-group mb-3" prop="password">
-                            <el-input v-model="form.password" type="password" placeholder="Password">
+                            <el-input v-model="form.password" type="password" placeholder="Password" required>
                                 <template slot="prepend">
                                     <i class="icon-lock"/>
                                 </template>
                             </el-input>
                         </el-form-item>
                         <el-form-item class="input-group mb-3" prop="password_repeat">
-                            <el-input v-model="form.password_repeat" type="password" placeholder="Repeat password">
+                            <el-input v-model="form.password_repeat" type="password" placeholder="Repeat password" required>
                                 <template slot="prepend">
                                     <i class="icon-lock"/>
                                 </template>
                             </el-input>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" class="btn btn-block btn-primary" @click.prevent="submit">
+                            <el-button type="primary" class="btn btn-block btn-primary" @click="submit">
                                 Submit
                             </el-button>
                         </el-form-item>

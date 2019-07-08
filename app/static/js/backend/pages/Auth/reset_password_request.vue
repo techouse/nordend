@@ -6,12 +6,12 @@
                     <el-form :ref="formRef" :model="form" :rules="rules" class="card-body p-4">
                         <h1>Reset Password</h1>
                         <el-form-item class="input-group mb-3" prop="email">
-                            <el-input v-model="form.email" placeholder="E-mail">
+                            <el-input v-model="form.email" type="email" placeholder="E-mail" required>
                                 <template slot="prepend">@</template>
                             </el-input>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" class="btn btn-block btn-primary" @click.prevent="submit">
+                            <el-button type="primary" class="btn btn-block btn-primary" @click="submit">
                                 Submit
                             </el-button>
                         </el-form-item>

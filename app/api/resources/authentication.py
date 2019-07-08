@@ -1,4 +1,4 @@
-from flask import g, jsonify, current_app, request
+from flask import g, current_app, request
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from flask_restful import Resource
 from sqlalchemy.exc import SQLAlchemyError
@@ -29,19 +29,41 @@ def verify_user_password(email_or_token, password):
         g.token_used = g.current_user is None
         return g.current_user is not None
     csrf.protect()
-    if request.recaptcha_valid is False:
+    if g.recaptcha_valid is False:
         return False
     user = User.query.filter_by(email=email_or_token).first()
     if not user:
         return False
     g.current_user = user
     g.token_used = False
-    return user.verify_password(password)
+    g.password_valid = user.verify_password(password)
+    g.otp_enabled = user.otp_enabled
+    g.otp_check_passed = not user.otp_enabled
+    if not g.password_valid:
+        return False
+    request_data = request.get_json() if request.get_json() else request.data
+    if user.otp_enabled:
+        totp = request_data.get("totp")
+        if not totp:
+            g.otp_check_passed = None
+            return False
+        g.otp_check_passed = user.verify_totp(totp)
+    return g.password_valid and g.otp_check_passed
 
 
 @basic_auth.error_handler
 def auth_error():
-    return jsonify({"message": "Invalid credentials"}), status.HTTP_401_UNAUTHORIZED
+    try:
+        if not g.recaptcha_valid:
+            return {"message": "Invalid reCAPTCHA"}, status.HTTP_401_UNAUTHORIZED
+        if g.otp_enabled:
+            if g.otp_check_passed is None:
+                return {"message": "One time password missing"}, status.HTTP_412_PRECONDITION_FAILED
+            if g.otp_check_passed is False:
+                return {"message": "One time password invalid"}, status.HTTP_401_UNAUTHORIZED
+    except AttributeError:
+        pass
+    return {"message": "Invalid credentials"}, status.HTTP_401_UNAUTHORIZED
 
 
 @token_auth.verify_token
@@ -52,7 +74,7 @@ def verify_token(token):
 
 @token_auth.error_handler
 def token_auth_error():
-    return jsonify({"message": "Token invalid"}), status.HTTP_401_UNAUTHORIZED
+    return {"message": "Token invalid"}, status.HTTP_401_UNAUTHORIZED
 
 
 class TokenRequiredResource(Resource):
@@ -103,7 +125,7 @@ class ResetPasswordResource(Resource):
         if not request_dict:
             response = {"message": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
-        if request.recaptcha_valid is False:
+        if g.recaptcha_valid is False:
             response = {"message": "Invalid reCAPTCHA"}
             return response, status.HTTP_400_BAD_REQUEST
         reset_password_schema = ResetPasswordSchema()
@@ -125,7 +147,7 @@ class ResetPasswordRequestResource(Resource):
         if not request_dict:
             response = {"message": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
-        if request.recaptcha_valid is False:
+        if g.recaptcha_valid is False:
             response = {"message": "Invalid reCAPTCHA"}
             return response, status.HTTP_400_BAD_REQUEST
         reset_password_request_schema = ResetPasswordRequestSchema()
@@ -155,7 +177,7 @@ class RegistrationResource(Resource):
         if not request_dict:
             response = {"message": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
-        if request.recaptcha_valid is False:
+        if g.recaptcha_valid is False:
             response = {"message": "Invalid reCAPTCHA"}
             return response, status.HTTP_400_BAD_REQUEST
         registration_schema = RegistrationSchema()

@@ -1,7 +1,28 @@
 <template>
     <centered>
         <template v-slot:body>
-            <div class="col-md-8">
+            <div v-if="otpEnabled" class="col-md-8">
+                <div class="card mx-4">
+                    <el-form :model="otpForm" :rules="otpRules" class="card-body p-4">
+                        <h4>Please enter the code from your authentication app</h4>
+                        <el-form-item class="input-group mb-3" prop="totp">
+                            <el-input v-model="otpForm.totp" placeholder="Please enter 6-digit one time password"
+                                      :max="6" :min="6" :maxlength="6" required show-word-limit
+                            >
+                                <template slot="prepend">
+                                    <i class="fal fa-key" />
+                                </template>
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" class="btn btn-block btn-primary" @click="submit">
+                                Submit
+                            </el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+            </div>
+            <div v-else class="col-md-8">
                 <div class="card-group">
                     <div class="card p-4">
                         <form class="card-body" @submit.prevent="submit">
@@ -12,19 +33,19 @@
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">
-                                        <i class="icon-user"/>
+                                        <i class="icon-user" />
                                     </span>
                                 </div>
-                                <input v-model="email" class="form-control" type="email" placeholder="E-mail">
+                                <input v-model="email" class="form-control" type="email" placeholder="E-mail" required>
                             </div>
                             <div class="input-group mb-4">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">
-                                        <i class="icon-lock"/>
+                                        <i class="icon-lock" />
                                     </span>
                                 </div>
                                 <input v-model="password" class="form-control" type="password"
-                                       placeholder="Password"
+                                       placeholder="Password" required
                                 >
                             </div>
                             <input v-model="remember" type="checkbox" name="remember_me" @change="rememberChanged">
@@ -68,15 +89,42 @@
     import User                     from "../../models/User"
 
     export default {
-        name:       "Login",
-        components: {Centered},
+        name: "Login",
+
+        components: {
+            Centered
+        },
 
         data() {
             return {
+                user:            new User(),
                 email:           null,
                 password:        null,
                 remember:        false,
-                recaptcha_token: null
+                recaptcha_token: null,
+                otpEnabled:      false,
+                otpForm:         {
+                    totp: null
+                },
+                otpRules:        {
+                    totp: [
+                        {
+                            validator: (rule, value, callback) => {
+                                if (!value) {
+                                    callback(new Error("Please fill the verification field!"))
+                                } else {
+                                    if (value.length !== 6) {
+                                        callback(new Error("One time password must be exactly 6-digits long"))
+                                    } else if (!value.match(/^\d+$/)) {
+                                        callback(new Error("Please fill the verification with digits only!"))
+                                    }
+                                    callback()
+                                }
+                            },
+                            trigger:   "blur"
+                        }
+                    ]
+                }
             }
         },
 
@@ -118,20 +166,38 @@
 
             submit() {
                 if (this.email && this.password) {
-                    this.login({email: this.email, password: this.password, recaptcha_token: this.recaptcha_token})
+                    this.login({
+                                   email:           this.email,
+                                   password:        this.password,
+                                   recaptcha_token: this.recaptcha_token,
+                                   totp:            this.otpForm.totp
+                               })
                         .then(({userId}) => {
                             this.getUser(userId)
                                 .then(({data}) => {
-                                    this.setCurrentUser(new User(data))
+                                    this.$set(this, "user", new User(data))
+
+                                    this.setCurrentUser(this.user)
 
                                     this.$router.push({name: "Dashboard"})
                                 })
                         })
                         .catch(error => {
+                            if (window.reCAPTCHASiteKey) {
+                                grecaptcha.ready(() => {
+                                    grecaptcha.execute(window.reCAPTCHASiteKey, {action: "login"})
+                                              .then(token => {
+                                                  this.$set(this, "recaptcha_token", token)
+                                              })
+                                })
+                            }
+
                             try {
                                 const response = error.response
                                 if (response.status === 403) {
                                     this.$router.push({name: "Unconfirmed", params: {token: response.data.token}})
+                                } else if (response.status === 412) {
+                                    this.$set(this, "otpEnabled", true)
                                 }
                             } catch (e) {
                                 console.log(error)

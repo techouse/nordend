@@ -13,14 +13,14 @@
                             </el-input>
                         </el-form-item>
                         <el-form-item class="input-group mb-3" prop="password_repeat">
-                            <el-input v-model="form.password_repeat" type="password" placeholder="Repeat password">
+                            <el-input v-model="form.password_repeat" type="password" placeholder="Repeat password" required>
                                 <template slot="prepend">
                                     <i class="icon-lock"/>
                                 </template>
                             </el-input>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" class="btn btn-block btn-primary" @click.prevent="submit">
+                            <el-button type="primary" class="btn btn-block btn-primary" @click="submit">
                                 Submit
                             </el-button>
                         </el-form-item>

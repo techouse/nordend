@@ -75,11 +75,11 @@ const actions = {
         commit("setRemember", remember)
     },
 
-    login({commit, dispatch}, {email, password, recaptcha_token}) {
+    login({commit, dispatch}, {email, password, recaptcha_token, totp}) {
         dispatch("alert/clear", null, {root: true})
 
         return new Promise((resolve, reject) => {
-            api.post("login", {recaptcha_token}, {
+            api.post("login", {recaptcha_token, totp}, {
                    auth:    {
                        username: email,
                        password: password

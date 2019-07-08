@@ -1,6 +1,6 @@
 from typing import List, Tuple
 
-from flask import request
+from flask import request, g
 from sqlalchemy import or_, desc, collate
 from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields, validate
@@ -255,7 +255,7 @@ class UserOtpResource(TokenRequiredResource):
         if not request_dict:
             response = {"message": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
-        if request.recaptcha_valid is False:
+        if g.recaptcha_valid is False:
             response = {"message": "Invalid reCAPTCHA"}
             return response, status.HTTP_400_BAD_REQUEST
         totp = request_dict.get("totp")
