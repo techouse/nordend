@@ -1,7 +1,7 @@
 <script>
-    import CreateUser   from "./create"
-    import {mapActions} from "vuex"
-    import User         from "../../models/User"
+    import CreateUser               from "./create"
+    import {mapActions, mapGetters} from "vuex"
+    import User                     from "../../models/User"
 
     export default {
         name: "EditUser",
@@ -73,8 +73,14 @@
         },
 
         computed: {
+            ...mapGetters("user", ["currentUser"]),
+
             title() {
                 return this.user.name
+            },
+
+            displayOtpButtons() {
+                return this.user.id && this.currentUser && (this.user.id === this.currentUser.id || this.currentUser.role.admin)
             }
         },
 

@@ -39,7 +39,7 @@
                                    required
                         />
                     </el-form-item>
-                    <el-form-item v-if="user.id" label="2 Factor Auth">
+                    <el-form-item v-if="displayOtpButtons" label="2 Factor Auth">
                         <el-button v-if="user.otp_enabled" type="danger" plain round @click="disableOtp">
                             Disable 2FA
                         </el-button>
@@ -74,11 +74,11 @@
 </template>
 
 <script>
-    import CreatePartial from "../../components/CreatePartial"
-    import User          from "../../models/User"
-    import Role          from "../../models/Role"
-    import EnableOtp     from "./OTP/enable"
-    import {mapActions}  from "vuex"
+    import CreatePartial            from "../../components/CreatePartial"
+    import User                     from "../../models/User"
+    import Role                     from "../../models/Role"
+    import EnableOtp                from "./OTP/enable"
+    import {mapActions, mapGetters} from "vuex"
 
     export default {
         name: "CreateUser",
@@ -153,6 +153,10 @@
         computed: {
             title() {
                 return "Create new user"
+            },
+
+            displayOtpButtons() {
+                return false
             }
         },
 
