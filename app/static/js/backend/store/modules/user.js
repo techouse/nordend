@@ -5,7 +5,13 @@ const state = {
 }
 
 const getters = {
-    currentUser: state => state.user
+    currentUser: state => state.user,
+
+    currentUserIsAdmin: state => state.user && state.user.role.admin,
+
+    currentUserIsStaff: state => state.user && (state.user.role.moderate || state.user.role.admin),
+
+    currentUserIsAuthor: state => state.user && (state.user.role.write || state.user.role.moderate || state.user.role.admin),
 }
 
 const mutations = {

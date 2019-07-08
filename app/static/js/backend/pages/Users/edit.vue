@@ -73,14 +73,14 @@
         },
 
         computed: {
-            ...mapGetters("user", ["currentUser"]),
+            ...mapGetters("user", ["currentUser", "currentUserIsAdmin"]),
 
             title() {
                 return this.user.name
             },
 
             displayOtpButtons() {
-                return this.user.id && this.currentUser && (this.user.id === this.currentUser.id || this.currentUser.role.admin)
+                return this.user.id && this.currentUser && (this.user.id === this.currentUser.id || this.currentUserIsAdmin)
             }
         },
 

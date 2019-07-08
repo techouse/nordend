@@ -49,27 +49,29 @@
                                 <i class="nav-icon icon-speedometer"/> Dashboard
                             </router-link>
                         </li>
-                        <li class="nav-item">
+                        <li v-if="currentUserIsAuthor"
+                            class="nav-item">
                             <router-link :to="{name: 'Posts'}" class="nav-link">
                                 <i class="nav-icon icon-notebook"/> Posts
                             </router-link>
                         </li>
-                        <li class="nav-item">
+                        <li v-if="currentUserIsAuthor"
+                            class="nav-item">
                             <router-link :to="{name: 'Images'}" class="nav-link">
                                 <i class="nav-icon icon-camera"/> Images
                             </router-link>
                         </li>
-                        <li class="nav-item">
+                        <li v-if="currentUserIsStaff" class="nav-item">
                             <router-link :to="{name: 'Categories'}" class="nav-link">
                                 <i class="nav-icon icon-tag"/> Categories
                             </router-link>
                         </li>
-                        <li class="nav-item">
+                        <li v-if="currentUserIsStaff" class="nav-item">
                             <router-link :to="{name: 'Users'}" class="nav-link">
                                 <i class="nav-icon icon-people"/> Users
                             </router-link>
                         </li>
-                        <li class="nav-item">
+                        <li v-if="currentUserIsAdmin" class="nav-item">
                             <router-link :to="{name: 'Roles'}" class="nav-link">
                                 <i class="nav-icon icon-graduation"/> Roles
                             </router-link>
@@ -93,7 +95,8 @@
         </div>
         <footer class="app-footer">
             <div>
-                <span>&copy;2018–{{ currentYear }} <a href="https://github.com/techouse" target="_blank">Klemen Tušar</a></span>
+                <span>&copy;2018–{{ currentYear }} <a href="https://github.com/techouse"
+                                                      target="_blank">Klemen Tušar</a></span>
             </div>
             <div class="ml-auto d-none d-md-block">
                 <span>Shamelessly powered by</span>
@@ -113,7 +116,11 @@
         name: "Admin",
 
         computed: {
-            ...mapGetters("user", ["currentUser"]),
+            ...mapGetters("user", ["currentUser",
+                                   "currentUserIsAdmin",
+                                   "currentUserIsStaff",
+                                   "currentUserIsAuthor",
+            ]),
 
             ...mapGetters("csrf", ["csrf"]),
 
@@ -123,7 +130,7 @@
 
             currentYear() {
                 return getYear(new Date())
-            }
+            },
         },
 
         mounted() {
