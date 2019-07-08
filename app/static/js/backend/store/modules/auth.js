@@ -190,31 +190,64 @@ const actions = {
     refreshToken({state, commit, dispatch}) {
         const refresher = setTimeout(() => {
                                          dispatch("csrf/getCsrf", {}, {root: true}).then(() => {
-                                             api.post("login", {}, {
-                                                    auth: {
-                                                        username: state.token,
-                                                        password: ""
-                                                    }
-                                                })
-                                                .then(response => {
-                                                    const data = response.data
-                                                    if (data.token) {
-                                                        const jwtData = JSON.parse(atob(data.token.split(".")[0]))
-                                                        const jwtUser = JSON.parse(atob(data.token.split(".")[1]))
+                                             if (window.reCAPTCHASiteKey) {
+                                                 grecaptcha.ready(() => {
+                                                     grecaptcha.execute(window.reCAPTCHASiteKey, {action: "refresh_token"})
+                                                               .then(token => {
+                                                                   api.post("login", {recaptcha_token: token}, {
+                                                                          auth: {
+                                                                              username: state.token,
+                                                                              password: ""
+                                                                          }
+                                                                      })
+                                                                      .then(response => {
+                                                                          const data = response.data
+                                                                          if (data.token) {
+                                                                              const jwtData = JSON.parse(atob(data.token.split(".")[0]))
+                                                                              const jwtUser = JSON.parse(atob(data.token.split(".")[1]))
 
-                                                        const authData = {
-                                                            userId:     (jwtUser && "id" in jwtUser) ? Number(jwtUser.id) : null,
-                                                            token:      data.token,
-                                                            expiration: jwtData ? Number(jwtData.exp) * 1000 : 0
+                                                                              const authData = {
+                                                                                  userId:     (jwtUser && "id" in jwtUser) ? Number(jwtUser.id) : null,
+                                                                                  token:      data.token,
+                                                                                  expiration: jwtData ? Number(jwtData.exp) * 1000 : 0
+                                                                              }
+
+                                                                              commit("setAuthData", authData)
+                                                                              dispatch("refreshToken")
+                                                                          }
+                                                                      })
+                                                                      .catch(() => {
+                                                                          dispatch("logout")
+                                                                      })
+                                                               })
+                                                 })
+                                             } else {
+                                                 api.post("login", {}, {
+                                                        auth: {
+                                                            username: state.token,
+                                                            password: ""
                                                         }
+                                                    })
+                                                    .then(response => {
+                                                        const data = response.data
+                                                        if (data.token) {
+                                                            const jwtData = JSON.parse(atob(data.token.split(".")[0]))
+                                                            const jwtUser = JSON.parse(atob(data.token.split(".")[1]))
 
-                                                        commit("setAuthData", authData)
-                                                        dispatch("refreshToken")
-                                                    }
-                                                })
-                                                .catch(() => {
-                                                    dispatch("logout")
-                                                })
+                                                            const authData = {
+                                                                userId:     (jwtUser && "id" in jwtUser) ? Number(jwtUser.id) : null,
+                                                                token:      data.token,
+                                                                expiration: jwtData ? Number(jwtData.exp) * 1000 : 0
+                                                            }
+
+                                                            commit("setAuthData", authData)
+                                                            dispatch("refreshToken")
+                                                        }
+                                                    })
+                                                    .catch(() => {
+                                                        dispatch("logout")
+                                                    })
+                                             }
                                          })
                                      },
                                      Math.max(differenceInMilliseconds(subMinutes(parse(state.expiration), state.authRefreshThreshold), new Date()), 1000))
