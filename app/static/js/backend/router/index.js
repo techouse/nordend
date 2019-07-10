@@ -37,6 +37,7 @@ import ListImages           from "../pages/Images/list"
 import EditImage            from "../pages/Images/edit"
 // Errors
 import Error404             from "../pages/Errors/404"
+import Role                 from "../models/Role"
 
 const routerOptions = [
     {
@@ -252,8 +253,9 @@ const routerOptions = [
         path:      "/roles/",
         component: Roles,
         meta:      {
-            requiresAuth: true,
-            breadcrumb:   "Roles"
+            requiresAuth:  true,
+            requiresAdmin: true,
+            breadcrumb:    "Roles"
         },
         children:  [
             {
@@ -350,17 +352,27 @@ const router = new Router(
 )
 
 router.beforeEach((to, from, next) => {
-    const remember   = Number(localStorage.getItem("remember")),
-          userId     = remember ? localStorage.getItem("userId") : sessionStorage.getItem("userId"),
-          token      = remember ? localStorage.getItem("token") : sessionStorage.getItem("token"),
-          expiration = remember ? Number(localStorage.getItem("expiration")) : Number(sessionStorage.getItem("expiration"))
+    const remember    = Number(localStorage.getItem("remember")),
+          userId      = remember ? localStorage.getItem("userId") : sessionStorage.getItem("userId"),
+          token       = remember ? localStorage.getItem("token") : sessionStorage.getItem("token"),
+          expiration  = remember ? Number(localStorage.getItem("expiration")) : Number(sessionStorage.getItem("expiration")),
+          permissions = remember ? Number(localStorage.getItem("permissions")) : Number(sessionStorage.getItem("permissions")),
+          role        = Role.createFromPermissions(permissions)
 
     if (to.matched.some(record => record.meta.requiresAuth)) {
         if (+new Date() >= expiration || !token || !userId) {
             store.commit("auth/clearAuthData")
             next({name: "Login"})
         } else {
-            next()
+            if (to.matched.some(record => record.meta.requiresAdmin)) {
+                if (!role.admin) {
+                    next({name: "Dashboard"})
+                } else {
+                    next()
+                }
+            } else {
+                next()
+            }
         }
     } else if (to.matched.some(record => record.meta.guest)) {
         if (+new Date() >= expiration || !token || !userId) {

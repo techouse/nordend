@@ -2,7 +2,6 @@ from functools import wraps
 
 import requests
 from flask import abort, request, current_app, g
-from flask_login import current_user
 from .models import Permission
 
 
@@ -10,9 +9,12 @@ def permission_required(permission):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            if not current_user.can(permission):
+            try:
+                if not g.current_user.can(permission):
+                    abort(403)
+                return f(*args, **kwargs)
+            except AttributeError:
                 abort(403)
-            return f(*args, **kwargs)
 
         return decorated_function
 
@@ -21,6 +23,14 @@ def permission_required(permission):
 
 def admin_required(f):
     return permission_required(Permission.ADMIN)(f)
+
+
+def staff_required(f):
+    return permission_required(Permission.MODERATE)(f)
+
+
+def author_required(f):
+    return permission_required(Permission.WRITE)(f)
 
 
 def verify_recaptcha(f):

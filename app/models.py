@@ -222,7 +222,7 @@ class User(UserMixin, db.Model, AddUpdateDelete):
 
     def generate_auth_token(self, expiration):
         s = Serializer(current_app.config["SECRET_KEY"], expires_in=expiration)
-        return s.dumps({"id": self.id}).decode("utf-8")
+        return s.dumps({"id": self.id, "permissions": self.role.permissions}).decode("utf-8")
 
     @staticmethod
     def verify_auth_token(token):

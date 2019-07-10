@@ -1,3 +1,11 @@
+const Permission = {
+    follow:   1,
+    comment:  2,
+    write:    4,
+    moderate: 8,
+    admin:    16
+}
+
 export default class Role {
     constructor(values = {}) {
         this.id = null
@@ -15,16 +23,29 @@ export default class Role {
 
     mappedForSubmission() {
         let permissions = 0
-        if (this.follow) permissions += 1
-        if (this.comment) permissions += 2
-        if (this.write) permissions += 4
-        if (this.moderate) permissions += 8
-        if (this.admin) permissions += 16
+        if (this.follow) permissions += Permission.follow
+        if (this.comment) permissions += Permission.comment
+        if (this.write) permissions += Permission.write
+        if (this.moderate) permissions += Permission.moderate
+        if (this.admin) permissions += Permission.admin
 
         return {
             name:        this.name,
             default:     this.default,
             permissions: permissions
         }
+    }
+
+    static createFromPermissions(permissions = 0) {
+        return new Role(
+            {
+                permissions,
+                follow:   (permissions & Permission.follow) === Permission.follow,
+                comment:  (permissions & Permission.comment) === Permission.comment,
+                write:    (permissions & Permission.write) === Permission.write,
+                moderate: (permissions & Permission.moderate) === Permission.moderate,
+                admin:    (permissions & Permission.admin) === Permission.admin
+            }
+        )
     }
 }

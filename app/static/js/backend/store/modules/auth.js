@@ -5,6 +5,7 @@ import {parse, subMinutes, differenceInMinutes, differenceInMilliseconds} from "
 const state = {
     remember:             0,
     userId:               null,
+    permissions:          0,
     token:                null,
     expiration:           0,
     authRefresher:        null,
@@ -16,6 +17,8 @@ const getters = {
 
     token: state => state.token,
 
+    remember: state => state.remember,
+
     isAuthenticated: state => state.token !== null && state.userId !== null && +new Date() < state.expiration
 }
 
@@ -25,18 +28,21 @@ const mutations = {
         localStorage.setItem("remember", state.remember)
     },
 
-    setAuthData(state, {userId, token, expiration, refresher}) {
+    setAuthData(state, {userId, permissions, token, expiration, refresher}) {
         state.userId = userId
+        state.permissions = permissions
         state.token = token
         state.expiration = expiration
         state.authRefresher = refresher
 
         if (state.remember) {
             localStorage.setItem("userId", userId)
+            localStorage.setItem("permissions", permissions)
             localStorage.setItem("token", token)
             localStorage.setItem("expiration", expiration)
         } else {
             sessionStorage.setItem("userId", userId)
+            sessionStorage.setItem("permissions", permissions)
             sessionStorage.setItem("token", token)
             sessionStorage.setItem("expiration", expiration)
         }
@@ -53,6 +59,7 @@ const mutations = {
     clearAuthData(state) {
         state.remember = false
         state.userId = null
+        state.permissions = null
         state.token = null
         state.expiration = 0
         if (state.authRefresher !== null) {
@@ -63,6 +70,8 @@ const mutations = {
         localStorage.removeItem("remember")
         localStorage.removeItem("userId")
         sessionStorage.removeItem("userId")
+        localStorage.removeItem("permissions")
+        sessionStorage.removeItem("permissions")
         localStorage.removeItem("token")
         sessionStorage.removeItem("token")
         localStorage.removeItem("expiration")
@@ -97,9 +106,10 @@ const actions = {
                        const jwtUser = JSON.parse(atob(data.token.split(".")[1]))
 
                        const authData = {
-                           userId:     (jwtUser && "id" in jwtUser) ? Number(jwtUser.id) : null,
-                           token:      data.token,
-                           expiration: jwtData ? Number(jwtData.exp) * 1000 : 0
+                           userId:      jwtUser && "id" in jwtUser ? Number(jwtUser.id) : null,
+                           permissions: jwtUser && "permissions" in jwtUser ? Number(jwtUser.permissions) : 0,
+                           token:       data.token,
+                           expiration:  jwtData ? Number(jwtData.exp) * 1000 : 0
                        }
 
                        window.csrfToken = null
@@ -125,9 +135,10 @@ const actions = {
             const remember = localStorage.getItem("remember") || 0
             commit("setRemember", remember)
 
-            const userId     = state.remember ? Number(localStorage.getItem("userId")) : Number(sessionStorage.getItem("userId")),
-                  token      = state.remember ? localStorage.getItem("token") : sessionStorage.getItem("token"),
-                  expiration = state.remember ? Number(localStorage.getItem("expiration")) : Number(sessionStorage.getItem("expiration"))
+            const userId      = state.remember ? Number(localStorage.getItem("userId")) : Number(sessionStorage.getItem("userId")),
+                  permissions = state.remember ? Number(localStorage.getItem("permissions")) : Number(sessionStorage.getItem("permissions")),
+                  token       = state.remember ? localStorage.getItem("token") : sessionStorage.getItem("token"),
+                  expiration  = state.remember ? Number(localStorage.getItem("expiration")) : Number(sessionStorage.getItem("expiration"))
 
             if (+new Date() >= expiration || !token || !userId) {
                 reject()
@@ -146,9 +157,10 @@ const actions = {
                            const jwtUser = JSON.parse(atob(data.token.split(".")[1]))
 
                            const authData = {
-                               userId:     (jwtUser && "id" in jwtUser) ? Number(jwtUser.id) : null,
-                               token:      data.token,
-                               expiration: jwtData ? Number(jwtData.exp) * 1000 : 0
+                               userId:      jwtUser && "id" in jwtUser ? Number(jwtUser.id) : null,
+                               permissions: jwtUser && "permissions" in jwtUser ? Number(jwtUser.permissions) : 0,
+                               token:       data.token,
+                               expiration:  jwtData ? Number(jwtData.exp) * 1000 : 0
                            }
 
                            commit("setAuthData", authData)
@@ -162,9 +174,10 @@ const actions = {
                    })
             } else {
                 const authData = {
-                    userId:     userId,
-                    token:      token,
-                    expiration: expiration
+                    userId,
+                    permissions,
+                    token,
+                    expiration
                 }
 
                 commit("setAuthData", authData)
@@ -207,9 +220,10 @@ const actions = {
                                                                               const jwtUser = JSON.parse(atob(data.token.split(".")[1]))
 
                                                                               const authData = {
-                                                                                  userId:     (jwtUser && "id" in jwtUser) ? Number(jwtUser.id) : null,
-                                                                                  token:      data.token,
-                                                                                  expiration: jwtData ? Number(jwtData.exp) * 1000 : 0
+                                                                                  userId:      jwtUser && "id" in jwtUser ? Number(jwtUser.id) : null,
+                                                                                  permissions: jwtUser && "permissions" in jwtUser ? Number(jwtUser.permissions) : 0,
+                                                                                  token:       data.token,
+                                                                                  expiration:  jwtData ? Number(jwtData.exp) * 1000 : 0
                                                                               }
 
                                                                               commit("setAuthData", authData)
@@ -235,9 +249,10 @@ const actions = {
                                                             const jwtUser = JSON.parse(atob(data.token.split(".")[1]))
 
                                                             const authData = {
-                                                                userId:     (jwtUser && "id" in jwtUser) ? Number(jwtUser.id) : null,
-                                                                token:      data.token,
-                                                                expiration: jwtData ? Number(jwtData.exp) * 1000 : 0
+                                                                userId:      jwtUser && "id" in jwtUser ? Number(jwtUser.id) : null,
+                                                                permissions: jwtUser && "permissions" in jwtUser ? Number(jwtUser.permissions) : 0,
+                                                                token:       data.token,
+                                                                expiration:  jwtData ? Number(jwtData.exp) * 1000 : 0
                                                             }
 
                                                             commit("setAuthData", authData)

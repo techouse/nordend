@@ -6,6 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields, validate
 from webargs.flaskparser import use_args
 
+from ...decorators import admin_required
 from .authentication import TokenRequiredResource
 from .user import user_schema
 from ..helpers import PaginationHelper
@@ -22,9 +23,11 @@ class RoleResource(TokenRequiredResource):
         result = role_schema.dump(role).data
         return result
 
+    @admin_required
     def put(self, id):
         return self.patch(id)
 
+    @admin_required
     def patch(self, id):
         role = Role.query.get_or_404(id)
         request_dict = request.get_json()
@@ -49,6 +52,7 @@ class RoleResource(TokenRequiredResource):
             resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
+    @admin_required
     def delete(self, id):
         role = Role.query.get_or_404(id)
         try:
@@ -70,6 +74,7 @@ class RoleListResource(TokenRequiredResource):
         "permissions": fields.Integer(allow_none=True, validate=lambda x: x > 0),
     }
 
+    @admin_required
     @use_args(get_args)
     def get(self, query_args):
         query = Role.query
@@ -108,6 +113,7 @@ class RoleListResource(TokenRequiredResource):
         result = pagination_helper.paginate_query()
         return result
 
+    @admin_required
     def post(self):
         request_dict = request.get_json()
         if not request_dict:
@@ -135,6 +141,7 @@ class RoleListResource(TokenRequiredResource):
             resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
+    @admin_required
     def delete(self):
         """ Bulk delete """
         request_dict = request.get_json()
@@ -165,6 +172,7 @@ class RoleUserListResource(TokenRequiredResource):
         "created_at": fields.DateTime(allow_none=True, format="iso8601"),
     }
 
+    @admin_required
     @use_args(get_args)
     def get(self, query_args, id):
         filters = [User.role_id == id]

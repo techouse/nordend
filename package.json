@@ -20,6 +20,7 @@
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.5.0",
     "@babel/preset-env": "^7.5.4",
+    "@babel/runtime": "^7.5.4",
     "@coreui/coreui": "^2.1.12",
     "@fortawesome/fontawesome-pro": "^5.9.0",
     "@toast-ui/vue-image-editor": "^1.0.2",
