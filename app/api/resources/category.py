@@ -11,6 +11,7 @@ from .post import post_schema
 from ..helpers import PaginationHelper
 from ..schemas import CategorySchema
 from ... import db, status
+from ...decorators import author_required
 from ...models import Category, Post, PostCategory
 
 category_schema = CategorySchema()
@@ -22,9 +23,11 @@ class CategoryResource(TokenRequiredResource):
         result = category_schema.dump(category).data
         return result
 
+    @author_required
     def put(self, id):
         return self.patch(id)
 
+    @author_required
     def patch(self, id):
         category = Category.query.get_or_404(id)
         request_dict = request.get_json()
@@ -49,6 +52,7 @@ class CategoryResource(TokenRequiredResource):
             resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
+    @author_required
     def delete(self, id):
         category = Category.query.get_or_404(id)
         try:
@@ -105,6 +109,7 @@ class CategoryListResource(TokenRequiredResource):
         result = pagination_helper.paginate_query()
         return result
 
+    @author_required
     def post(self):
         request_dict = request.get_json()
         if not request_dict:
@@ -128,6 +133,7 @@ class CategoryListResource(TokenRequiredResource):
             resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
+    @author_required
     def delete(self):
         """ Bulk delete """
         request_dict = request.get_json()

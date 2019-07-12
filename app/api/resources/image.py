@@ -19,6 +19,7 @@ from ..image_processor import ImageProcessor
 from ..schemas import ImageSchema
 from ..validators import allowed_image_file
 from ... import db, status
+from ...decorators import author_required
 from ...models import Post, Image, User
 
 image_schema = ImageSchema()
@@ -30,9 +31,11 @@ class ImageResource(TokenRequiredResource):
         result = image_schema.dump(image).data
         return result
 
+    @author_required
     def put(self, id):
         return self.patch(id)
 
+    @author_required
     def patch(self, id):
         image = Image.query.get_or_404(id)
         request_dict = request.get_json()
@@ -70,6 +73,7 @@ class ImageResource(TokenRequiredResource):
             resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
+    @author_required
     def delete(self, id):
         image = Image.query.get_or_404(id)
         try:
@@ -157,6 +161,7 @@ class ImageListResource(TokenRequiredResource):
         result = pagination_helper.paginate_query()
         return result
 
+    @author_required
     def post(self):
         request_dict = request.get_json()
         if "file" in request.files:
@@ -223,6 +228,7 @@ class ImageListResource(TokenRequiredResource):
                 resp = {"message": str(e)}
                 return resp, status.HTTP_400_BAD_REQUEST
 
+    @author_required
     def delete(self):
         """ Bulk delete """
         request_dict = request.get_json()

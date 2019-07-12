@@ -11,6 +11,7 @@ from .post import post_schema
 from ..helpers import PaginationHelper
 from ..schemas import TagSchema
 from ... import db, status
+from ...decorators import author_required
 from ...models import Tag, Post, Image
 
 tag_schema = TagSchema()
@@ -22,9 +23,11 @@ class TagResource(TokenRequiredResource):
         result = tag_schema.dump(tag).data
         return result
 
+    @author_required
     def put(self, id):
         return self.patch(id)
 
+    @author_required
     def patch(self, id):
         tag = Tag.query.get_or_404(id)
         request_dict = request.get_json()
@@ -49,6 +52,7 @@ class TagResource(TokenRequiredResource):
             resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
+    @author_required
     def delete(self, id):
         tag = Tag.query.get_or_404(id)
         try:
@@ -105,6 +109,7 @@ class TagListResource(TokenRequiredResource):
         result = pagination_helper.paginate_query()
         return result
 
+    @author_required
     def post(self):
         request_dict = request.get_json()
         if not request_dict:
@@ -128,6 +133,7 @@ class TagListResource(TokenRequiredResource):
             resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
+    @author_required
     def delete(self):
         """ Bulk delete """
         request_dict = request.get_json()

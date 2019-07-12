@@ -6,12 +6,12 @@ from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields, validate
 from webargs.flaskparser import use_args
 
-from ...decorators import admin_required
 from .authentication import TokenRequiredResource
 from .user import user_schema
 from ..helpers import PaginationHelper
 from ..schemas import RoleSchema
 from ... import status, db
+from ...decorators import admin_required
 from ...models import Role, User
 
 role_schema = RoleSchema()
@@ -74,7 +74,6 @@ class RoleListResource(TokenRequiredResource):
         "permissions": fields.Integer(allow_none=True, validate=lambda x: x > 0),
     }
 
-    @admin_required
     @use_args(get_args)
     def get(self, query_args):
         query = Role.query

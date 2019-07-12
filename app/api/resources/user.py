@@ -13,6 +13,7 @@ from .post import post_schema
 from ..helpers import PaginationHelper
 from ..schemas import UserSchema
 from ... import db, status, redis
+from ...decorators import staff_required
 from ...models import User, Post, Role
 
 user_schema = UserSchema()
@@ -68,6 +69,7 @@ class UserResource(TokenRequiredResource):
             resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
+    @staff_required
     def delete(self, id):
         user = User.query.get_or_404(id)
         try:
@@ -145,6 +147,7 @@ class UserListResource(TokenRequiredResource):
         result = pagination_helper.paginate_query()
         return result
 
+    @staff_required
     def post(self):
         request_dict = request.get_json()
         if not request_dict:
@@ -175,6 +178,7 @@ class UserListResource(TokenRequiredResource):
             resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
+    @staff_required
     def delete(self):
         """ Bulk delete """
         request_dict = request.get_json()

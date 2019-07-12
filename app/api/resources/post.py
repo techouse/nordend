@@ -12,6 +12,7 @@ from ..broadcast.post import PostBroadcast
 from ..helpers import PaginationHelper
 from ..schemas import PostSchema
 from ... import db, status
+from ...decorators import author_required
 from ...models import Post, Category, User, PostCategory, PostAuthor
 
 post_schema = PostSchema()
@@ -23,9 +24,11 @@ class PostResource(TokenRequiredResource):
         result = post_schema.dump(post).data
         return result
 
+    @author_required
     def put(self, id):
         return self.patch(id)
 
+    @author_required
     def patch(self, id):
         post = Post.query.get_or_404(id)
         request_dict = request.get_json()
@@ -80,6 +83,7 @@ class PostResource(TokenRequiredResource):
             resp.status_code = status.HTTP_400_BAD_REQUEST
             return resp
 
+    @author_required
     def delete(self, id):
         post = Post.query.get_or_404(id)
         try:
@@ -168,6 +172,7 @@ class PostListResource(TokenRequiredResource):
         result = pagination_helper.paginate_query()
         return result
 
+    @author_required
     def post(self):
         request_dict = request.get_json()
         if not request_dict:
@@ -211,6 +216,7 @@ class PostListResource(TokenRequiredResource):
             resp = {"message": str(e)}
             return resp, status.HTTP_400_BAD_REQUEST
 
+    @author_required
     def delete(self):
         """ Bulk delete """
         request_dict = request.get_json()
