@@ -6,28 +6,30 @@ from sqlalchemy.exc import SQLAlchemyError
 from webargs import fields, validate
 from webargs.flaskparser import use_args
 
-from ...redis_keys import user_otp_secret_key
-from ...decorators import verify_recaptcha
 from .authentication import TokenRequiredResource
 from .post import post_schema
 from ..helpers import PaginationHelper
 from ..schemas import UserSchema
 from ... import db, status, redis
-from ...decorators import staff_required
+from ...decorators import verify_recaptcha, myself_or_staff_required, staff_required, myself_or_admin_required
 from ...models import User, Post, Role
+from ...redis_keys import user_otp_secret_key
 
 user_schema = UserSchema()
 
 
 class UserResource(TokenRequiredResource):
+    @myself_or_staff_required
     def get(self, id):
         user = User.query.get_or_404(id)
         result = user_schema.dump(user).data
         return result
 
+    @myself_or_staff_required
     def put(self, id):
         return self.patch(id)
 
+    @myself_or_staff_required
     def patch(self, id):
         user = User.query.get_or_404(id)
         request_dict = request.get_json()
@@ -94,6 +96,7 @@ class UserListResource(TokenRequiredResource):
         "created_at": fields.DateTime(allow_none=True, format="iso8601"),
     }
 
+    @staff_required
     @use_args(get_args)
     def get(self, query_args):
         query = User.query
@@ -208,6 +211,7 @@ class UserPostListResource(TokenRequiredResource):
         "created_at": fields.DateTime(allow_none=True, format="iso8601"),
     }
 
+    @myself_or_staff_required
     @use_args(get_args)
     def get(self, query_args, id):
         filters = [Post.author_id == id]
@@ -234,6 +238,7 @@ class UserPostListResource(TokenRequiredResource):
 
 
 class UserOtpResource(TokenRequiredResource):
+    @myself_or_admin_required
     def get(self, id):
         user = User.query.get_or_404(id)
         if user.otp_enabled:
@@ -249,9 +254,11 @@ class UserOtpResource(TokenRequiredResource):
         redis.set(user_otp_secret_key.format(id=user.id), totp["secret"], ex=600)
         return totp, status.HTTP_201_CREATED
 
+    @myself_or_admin_required
     def put(self, id):
         return self.patch(id)
 
+    @myself_or_admin_required
     @verify_recaptcha
     def patch(self, id):
         user = User.query.get_or_404(id)
@@ -280,6 +287,7 @@ class UserOtpResource(TokenRequiredResource):
             response = {"message": str(err)}
             return response, status.HTTP_400_BAD_REQUEST
 
+    @myself_or_admin_required
     def delete(self, id):
         user = User.query.get_or_404(id)
         if user.otp_enabled:
