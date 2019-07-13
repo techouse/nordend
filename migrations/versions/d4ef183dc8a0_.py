@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: eb425fdb2449
+Revision ID: d4ef183dc8a0
 Revises: 
-Create Date: 2019-06-16 00:14:46.024843
+Create Date: 2019-07-13 18:10:19.729769
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'eb425fdb2449'
+revision = 'd4ef183dc8a0'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -99,6 +99,7 @@ def upgrade():
     sa.Column('email', sa.String(length=120), nullable=False),
     sa.Column('role_id', sa.Integer(), nullable=True),
     sa.Column('password_hash', sa.String(length=128), nullable=True),
+    sa.Column('otp_secret', sa.String(length=16), nullable=True),
     sa.Column('confirmed', sa.Boolean(), nullable=True),
     sa.Column('name', sa.String(length=64), nullable=False),
     sa.Column('location', sa.String(length=64), nullable=True),
@@ -113,6 +114,7 @@ def upgrade():
     )
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
     op.create_index(op.f('ix_users_name'), 'users', ['name'], unique=False)
+    op.create_index(op.f('ix_users_otp_secret'), 'users', ['otp_secret'], unique=False)
     op.create_table('images',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('author_id', sa.Integer(), nullable=False),
@@ -178,6 +180,7 @@ def downgrade():
     op.drop_index(op.f('ix_images_hash'), table_name='images')
     op.drop_index(op.f('ix_images_created_at'), table_name='images')
     op.drop_table('images')
+    op.drop_index(op.f('ix_users_otp_secret'), table_name='users')
     op.drop_index(op.f('ix_users_name'), table_name='users')
     op.drop_index(op.f('ix_users_email'), table_name='users')
     op.drop_table('users')
