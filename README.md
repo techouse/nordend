@@ -1,5 +1,5 @@
 <div align="center">
-    <img width="350" height="48" src="app/static/images/admin/logo_full.svg">
+    <img width="350" height="48" src="app/static/images/admin/logo_full.png">
 </div>
 
 # Nordend CMS
