@@ -2,7 +2,7 @@
   "private": true,
   "author": "Klemen Tušar",
   "license": "MIT",
-  "name": "flask-cms",
+  "name": "nordend",
   "version": "0.8.0",
   "description": "A simple CMS built on top of Flask and VueJS",
   "scripts": {
