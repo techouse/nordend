@@ -144,8 +144,9 @@ const routerOptions = [
                 props:     true,
                 name:      "EditPost",
                 meta:      {
-                    requiresAuth: true,
-                    breadcrumb:   "Edit"
+                    requiresAuth:   true,
+                    requiresAuthor: true,
+                    breadcrumb:     "Edit"
                 }
             },
             {
@@ -153,9 +154,9 @@ const routerOptions = [
                 component: CreatePost,
                 name:      "CreatePost",
                 meta:      {
-                    requiresAuth:  true,
-                    requiresAdmin: true,
-                    breadcrumb:    "Create"
+                    requiresAuth:   true,
+                    requiresAuthor: true,
+                    breadcrumb:     "Create"
                 }
             },
         ]
@@ -180,7 +181,7 @@ const routerOptions = [
                 }),
                 meta:      {
                     requiresAuth:  true,
-                    requiresAdmin: true,
+                    requiresStaff: true,
                 }
             },
             {
@@ -189,8 +190,9 @@ const routerOptions = [
                 props:     true,
                 name:      "EditUser",
                 meta:      {
-                    requiresAuth: true,
-                    breadcrumb:   "Edit"
+                    requiresAuth:          true,
+                    requiresMyselfOrStaff: true,
+                    breadcrumb:            "Edit"
                 }
             },
             {
@@ -199,7 +201,7 @@ const routerOptions = [
                 name:      "CreateUser",
                 meta:      {
                     requiresAuth:  true,
-                    requiresAdmin: true,
+                    requiresStaff: true,
                     breadcrumb:    "Create"
                 }
             },
@@ -209,8 +211,9 @@ const routerOptions = [
         path:      "/categories/",
         component: Categories,
         meta:      {
-            requiresAuth: true,
-            breadcrumb:   "Categories"
+            requiresAuth:   true,
+            requiresAuthor: true,
+            breadcrumb:     "Categories"
         },
         children:  [
             {
@@ -224,7 +227,8 @@ const routerOptions = [
                     sort:    route.query.sort
                 }),
                 meta:      {
-                    requiresAuth: true,
+                    requiresAuth:   true,
+                    requiresAuthor: true,
                 }
             },
             {
@@ -233,8 +237,9 @@ const routerOptions = [
                 props:     true,
                 name:      "EditCategory",
                 meta:      {
-                    requiresAuth: true,
-                    breadcrumb:   "Edit"
+                    requiresAuth:   true,
+                    requiresAuthor: true,
+                    breadcrumb:     "Edit"
                 }
             },
             {
@@ -242,9 +247,9 @@ const routerOptions = [
                 component: CreateCategory,
                 name:      "CreateCategory",
                 meta:      {
-                    requiresAuth:  true,
-                    requiresAdmin: true,
-                    breadcrumb:    "Create"
+                    requiresAuth:   true,
+                    requiresAuthor: true,
+                    breadcrumb:     "Create"
                 }
             },
         ]
@@ -300,8 +305,9 @@ const routerOptions = [
         path:      "/images/",
         component: Images,
         meta:      {
-            requiresAuth: true,
-            breadcrumb:   "Images"
+            requiresAuth:   true,
+            requiresAuthor: true,
+            breadcrumb:     "Images"
         },
         children:  [
             {
@@ -315,7 +321,8 @@ const routerOptions = [
                     sort:    route.query.sort
                 }),
                 meta:      {
-                    requiresAuth: true,
+                    requiresAuth:   true,
+                    requiresAuthor: true,
                 }
             },
             {
@@ -324,8 +331,9 @@ const routerOptions = [
                 props:     true,
                 name:      "EditImage",
                 meta:      {
-                    requiresAuth: true,
-                    breadcrumb:   "Edit"
+                    requiresAuth:   true,
+                    requiresAuthor: true,
+                    breadcrumb:     "Edit"
                 }
             },
         ]
@@ -353,7 +361,7 @@ const router = new Router(
 
 router.beforeEach((to, from, next) => {
     const remember    = Number(localStorage.getItem("remember")),
-          userId      = remember ? localStorage.getItem("userId") : sessionStorage.getItem("userId"),
+          userId      = remember ? Number(localStorage.getItem("userId")) : Number(sessionStorage.getItem("userId")),
           token       = remember ? localStorage.getItem("token") : sessionStorage.getItem("token"),
           expiration  = remember ? Number(localStorage.getItem("expiration")) : Number(sessionStorage.getItem("expiration")),
           permissions = remember ? Number(localStorage.getItem("permissions")) : Number(sessionStorage.getItem("permissions")),
@@ -364,11 +372,29 @@ router.beforeEach((to, from, next) => {
             store.commit("auth/clearAuthData")
             next({name: "Login"})
         } else {
-            if (to.matched.some(record => record.meta.requiresAdmin)) {
-                if (!role.admin) {
-                    next({name: "Dashboard"})
-                } else {
+            if (to.matched.some(record => record.meta.requiresAuthor)) {
+                if (role.write) {
                     next()
+                } else {
+                    next({name: "Dashboard"})
+                }
+            } else if (to.matched.some(record => record.meta.requiresMyselfOrStaff)) {
+                if (("userId" in to.params && to.params.userId === userId) || role.moderate) {
+                    next()
+                } else {
+                    next({name: "Dashboard"})
+                }
+            } else if (to.matched.some(record => record.meta.requiresStaff)) {
+                if (role.moderate) {
+                    next()
+                } else {
+                    next({name: "Dashboard"})
+                }
+            } else if (to.matched.some(record => record.meta.requiresAdmin)) {
+                if (role.admin) {
+                    next()
+                } else {
+                    next({name: "Dashboard"})
                 }
             } else {
                 next()
