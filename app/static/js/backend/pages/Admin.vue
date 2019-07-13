@@ -35,7 +35,7 @@
                     <path d="m32.86 25.53-11.3 19.9h39.2c1.9 0 1.2-1.8.5-2.8l-6.9-9.8c-4.2.2-9.5-.1-12.3-2.6-2.6-2.4-5.7-4-9.2-4.7zm7.8-11.5c-.3-.1-.7 0-1 .2-.1 0-.1.1-.2.1s-.1.1-.1.2l-1.1 1.5-4.4 7.7c3.6.8 6.8 2.5 9.5 5 2 1.8 7 2.3 9.7 2.3zm-21.6 31.9 11.8-20.7.7-1.2 5.1-8.9v-.1l1.1-1.6c.1-.1.2-.3.4-.4.1-.1.3-.2.4-.4.7-.5 1.6-.7 2.4-.5.8.1 1.6.6 2.1 1.3l12.6 18 .9 1.3 6.8 9.6c1.5 2.1-.1 5.1-2.6 5.1h-42.5z"
                           fill="#0e0f0f"
                     />
-                    <text font-family="'Montserrat'" font-size="50.3908" font-weight="800"
+                    <text font-family="Montserrat" font-size="50.3908" font-weight="800"
                           transform="translate(66.0598 42.8315)"
                     >
                         NORDEND
@@ -151,7 +151,7 @@
                 </span>
             </div>
             <div class="ml-auto d-none d-md-block">
-                <span>Shamelessly powered by</span>
+                <span>Powered by</span>
                 <a href="http://flask.pocoo.org" target="_blank">Flask</a> and
                 <a href="https://vuejs.org" target="_blank">Vue.js</a>.
                 <a href="https://en.wikipedia.org/wiki/Slovenia" target="_blank">

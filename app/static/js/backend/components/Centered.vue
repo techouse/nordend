@@ -2,6 +2,7 @@
     <div class="app flex-row align-items-center">
         <div class="container">
             <div class="row justify-content-center">
+                <slot name="logo" />
                 <slot name="body" />
             </div>
         </div>

@@ -1,5 +1,10 @@
 <template>
     <centered>
+        <template v-slot:logo>
+            <div class="col-md-8 text-center mb-4">
+                <img width="224" src="/static/images/admin/logo_full.svg">
+            </div>
+        </template>
         <template v-slot:body>
             <div class="col-md-6">
                 <div class="card mx-4">
