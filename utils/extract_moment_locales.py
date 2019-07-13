@@ -1,22 +1,38 @@
+import codecs
+import re
 from json import dumps
 from os import walk
 from os.path import dirname, isdir, join, abspath
 
+ESCAPE_SEQUENCE_RE = re.compile(
+    r"""
+    ( \\U........      # 8-digit hex escapes
+    | \\u....          # 4-digit hex escapes
+    | \\x..            # 2-digit hex escapes
+    | \\[0-7]{1,3}     # Octal escapes
+    | \\N\{[^}]+\}     # Unicode characters by name
+    | \\[\\'"abfnrtv]  # Single-character escapes
+    )""",
+    re.UNICODE | re.VERBOSE,
+)
+
+
+def decode_escapes(s):
+    def decode_match(match):
+        return codecs.decode(match.group(0), "unicode-escape")
+
+    return ESCAPE_SEQUENCE_RE.sub(decode_match, s)
+
+
 moment_locale_directory = join(dirname(dirname(abspath(__file__))), "node_modules", "moment", "src", "locale")
 
-long_date_format_parts = (
-    r"LT : '",
-    r'LT : "',
-    r"LTS : '",
-    r'LTS : "',
-    r"L : '",
-    r'L : "',
-    r"LL : '",
-    r'LL : "',
-    r"LLL : '",
-    r'LLL : "',
-    r"LLLL : '",
-    r'LLLL : "',
+long_date_format_patterns = (
+    re.compile(r"^(LT)(\s+)?:(\s+)?['\"](.*?)['\"]", re.UNICODE),
+    re.compile(r"^(LTS)(\s+)?:(\s+)?['\"](.*?)['\"]", re.UNICODE),
+    re.compile(r"^(L)(\s+)?:(\s+)?['\"](.*?)['\"]", re.UNICODE),
+    re.compile(r"^(LL)(\s+)?:(\s+)?['\"](.*?)['\"]", re.UNICODE),
+    re.compile(r"^(LLL)(\s+)?:(\s+)?['\"](.*?)['\"]", re.UNICODE),
+    re.compile(r"^(LLLL)(\s+)?:(\s+)?['\"](.*?)['\"]", re.UNICODE),
 )
 
 locales = {}
@@ -28,18 +44,16 @@ if isdir(moment_locale_directory):
                 with open(join(root, file), "r", encoding="utf-8") as locale:
                     long_date_format = {}
                     for line in locale.readlines():
-                        for part in long_date_format_parts:
-                            if line.strip().startswith(part):
-                                line = line.strip()
-
-                                if part.endswith('"'):
-                                    key = part.rstrip(' :"')
-                                    value = line.lstrip(part).rstrip('", ')
-                                else:
-                                    key = part.rstrip(" :'")
-                                    value = line.lstrip(part).rstrip("', ")
-
-                                long_date_format[key] = value
+                        line = " ".join(line.split()).strip()
+                        for pattern in long_date_format_patterns:
+                            matches = pattern.match(line)
+                            if matches:
+                                try:
+                                    key = matches.group(1)
+                                    value = decode_escapes(matches.group(4))
+                                    long_date_format[key] = value
+                                except IndexError:
+                                    pass
 
                         if long_date_format:
                             locale_name = file.replace(".js", "")

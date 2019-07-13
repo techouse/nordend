@@ -12,7 +12,7 @@
     "watch-poll": "npm run watch -- --watch-poll",
     "prod": "npm run production",
     "production": "cross-env NODE_ENV=production webpack --no-progress --hide-modules --config=webpack.config.js",
-    "postinstall": "npm install --no-save --no-optional fabric@^1.6.7 && python utils/extract_moment_locales.py",
+    "postinstall": "npm install --no-save --no-optional fabric@^1.6.7 && python3 utils/extract_moment_locales.py",
     "postuninstall": "npm install --no-save --no-optional fabric@^1.6.7"
   },
   "devDependencies": {
