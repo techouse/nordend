@@ -1,43 +1,44 @@
-import Vue                  from "vue"
-import Router               from "vue-router"
-import store                from "../store"
+import Vue    from "vue"
+import Router from "vue-router"
+import store  from "../store"
+import Role   from "../models/Role"
+
 // PAGES
 // Dashboard
-import Dashboard            from "../pages/Dashboard"
+const Dashboard = () => import(/* webpackChunkName: "dashboard" */ "../pages/Dashboard")
 // Auth
-import Auth                 from "../pages/Auth"
-import Login                from "../pages/Auth/login"
-import Register             from "../pages/Auth/register"
-import ResetPassword        from "../pages/Auth/reset_password"
-import ResetPasswordRequest from "../pages/Auth/reset_password_request"
-import Unconfirmed          from "../pages/Auth/unconfirmed"
+const Auth = () => import(/* webpackChunkName: "auth" */ "../pages/Auth")
+const Login = () => import(/* webpackChunkName: "auth-login" */ "../pages/Auth/login")
+const Register = () => import(/* webpackChunkName: "auth-register" */ "../pages/Auth/register")
+const ResetPassword = () => import(/* webpackChunkName: "auth-reset-password" */ "../pages/Auth/reset_password")
+const ResetPasswordRequest = () => import(/* webpackChunkName: "auth-reset-password-request" */ "../pages/Auth/reset_password_request")
+const Unconfirmed = () => import(/* webpackChunkName: "auth-unconfirmed" */ "../pages/Auth/unconfirmed")
 // Posts
-import Posts                from "../pages/Posts"
-import ListPosts            from "../pages/Posts/list"
-import CreatePost           from "../pages/Posts/create"
-import EditPost             from "../pages/Posts/edit"
+const Posts = () => import(/* webpackChunkName: "posts" */ "../pages/Posts")
+const ListPosts = () => import(/* webpackChunkName: "posts-list" */ "../pages/Posts/list")
+const CreatePost = () => import(/* webpackChunkName: "posts-create" */ "../pages/Posts/create")
+const EditPost = () => import(/* webpackChunkName: "posts-edit" */ "../pages/Posts/edit")
 // Users
-import Users                from "../pages/Users"
-import ListUsers            from "../pages/Users/list"
-import CreateUser           from "../pages/Users/create"
-import EditUser             from "../pages/Users/edit"
+const Users = () => import(/* webpackChunkName: "users" */ "../pages/Users")
+const ListUsers = () => import(/* webpackChunkName: "users-list" */ "../pages/Users/list")
+const CreateUser = () => import(/* webpackChunkName: "users-create" */ "../pages/Users/create")
+const EditUser = () => import(/* webpackChunkName: "users-edit" */ "../pages/Users/edit")
 // Categories
-import Categories           from "../pages/Categories"
-import ListCategories       from "../pages/Categories/list"
-import CreateCategory       from "../pages/Categories/create"
-import EditCategory         from "../pages/Categories/edit"
+const Categories = () => import(/* webpackChunkName: "categories" */ "../pages/Categories")
+const ListCategories = () => import(/* webpackChunkName: "categories-list" */ "../pages/Categories/list")
+const CreateCategory = () => import(/* webpackChunkName: "categories-create" */ "../pages/Categories/create")
+const EditCategory = () => import(/* webpackChunkName: "categories-edit" */ "../pages/Categories/edit")
 // Roles
-import Roles                from "../pages/Roles"
-import ListRoles            from "../pages/Roles/list"
-import CreateRole           from "../pages/Roles/create"
-import EditRole             from "../pages/Roles/edit"
+const Roles = () => import(/* webpackChunkName: "roles" */ "../pages/Roles")
+const ListRoles = () => import(/* webpackChunkName: "roles-list" */ "../pages/Roles/list")
+const CreateRole = () => import(/* webpackChunkName: "roles-create" */ "../pages/Roles/create")
+const EditRole = () => import(/* webpackChunkName: "roles-edit" */ "../pages/Roles/edit")
 // Images
-import Images               from "../pages/Images"
-import ListImages           from "../pages/Images/list"
-import EditImage            from "../pages/Images/edit"
+const Images = () => import(/* webpackChunkName: "pages" */ "../pages/Images")
+const ListImages = () => import(/* webpackChunkName: "pages-list" */ "../pages/Images/list")
+const EditImage = () => import(/* webpackChunkName: "pages-edit" */ "../pages/Images/edit")
 // Errors
-import Error404             from "../pages/Errors/404"
-import Role                 from "../models/Role"
+const Error404 = () => import(/* webpackChunkName: "error-404" */ "../pages/Errors/404")
 
 const routerOptions = [
     {

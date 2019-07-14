@@ -5,14 +5,15 @@ module.exports = {
         "sourceType":  "module"
     },
     extends:       [
-        'eslint:recommended',
-        'plugin:vue/recommended'
+        "eslint:recommended",
+        "plugin:vue/recommended"
     ],
     globals:       {
-        '$':          true,
-        'require':    true,
-        'Vue':        true,
-        'grecaptcha': true
+        "$":                       true,
+        "require":                 true,
+        "__webpack_public_path__": true,
+        "Vue":                     true,
+        "grecaptcha":              true
     },
     env:           {
         browser: true
@@ -20,17 +21,17 @@ module.exports = {
     // add your custom rules here
     rules:         {
         // allow paren-less arrow functions
-        'arrow-parens':                0,
+        "arrow-parens":                0,
         // allow async-await
-        'generator-star-spacing':      0,
+        "generator-star-spacing":      0,
         // allow debugger during development
-        'no-debugger':                 process.env.NODE_ENV === 'production' ? 2 : 0,
-        'no-tabs':                     2,
-        'no-console':                  0,
+        "no-debugger":                 process.env.NODE_ENV === "production" ? 2 : 0,
+        "no-tabs":                     2,
+        "no-console":                  0,
         "linebreak-style":             ["error", "unix"],
         "quotes":                      ["error", "double"],
-        'semi':                        ['error', 'never'],
-        'vue/html-indent':             ['error', 4],
-        'vue/max-attributes-per-line': 0
+        "semi":                        ["error", "never"],
+        "vue/html-indent":             ["error", 4],
+        "vue/max-attributes-per-line": 0
     }
 }
