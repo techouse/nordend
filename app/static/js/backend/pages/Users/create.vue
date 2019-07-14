@@ -74,17 +74,16 @@
 </template>
 
 <script>
-    import CreatePartial            from "../../components/CreatePartial"
-    import User                     from "../../models/User"
-    import Role                     from "../../models/Role"
-    import EnableOtp                from "./OTP/enable"
-    import {mapActions, mapGetters} from "vuex"
+    import CreatePartial from "../../components/CreatePartial"
+    import User          from "../../models/User"
+    import Role          from "../../models/Role"
+    import {mapActions}  from "vuex"
 
     export default {
         name: "CreateUser",
 
         components: {
-            EnableOtp
+            "enable-otp": () => import(/* webpackChunkName: "users-otp-enable" */ "./OTP/enable")
         },
 
         extends: CreatePartial,
