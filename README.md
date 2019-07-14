@@ -8,6 +8,9 @@ Nordend is a minimalistic CMS build on top of Flask and Vue.js
 
 ## Prerequisites
 
+- [Python 3.5+](https://www.python.org)
+- [Node.js](https://nodejs.org/)
+- [Dart Sass](https://sass-lang.com/dart-sass)
 - [Redis](https://redis.io)
 
 ## How to run the development server?
