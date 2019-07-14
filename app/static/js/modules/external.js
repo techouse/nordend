@@ -1,1 +1,0 @@
-export let myKey = 1000
