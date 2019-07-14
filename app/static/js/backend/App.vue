@@ -1,25 +1,22 @@
 <template>
     <div id="app">
-        <auth v-if="isAuthPage" />
-        <admin v-else-if="isAdministrationPage" />
-        <error v-else-if="isErrorPage" />
+        <auth v-if="isAuthPage"/>
+        <admin v-else-if="isAdministrationPage"/>
+        <error v-else-if="isErrorPage"/>
         <div v-else/>
     </div>
 </template>
 
 <script>
     import {mapGetters, mapActions} from "vuex"
-    import Auth                     from "./pages/Auth"
-    import Admin                    from "./pages/Admin"
-    import Error                    from "./pages/Errors"
 
     export default {
         name: "App",
 
         components: {
-            Auth,
-            Admin,
-            Error
+            "auth":  () => import(/* webpackChunkName: "auth" */ "./pages/Auth"),
+            "admin": () => import(/* webpackChunkName: "admin" */ "./pages/Admin"),
+            "error": () => import(/* webpackChunkName: "errors" */ "./pages/Errors")
         },
 
         computed: {

@@ -38,7 +38,7 @@ const Images = () => import(/* webpackChunkName: "pages" */ "../pages/Images")
 const ListImages = () => import(/* webpackChunkName: "pages-list" */ "../pages/Images/list")
 const EditImage = () => import(/* webpackChunkName: "pages-edit" */ "../pages/Images/edit")
 // Errors
-const Error404 = () => import(/* webpackChunkName: "error-404" */ "../pages/Errors/404")
+const Error404 = () => import(/* webpackChunkName: "errors-404" */ "../pages/Errors/404")
 
 const routerOptions = [
     {
