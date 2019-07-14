@@ -17,7 +17,6 @@ from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from flask_webpackext import FlaskWebpackExt
-
 from config import Config, basedir
 
 csrf = CSRFProtect()

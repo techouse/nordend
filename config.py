@@ -1,11 +1,9 @@
 import os
-import re
 
 import pytz
-
 from dotenv import load_dotenv
-from str2bool import str2bool
 from slugify import slugify
+from str2bool import str2bool
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, ".env"))
