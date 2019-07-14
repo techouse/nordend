@@ -11,7 +11,6 @@ module.exports = {
     globals:       {
         "$":                       true,
         "require":                 true,
-        "__webpack_public_path__": true,
         "Vue":                     true,
         "grecaptcha":              true
     },
