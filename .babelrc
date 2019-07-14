@@ -14,6 +14,13 @@
       {
         "regenerator": true
       }
+    ],
+    [
+      "component",
+      {
+        "libraryName": "element-ui",
+        "styleLibraryName": "theme-chalk"
+      }
     ]
   ]
 }
