@@ -62,7 +62,6 @@
 </template>
 
 <script>
-    import {ImageEditor}         from "@toast-ui/vue-image-editor"
     import {mapActions}          from "vuex"
     import MD5                   from "crypto-js/md5"
     import Photo                 from "../../models/Image"
@@ -75,7 +74,7 @@
         name: "EditImage",
 
         components: {
-            "tui-image-editor": ImageEditor,
+            "tui-image-editor": () => import(/* webpackChunkName: "vue-image-editor" */ "@toast-ui/vue-image-editor").then(({ImageEditor}) => ImageEditor),
             CardForm
         },
 

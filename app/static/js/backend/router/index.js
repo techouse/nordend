@@ -34,9 +34,9 @@ const ListRoles = () => import(/* webpackChunkName: "roles-list" */ "../pages/Ro
 const CreateRole = () => import(/* webpackChunkName: "roles-create" */ "../pages/Roles/create")
 const EditRole = () => import(/* webpackChunkName: "roles-edit" */ "../pages/Roles/edit")
 // Images
-const Images = () => import(/* webpackChunkName: "pages" */ "../pages/Images")
-const ListImages = () => import(/* webpackChunkName: "pages-list" */ "../pages/Images/list")
-const EditImage = () => import(/* webpackChunkName: "pages-edit" */ "../pages/Images/edit")
+const Images = () => import(/* webpackChunkName: "images" */ "../pages/Images")
+const ListImages = () => import(/* webpackChunkName: "images-list" */ "../pages/Images/list")
+const EditImage = () => import(/* webpackChunkName: "images-edit" */ "../pages/Images/edit")
 // Errors
 const Error404 = () => import(/* webpackChunkName: "errors-404" */ "../pages/Errors/404")
 

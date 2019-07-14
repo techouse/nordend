@@ -24,7 +24,6 @@
 </template>
 
 <script>
-    import {ImageEditor}         from "@toast-ui/vue-image-editor"
     import {mapActions}          from "vuex"
     import Photo                 from "../../models/Image"
     import Modal                 from "../Modal"
@@ -35,7 +34,7 @@
 
         components: {
             "modal":            Modal,
-            "tui-image-editor": ImageEditor
+            "tui-image-editor": () => import(/* webpackChunkName: "vue-image-editor" */ "@toast-ui/vue-image-editor").then(({ImageEditor}) => ImageEditor),
         },
 
         props: {
