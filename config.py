@@ -1,4 +1,6 @@
 import os
+import re
+
 import pytz
 
 from dotenv import load_dotenv
@@ -25,6 +27,8 @@ class Config(object):
     # Database settings
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or "sqlite:///" + os.path.join(basedir, "db.sqlite3")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Webpack
+    WEBPACKEXT_MANIFEST_PATH = "dist/manifest.json"
     # Redis
     REDIS_HOST = os.environ.get("REDIS_HOST") or "localhost"
     REDIS_PORT = int(os.environ.get("REDIS_PORT")) or 6379

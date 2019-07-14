@@ -3,6 +3,7 @@ import os
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
 from gevent import monkey
+
 monkey.patch_all()
 
 from flask import Flask, request, current_app
@@ -15,6 +16,7 @@ from flask_redis import Redis
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
+from flask_webpackext import FlaskWebpackExt
 
 from config import Config, basedir
 
@@ -29,6 +31,7 @@ babel = Babel()
 cache_buster = CacheBuster(config={"extensions": [".js", ".css"], "hash_size": 10})
 socketio = SocketIO()
 redis = Redis()
+webpack = FlaskWebpackExt()
 
 
 def create_app(config_class=Config):
@@ -42,6 +45,7 @@ def create_app(config_class=Config):
     mail.init_app(app)
     babel.init_app(app)
     cache_buster.init_app(app)
+    webpack.init_app(app)
     redis.init_app(app)
 
     from .errors import errors
@@ -57,7 +61,7 @@ def create_app(config_class=Config):
     app.register_blueprint(main)
 
     from .api import api_bp
-    
+
     csrf.exempt(api_bp)
     app.register_blueprint(api_bp)
 

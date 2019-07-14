@@ -22,6 +22,7 @@ Flask-Migrate==2.5.2
 Flask-RESTful==0.3.7
 Flask-SocketIO==4.1.0
 Flask-SQLAlchemy==2.4.0
+flask-webpackext==1.0.0
 Flask-WTF==0.14.2
 gevent==1.4.0
 gevent-websocket==0.10.1
@@ -35,8 +36,10 @@ MarkupSafe==1.1.1
 marshmallow==2.19.5
 marshmallow-sqlalchemy==0.17.0
 monotonic==1.5
+node-semver==0.6.1
 Pillow==6.1.0
 PyJWT==1.7.1
+pynpm==0.1.1
 pyotp==2.2.7
 python-dateutil==2.8.0
 python-dotenv==0.10.3
@@ -45,6 +48,7 @@ python-engineio==3.8.2.post1
 python-slugify==3.0.2
 python-socketio==4.2.0
 pytz==2019.1
+pywebpack==1.0.0
 redis==3.2.1
 regex==2019.6.8
 requests==2.22.0

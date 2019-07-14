@@ -9,7 +9,7 @@
 
     <title>{{ title + ' |' if title else '' }} {{ config['APP_NAME'] }} | ADMIN</title>
 
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dist/css/backend.css') }}">
+    {{ webpack['backend.css'] }}
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/admin/logo.png') }}">
 
     <script>window.csrfToken = "{{ csrf_token() }}"</script>
@@ -19,10 +19,10 @@
     {% else %}
         <script>window.reCAPTCHASiteKey = null</script>
     {% endif %}
-    <script defer src="{{ url_for('static', filename='dist/js/backend.js') }}"></script>
     {% block head_includes %}{% endblock %}
 </head>
 <body class="header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
 <div id="app"></div>
+{{ webpack['backend.js'] }}
 </body>
 </html>

@@ -77,7 +77,9 @@
     "vue2-ace-editor": "0.0.13",
     "vuex": "^3.1.1",
     "webpack": "^4.35.3",
+    "webpack-bundle-tracker": "^0.4.2-beta",
     "webpack-cli": "^3.3.5",
+    "webpack-manifest-plugin": "^2.0.4",
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {}

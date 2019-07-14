@@ -6,6 +6,7 @@ const path                    = require("path"),
       {VueLoaderPlugin}       = require("vue-loader"),
       OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin"),
       TerserPlugin            = require("terser-webpack-plugin"),
+      ManifestPlugin          = require("webpack-manifest-plugin"),
       env                     = process.env.NODE_ENV,
       npm_config_argv         = JSON.parse(process.env.npm_config_argv),
       isWatch                 = npm_config_argv.remain.some(el => el.startsWith("--watch")),
@@ -24,8 +25,9 @@ const config = {
     },
     output:       {
         path:          outputPath,
-        filename:      "js/[name].js",
-        chunkFilename: "js/[name].js",
+        publicPath:    "/static/dist/",
+        filename:      "js/[name].[hash].js",
+        chunkFilename: "js/[name].[hash].js",
     },
     optimization: {},
     resolve:      {
@@ -109,11 +111,12 @@ const config = {
         new CleanWebpackPlugin({cleanStaleWebpackAssets: !isWatch}),
         new MiniCssExtractPlugin({
                                      path:          outputPath + "/css",
-                                     filename:      "css/[name].css",
-                                     chunkFilename: "css/[id].css"
+                                     filename:      "css/[name].[hash].css",
+                                     chunkFilename: "css/[id].[hash].css"
                                  }),
         new webpack.NormalModuleReplacementPlugin(/element-ui[\/\\]lib[\/\\]locale[\/\\]lang[\/\\]zh-CN/,
-                                                  "element-ui/lib/locale/lang/en")
+                                                  "element-ui/lib/locale/lang/en"),
+        new ManifestPlugin()
     ]
 }
 
