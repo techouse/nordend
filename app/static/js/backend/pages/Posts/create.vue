@@ -29,36 +29,30 @@
                                       :disabled="!editable" type="textarea" maxlength="1024" show-word-limit
                             />
                         </el-form-item>
-                        <el-row>
-                            <el-col :lg="6" :md="24">
-                                <el-form-item label="Main category" prop="category_id">
-                                    <el-select v-model="post.category_id" :disabled="!editable"
-                                               placeholder="Main post category"
-                                               filterable required
-                                               @change="handleMainCategoryChanged"
-                                    >
-                                        <el-option v-for="category in categoriesWithoutAdditional"
-                                                   :key="category.id"
-                                                   :label="category.name"
-                                                   :value="category.id"
-                                        />
-                                    </el-select>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :lg="18" :md="24">
-                                <el-form-item label="Extra categories">
-                                    <el-select v-model="post.additional_category_ids" :disabled="!editable"
-                                               placeholder="Additional post categories" multiple filterable
-                                    >
-                                        <el-option v-for="category in categoriesWithoutPrimary"
-                                                   :key="category.id"
-                                                   :label="category.name"
-                                                   :value="category.id"
-                                        />
-                                    </el-select>
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
+                        <el-form-item label="Main category" prop="category_id">
+                            <el-select v-model="post.category_id" :disabled="!editable"
+                                       placeholder="Main post category"
+                                       filterable required
+                                       @change="handleMainCategoryChanged"
+                            >
+                                <el-option v-for="category in categoriesWithoutAdditional"
+                                           :key="category.id"
+                                           :label="category.name"
+                                           :value="category.id"
+                                />
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="Extra categories">
+                            <el-select v-model="post.additional_category_ids" :disabled="!editable"
+                                       placeholder="Additional post categories" multiple filterable
+                            >
+                                <el-option v-for="category in categoriesWithoutPrimary"
+                                           :key="category.id"
+                                           :label="category.name"
+                                           :value="category.id"
+                                />
+                            </el-select>
+                        </el-form-item>
                         <el-row class="post-tags">
                             <el-col :span="24">
                                 <el-form-item label="Tags">
@@ -99,7 +93,7 @@
                             </el-select>
                         </el-form-item>
                         <el-row>
-                            <el-col :span="18">
+                            <el-col :span="12">
                                 <el-form-item label="Published">
                                     <el-date-picker v-model="post.published_at"
                                                     type="datetime"
@@ -110,7 +104,7 @@
                                     />
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="6">
+                            <el-col :span="12">
                                 <el-form-item label="Draft" prop="draft">
                                     <el-tooltip :disabled="post.draft" class="item" effect="dark" placement="left"
                                                 content="NOTE: Setting the post to draft will unpublish it!"
@@ -639,17 +633,11 @@
         Underline,
     }                               from "tiptap-extensions"
     import Picture                  from "../../components/editor/Picture"
-    import UploadImageModal         from "../../components/editor/UploadImage"
     import YouTube                  from "../../components/editor/YouTube"
-    import EmbedYouTubeModal        from "../../components/editor/EmbedYouTube"
     import Vimeo                    from "../../components/editor/Vimeo"
-    import EmbedVimeoModal          from "../../components/editor/EmbedVimeo"
-    import SourceCode               from "../../components/editor/SourceCode"
-    import EditImageModal           from "../../components/editor/EditImage"
     import CreatePartial            from "../../components/CreatePartial"
     import Post                     from "../../models/Post"
     import Category                 from "../../models/Category"
-    import CreateImage              from "../Images/create"
     import {addDays, addWeeks}      from "date-fns"
     import {uniqBy}                 from "lodash"
     // Code highlighting
@@ -676,12 +664,12 @@
             EditorContent,
             EditorMenuBar,
             EditorMenuBubble,
-            "upload-image-modal":  UploadImageModal,
-            "embed-youtube-modal": EmbedYouTubeModal,
-            "embed-vimeo-modal":   EmbedVimeoModal,
-            "edit-image-modal":    EditImageModal,
-            "source-code":         SourceCode,
-            CreateImage,
+            "upload-image-modal":  () => import(/* webpackChunkName: "posts-editor-upload-image" */ "../../components/editor/UploadImage"),
+            "embed-youtube-modal": () => import(/* webpackChunkName: "posts-editor-embed-youtube" */ "../../components/editor/EmbedYouTube"),
+            "embed-vimeo-modal":   () => import(/* webpackChunkName: "posts-editor-embed-vimeo" */ "../../components/editor/EmbedVimeo"),
+            "edit-image-modal":    () => import(/* webpackChunkName: "posts-editor-edit-image" */  "../../components/editor/EditImage"),
+            "source-code":         () => import(/* webpackChunkName: "posts-editor-source-code" */ "../../components/editor/SourceCode"),
+            "create-image":        () => import(/* webpackChunkName: "images-create" */ "../Images/create"),
         },
 
         extends: CreatePartial,
