@@ -145,16 +145,15 @@
 </template>
 
 <script>
-    import IndexPartial from "../../components/IndexPartial"
     import {mapActions} from "vuex"
+    import IndexPartial from "../../components/IndexPartial"
     import Photo        from "../../models/Image"
-    import CreateImage  from "./create"
 
     export default {
         name: "ListImages",
 
         components: {
-            CreateImage
+            "create-image": () => import(/* webpackChunkName: "images-create" */ "./create"),
         },
 
         extends: IndexPartial,
