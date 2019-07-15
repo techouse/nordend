@@ -591,13 +591,15 @@
                 </el-button>
             </template>
         </card-form>
-
-        <upload-image-modal ref="upload-image-modal" :post-id="post.id" @onConfirm="addCommand"/>
-        <embed-youtube-modal ref="embed-youtube-modal" :post-id="post.id" @onConfirm="addCommand"/>
-        <embed-vimeo-modal ref="embed-vimeo-modal" :post-id="post.id" @onConfirm="addCommand"/>
-        <edit-image-modal v-if="imageEditorVisible" :image="imageEditorImage" @onConfirm="updateImage"/>
-        <create-image :ref="createMainImageRef" :gallery="true" :multiple="false" @success="updateMainImage"/>
-        <create-image :ref="createGalleryImagesRef" :gallery="true" :multiple="true" @success="updateGalleryImages"/>
+        <template v-if="editable">
+            <upload-image-modal ref="upload-image-modal" :post-id="post.id" @onConfirm="addCommand"/>
+            <embed-youtube-modal ref="embed-youtube-modal" :post-id="post.id" @onConfirm="addCommand"/>
+            <embed-vimeo-modal ref="embed-vimeo-modal" :post-id="post.id" @onConfirm="addCommand"/>
+            <edit-image-modal v-if="imageEditorVisible" :image="imageEditorImage" @onConfirm="updateImage"/>
+            <create-image :ref="createMainImageRef" :gallery="true" :multiple="false" @success="updateMainImage"/>
+            <create-image :ref="createGalleryImagesRef" :gallery="true" :multiple="true"
+                          @success="updateGalleryImages"/>
+        </template>
     </div>
 </template>
 
