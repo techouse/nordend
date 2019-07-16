@@ -640,6 +640,7 @@
     import CreatePartial            from "../../components/CreatePartial"
     import Post                     from "../../models/Post"
     import Category                 from "../../models/Category"
+    import Tag                      from "../../models/Tag"
     import {addDays, addWeeks}      from "date-fns"
     import {uniqBy}                 from "lodash"
     // Code highlighting
@@ -657,7 +658,6 @@
     import shell                    from "highlight.js/lib/languages/shell"
     import sql                      from "highlight.js/lib/languages/sql"
     import swift                    from "highlight.js/lib/languages/swift"
-    import Tag                      from "../../models/Tag"
 
     export default {
         name: "CreatePost",
