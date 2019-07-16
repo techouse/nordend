@@ -2,16 +2,16 @@
     <div class="row">
         <div class="col-sm-12">
             <el-form :id="id" :ref="formRef" v-loading="loading" :model="model" :rules="rules"
-                     :label-width="labelWidth" class="card"
+                     :label-width="labelWidth" :label-position="labelPosition" class="card"
             >
                 <div class="card-header">
-                    <slot name="header" />
+                    <slot name="header"/>
                 </div>
                 <div class="card-body">
-                    <slot name="body" />
+                    <slot name="body"/>
                 </div>
                 <div class="card-footer">
-                    <slot name="footer" />
+                    <slot name="footer"/>
                 </div>
             </el-form>
         </div>
@@ -23,35 +23,39 @@
         name: "CardForm",
 
         props: {
-            id: {
+            id:            {
                 type:    String,
                 default: "card-form"
             },
-            formRef:    {
+            formRef:       {
                 type:    String,
                 default: "form"
             },
-            loading:    {
+            loading:       {
                 type:    Boolean,
                 default: false
             },
-            model:      {
+            model:         {
                 type:    Object,
                 require: true
             },
-            rules:      {
+            rules:         {
                 type:    Object,
                 default: () => ({})
             },
-            labelWidth: {
+            labelWidth:    {
                 type:    String,
                 default: "140px"
             },
+            labelPosition: {
+                type:    String,
+                default: "right"
+            }
         },
 
         data() {
             return {
-                width: 0,
+                width:  0,
                 height: 0
             }
         },

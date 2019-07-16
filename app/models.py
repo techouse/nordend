@@ -569,16 +569,18 @@ class Post(db.Model, AddUpdateDelete):
     @image.setter
     def image(self, value=None):
         current_image = self._images.filter(PostImage.primary.is_(True)).first()
-        if value is None or not value and current_image:
-            current_image.delete(current_image)
-            return
-        elif value and isinstance(value, Image):
-            value = value.id
-        if current_image:
-            if current_image.image_id == value:
+        if value:
+            if value and isinstance(value, Image):
+                value = value.id
+            if current_image:
+                if current_image.image_id == value:
+                    return
+                current_image.delete(current_image)
+            self._images.append(PostImage(image_id=value, primary=True))
+        else:
+            if current_image:
+                current_image.delete(current_image)
                 return
-            current_image.delete(current_image)
-        self.images.append(PostImage(image_id=value, primary=True))
 
     @hybrid_property
     def images(self):

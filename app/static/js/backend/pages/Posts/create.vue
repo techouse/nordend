@@ -1,7 +1,7 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div>
         <card-form :ref="formRef" :form-ref="formRef" :loading="loading" :model="post" :rules="rules"
-                   :label-width="labelWidth"
+                   :label-width="labelWidth" label-position="top"
         >
             <template v-slot:header>
                 <el-page-header :content="title" @back="goBack"/>
@@ -643,21 +643,6 @@
     import Tag                      from "../../models/Tag"
     import {addDays, addWeeks}      from "date-fns"
     import {uniqBy}                 from "lodash"
-    // Code highlighting
-    import css                      from "highlight.js/lib/languages/css"
-    import http                     from "highlight.js/lib/languages/http"
-    import javascript               from "highlight.js/lib/languages/javascript"
-    import json                     from "highlight.js/lib/languages/json"
-    import less                     from "highlight.js/lib/languages/less"
-    import markdown                 from "highlight.js/lib/languages/markdown"
-    import perl                     from "highlight.js/lib/languages/perl"
-    import php                      from "highlight.js/lib/languages/php"
-    import python                   from "highlight.js/lib/languages/python"
-    import ruby                     from "highlight.js/lib/languages/ruby"
-    import scss                     from "highlight.js/lib/languages/scss"
-    import shell                    from "highlight.js/lib/languages/shell"
-    import sql                      from "highlight.js/lib/languages/sql"
-    import swift                    from "highlight.js/lib/languages/swift"
 
     export default {
         name: "CreatePost",
@@ -710,20 +695,20 @@
                             new CodeBlockHighlight(
                                 {
                                     languages: {
-                                        css,
-                                        http,
-                                        javascript,
-                                        json,
-                                        less,
-                                        markdown,
-                                        perl,
-                                        php,
-                                        python,
-                                        ruby,
-                                        scss,
-                                        shell,
-                                        sql,
-                                        swift,
+                                        css:        () => import(/* webpackChunkName: "highlight-css" */ "highlight.js/lib/languages/css"),
+                                        http:       () => import(/* webpackChunkName: "highlight-http" */ "highlight.js/lib/languages/http"),
+                                        javascript: () => import(/* webpackChunkName: "highlight-javascript" */ "highlight.js/lib/languages/javascript"),
+                                        json:       () => import(/* webpackChunkName: "highlight-json" */ "highlight.js/lib/languages/json"),
+                                        less:       () => import(/* webpackChunkName: "highlight-less" */ "highlight.js/lib/languages/less"),
+                                        markdown:   () => import(/* webpackChunkName: "highlight-markdown" */ "highlight.js/lib/languages/markdown"),
+                                        perl:       () => import(/* webpackChunkName: "highlight-perl" */ "highlight.js/lib/languages/perl"),
+                                        php:        () => import(/* webpackChunkName: "highlight-php" */ "highlight.js/lib/languages/php"),
+                                        python:     () => import(/* webpackChunkName: "highlight-python" */ "highlight.js/lib/languages/python"),
+                                        ruby:       () => import(/* webpackChunkName: "highlight-ruby" */ "highlight.js/lib/languages/ruby"),
+                                        scss:       () => import(/* webpackChunkName: "highlight-scss" */ "highlight.js/lib/languages/scss"),
+                                        shell:      () => import(/* webpackChunkName: "highlight-shell" */ "highlight.js/lib/languages/shell"),
+                                        sql:        () => import(/* webpackChunkName: "highlight-sql" */ "highlight.js/lib/languages/sql"),
+                                        swift:      () => import(/* webpackChunkName: "highlight-swift" */ "highlight.js/lib/languages/swift"),
                                     },
                                 }
                             ),
@@ -1112,3 +1097,11 @@
         },
     }
 </script>
+
+<style lang="scss" scoped>
+    .el-form-item__content {
+        & > div:first-child:not(.editor) {
+            width: calc(100% - 20px);
+        }
+    }
+</style>
