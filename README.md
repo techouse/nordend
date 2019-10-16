@@ -4,7 +4,7 @@
 
 # :mountain_snow: NORDEND
 
-Nordend is a minimalistic CMS build on top of Flask and Vue.js
+Nordend is a minimalistic CMS built on top of Flask and Vue.js
 
 ## Prerequisites
 
